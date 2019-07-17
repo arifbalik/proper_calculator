@@ -9,4 +9,4 @@ clean:
 	rm euler lexer.c graphviz.txt parser.c parser.h parser.out
 
 graph:
-	re2c -D -o graphviz.txt lexer.re 
+	re2c -D -o graphviz.txt lexer.re

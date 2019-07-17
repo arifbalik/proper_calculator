@@ -2,5 +2,11 @@
     "files.associations": {
         "*.re": "c",
         "parser.h": "c"
-    }
+    },
+    "editor.tabSize": 8,
+"editor.cursorSmoothCaretAnimation": true,
+"editor.detectIndentation": false,
+"editor.formatOnPaste": true,
+"editor.formatOnSave": true,
+"editor.formatOnType": true
 }
