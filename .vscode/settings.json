@@ -12,5 +12,8 @@
 "editor.formatOnType": true,
 "c-cpp-flylint.flexelint.enable": false,
 "c-cpp-flylint.cppcheck.force": true,
-"c-cpp-flylint.cppcheck.executable": "cppcheck.exe"
+"c-cpp-flylint.cppcheck.executable": "cppcheck.exe",
+"C_Cpp.default.cStandard": "c99",
+"C_Cpp.default.intelliSenseMode": "gcc-x64",
+"clang-format.language.c.style": "file"
 }
