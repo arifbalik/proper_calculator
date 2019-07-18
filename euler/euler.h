@@ -1,3 +1,6 @@
+/*
+        File info
+ */
 #ifndef __EULER__
 #define __EULER__
 
@@ -6,8 +9,10 @@
 #define EOL 0
 #define QUIT -2
 
-int add_variable(char *name, double value);
-void list_variables(void);
+void *ParseAlloc();
+void Parse();
+void ParseFree();
+
 
 struct token_info{
         char *name;

@@ -1,7 +1,7 @@
 compile: lexer.re parser.y
 	lemon -c parser.y
 	re2c -o lexer.c lexer.re
-	gcc -o euler lexer.c parser.c
+	gcc -o euler lexer.c parser.c variables.c
 	rm parser.out
 	./euler
 	

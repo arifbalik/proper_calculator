@@ -9,5 +9,8 @@
 "editor.detectIndentation": false,
 "editor.formatOnPaste": true,
 "editor.formatOnSave": true,
-"editor.formatOnType": true
+"editor.formatOnType": true,
+"c-cpp-flylint.flexelint.enable": false,
+"c-cpp-flylint.cppcheck.force": true,
+"c-cpp-flylint.cppcheck.executable": "cppcheck.exe"
 }

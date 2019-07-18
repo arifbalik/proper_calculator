@@ -8,12 +8,8 @@
 #define GETFV(bstr, estr) atof(GETSV(bstr, estr))
 #define GETIV(bstr, estr) atoi(GETSV(bstr, estr))
 
-void *ParseAlloc();
-void Parse();
-void ParseFree();
-
-char* YYCURSOR;
-char* exsp;
+static const char* YYCURSOR;
+const char* exsp;
 struct token_info *tkn;
 
 
@@ -79,7 +75,7 @@ int main(int argc, char **argv)
 		while(token != EOL){
 			token = lex(equery);
 			Parse(parser, token, *tkn);
-			exsp = YYCURSOR;
+                        exsp = YYCURSOR;
 		}
                 tkn->val = 0;
                 strcpy(tkn->name , " ");
