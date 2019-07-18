@@ -8,21 +8,43 @@
 struct symbol_table stbl[50];
 static int vrc = 0;
 
+
+
+void list(void){
+        int i = vrc;
+        if(i < 0) return;
+        while(i--){
+                printf("Name: %s, value: %f\n", stbl[i].name, stbl[i].val);
+        }
+}
+int lookup(char *name){
+        int i = vrc - 1;
+        if(i < 0) return 0;
+        while(strcmp(name, (stbl + i)->name) != 0){
+                i--;
+                if (i < 0){
+                        return -1;
+                }
+        }
+        return i;
+}
+
 double add(char *name, double val){
+        
+        if(lookup(name) != -1 && vrc > 0){
+                printf("Given Name: %s, index: %d, Found name:%s val:%f\n", name, lookup(name), (stbl + lookup(name))->name, (stbl + lookup(name))->val);
+                (stbl + lookup(name))->val = val;
+                printf("Updated Value: %f\n", (stbl + lookup(name))->val);
+                return val;
+        }
+        
         (stbl + vrc)->name = (char *)malloc(sizeof(char) * MAX_VARNAME_LEN);
         strcpy((stbl + vrc)->name, name);
         (stbl + vrc)->val = val;
         vrc++;
 }
 
-double lookup(char *name){
-        int i = vrc - 1;
-        while(strcmp(name, (stbl + i)->name) != 0){
-                i--;
-        } 
 
-        return (stbl + i)->val;
-}
 }
 
 %token_type { struct token_info }
@@ -31,7 +53,7 @@ double lookup(char *name){
         
 }
 
-
+%nonassoc EQ.
 %left PLUS MINUS.
 %left MULT DIV.
 
@@ -43,11 +65,28 @@ double lookup(char *name){
 
 %start_symbol program
 
-number ::= INT.
-number ::= FLOAT.
+program ::= line.
 
-expression ::= number.
-expression(C) ::= NAME(A). {C.val = lookup(A.name);}
+line ::= expression(C). {printf("%f\n", C.val);
+        C.val = 0;
+        strcpy(C.name, " ");
+}
+
+expression ::= LIST. { list(); }
+expression(C) ::= var(A). {
+        strcpy(C.name, A.name);
+        C.val = (stbl + lookup(A.name))->val;
+        printf("Name: %s\n", A.name);
+}
+
+expression(C) ::= expression(B) EQ var(A). {
+        printf("asignee: %s\n", A.name);
+        printf("expression: %f\n", B.val);
+        C.val = (stbl + lookup(A.name))->val = add(A.name, B.val);
+}
+
+var ::= NAME.
+
 expression(C) ::= expression(A) PLUS expression(B). { C.val = A.val + B.val; }
 expression(C) ::= expression(A) MINUS expression(B). { C.val = A.val - B.val;  }
 expression(C) ::= expression(A) MULT expression(B). { C.val = A.val * B.val; }
@@ -57,13 +96,25 @@ expression(C) ::= expression(A) DIV expression(B).      {
                                                                 else
                                                                         printf("Math Error!"); 
                                                         }
-expression(C) ::= NAME(A) EQ number(B). {
-        C.val = add(A.name, B.val);
-        
-}
+
+expression(C) ::= number(B). {C.val = B.val;}
+number ::= INT.
+number ::= FLOAT.
+
+
+
+
+
+
+
+
+
+
+
+
 expression ::= DUMMY.
 
 
-line ::= expression(C). {printf("%f\n", C.val);} 
 
-program ::= line.
+
+

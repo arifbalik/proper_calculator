@@ -54,6 +54,7 @@ int lex(char *equery)
 	"*" { return MULT; }
 	"/" { return DIV; }
 	"=" { return EQ; }
+        "list" {return LIST; }
 	*   { return QUIT; }
 	*/
 }
@@ -81,7 +82,7 @@ int main(int argc, char **argv)
 			exsp = YYCURSOR;
 		}
                 tkn->val = 0;
-                strcpy(tkn->name ," ");
+                strcpy(tkn->name , " ");
                 token = -3;
         }
 
