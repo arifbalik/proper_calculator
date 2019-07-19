@@ -31,9 +31,10 @@ line ::= expression(C). {
         C.val = 0;
 }
 
-expression ::= LIST. { list(); }
-expression(C) ::= NAME(A). { C.val = get_var_val(A.name); }
-expression(C) ::= expression(B) EQ NAME(A). { C.val = A.val = add(A.name, B.val); }
+expression ::= LIST. { list_vars(); }
+expression(C) ::= NAME(A). { C.val = get_var_val(A.name, -1); }
+expression(C) ::= NAME EQ expression(B). { C.val = add_var(fvar, B.val); }
+
 
 expression(C) ::= expression(A) PLUS expression(B). { C.val = A.val + B.val; }
 expression(C) ::= expression(A) MINUS expression(B). { C.val = A.val - B.val;  }

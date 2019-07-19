@@ -14,16 +14,17 @@ int terr(int code, char *msg)
 	__err = MXVQ;
 	return __err;
 }
-void list(void)
+void list_vars(void)
 {
 	int idx = vrc;
 	if (idx < 0)
 		return;
 	while (idx--) {
-		printf("Name: %s, vvalue: %f\n", stbl[idx].name, stbl[idx].val);
+		printf("Name: %s, value: %f, id: %d\n", stbl[idx].name,
+		       stbl[idx].val, stbl[idx].id);
 	}
 }
-int lookup(char *vname)
+int lookup_vars(char *vname)
 {
 	int idx = vrc - 1;
 	if (idx < 0)
@@ -36,9 +37,12 @@ int lookup(char *vname)
 	return idx;
 }
 
-double get_var_val(char *vname)
+double get_var_val(char *vname, int idx)
 {
-	int idx = lookup(vname);
+	if (idx >= 0) { /* if idx > 0 function returns directly with id*/
+		return stbl[idx].val;
+	}
+	idx = lookup_vars(vname);
 	if (idx < 0) {
 		errmsg = (char *)malloc(sizeof(char) * 30);
 		sprintf(errmsg, "No variable found named: %s", vname);
@@ -50,14 +54,16 @@ double get_var_val(char *vname)
 	}
 }
 
-double add(char *vname, double vval)
+double add_var(char *vname, double vval)
 {
 	int idx = -1; /* arbitrary negative value */
 	if (vrc >= MAX_VAR_QTY) {
 		terr(MXVQ, "Max variable quantity has been reached!");
 		return MXVQ;
 	}
-	idx = lookup(vname);
+
+	/* Update if variable already exists. */
+	idx = lookup_vars(vname);
 	if (idx >= 0 && vrc > 0) {
 		(stbl + idx)->val = vval;
 		return vval;

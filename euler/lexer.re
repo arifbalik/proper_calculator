@@ -3,6 +3,7 @@
 #include <string.h>
 #include "parser.h"
 #include "euler.h"
+#include "variables.h"
 
 #define GETSV(bstr, estr) strndup(estr, bstr - estr)
 #define GETFV(bstr, estr) atof(GETSV(bstr, estr))
@@ -11,6 +12,8 @@
 static const char *YYCURSOR;
 const char *exsp;
 struct token_info *tkn;
+
+static int fch = 0; /* flag to indicate first variable name in the query line */
 
 int lex(char *equery)
 {
@@ -29,7 +32,7 @@ int lex(char *equery)
 	*/
 
 	/*!re2c
-	int { 
+	int {
 		tkn->val = GETIV(YYCURSOR, exsp);
                 return INT;
 	}
@@ -39,7 +42,12 @@ int lex(char *equery)
 	}
 	name {
                 strcpy(tkn->name,GETSV(YYCURSOR, exsp));
-		return NAME; 
+		if(fch == 0){
+			fch = 1;
+			strcpy(fvar, tkn->name);
+			printf("fvar saved!\n");
+		}
+		return NAME;
 	}
 
 
@@ -49,6 +57,7 @@ int lex(char *equery)
 	"/" { return DIV; }
 	"=" { return EQ; }
         "list" {return LIST; }
+	"quit" {return QUIT;}
 	*   { return QUIT; }
 	*/
 }
@@ -64,7 +73,7 @@ int main(int argc, char **argv)
 	tkn->name = (char *)malloc(sizeof(char) * MAX_VARNAME_LEN);
 	parser = ParseAlloc(malloc);
 
-	while (token != QUIT) {
+	while (1) {
 		printf(">>>");
 		scanf("%s", query);
 		equery = (char *)(((char *)query) + strlen(query));
@@ -72,15 +81,20 @@ int main(int argc, char **argv)
 
 		while (token != EOL) {
 			token = lex(equery);
+			if (token == QUIT)
+				goto quit;
 			Parse(parser, token, *tkn);
 			exsp = YYCURSOR;
 		}
+		fch = 0;
 		tkn->val = 0;
 		strcpy(tkn->name, " ");
 		token = -3;
 	}
-
-	ParseFree(free);
+quit:
+	free(tkn->name);
+	free(tkn);
+	ParseFree(parser, free);
 	free(query);
 	return (0);
 }
