@@ -63,8 +63,14 @@ int lex(char *equery)
 
 
 	"cos" {return COS;}
+	"acos" {return ACOS;}
+	"cosh" {return COSH;}
 	"sin" {return SIN;}
+	"asin" {return ASIN;}
+	"sinh" {return SINH;}
 	"tan" {return TAN;}
+	"atan" {return ATAN;}
+	"tanh" {return TANH;}
 	"cot" {return COT;}
 
 	"pi" {return PI;}

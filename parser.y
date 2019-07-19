@@ -4,7 +4,6 @@
 #include <assert.h>
 #include "includes.h"
 #include "variables.h"
-#include <math.h>
 #include "euler/euler.h"
 
 int __err;
@@ -19,6 +18,7 @@ int __err;
 %nonassoc EQ.
 %left PLUS MINUS.
 %left MULT DIV.
+%left LAPREN RPAREN.
 
 %parse_accept { }
 
@@ -42,13 +42,22 @@ line ::= expression(C). {
 
 
 
-expression ::= LIST LPAREN RPAREN. { list_vars(); }
+expression ::= LIST. { list_vars(); }
 
 f_form(A) ::= LPAREN expression(B) RPAREN. { A.val = B.val; }
 
 trig_function(A) ::= SIN f_form(B). { A.val = E_SIN(B.val); }
+trig_function(A) ::= ASIN f_form(B). { A.val = E_ASIN(B.val); }
+trig_function(A) ::= SINH f_form(B). { A.val = E_SINH(B.val); }
+
 trig_function(A) ::= COS f_form(B). { A.val = E_COS(B.val); }
+trig_function(A) ::= ACOS f_form(B). { A.val = E_ACOS(B.val); }
+trig_function(A) ::= COSH f_form(B). { A.val = E_COSH(B.val); }
+
 trig_function(A) ::= TAN f_form(B). { A.val = E_TAN(B.val); }
+trig_function(A) ::= ATAN f_form(B). { A.val = E_ATAN(B.val); }
+trig_function(A) ::= TANH f_form(B). { A.val = E_TANH(B.val); }
+
 trig_function(A) ::= COT f_form(B). { A.val = E_COT(B.val); }
 
 expression(A) ::= trig_function(B). { A.val = B.val; }
@@ -66,6 +75,8 @@ expression(A) ::= expression(B) DIV expression(C). {
         else
                 printf("Math Error!");
 }
+
+expression(A) ::= LPAREN expression(B) RPAREN. { A.val = B.val; }
 
 expression ::= constant.
 
