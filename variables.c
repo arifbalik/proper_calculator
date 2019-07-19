@@ -1,7 +1,8 @@
-#include "euler.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "includes.h"
 #include "errors.h"
 
 struct symbol_table stbl[MAX_VAR_QTY];
@@ -11,7 +12,7 @@ char *errmsg;
 int terr(int code, char *msg)
 {
 	printf("euler(error): %s\n", msg);
-	__err = MXVQ;
+	__err = code;
 	return __err;
 }
 void list_vars(void)
@@ -20,8 +21,7 @@ void list_vars(void)
 	if (idx < 0)
 		return;
 	while (idx--) {
-		printf("Name: %s, value: %f, id: %d\n", stbl[idx].name,
-		       stbl[idx].val, stbl[idx].id);
+		printf("Name: %s, value: %f\n", stbl[idx].name, stbl[idx].val);
 	}
 }
 int lookup_vars(char *vname)

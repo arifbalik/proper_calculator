@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "parser.h"
-#include "euler.h"
+#include "includes.h"
 #include "variables.h"
 
 #define GETSV(bstr, estr) strndup(estr, bstr - estr)
@@ -28,7 +28,7 @@ int lex(char *equery)
 
 	int = [-+]?[0-9]+;
 	float = [-+]?[0-9]+('.'[0-9]+)('e'[+-]?[0-9]+)? ;
-	name = [A-Z]+;
+	var = [A-Z]+;
 	*/
 
 	/*!re2c
@@ -40,14 +40,13 @@ int lex(char *equery)
 		tkn->val = GETFV(YYCURSOR, exsp);
                 return FLOAT;
 	}
-	name {
+	var {
                 strcpy(tkn->name,GETSV(YYCURSOR, exsp));
 		if(fch == 0){
 			fch = 1;
 			strcpy(fvar, tkn->name);
-			printf("fvar saved!\n");
 		}
-		return NAME;
+		return VAR;
 	}
 
 
@@ -56,9 +55,20 @@ int lex(char *equery)
 	"*" { return MULT; }
 	"/" { return DIV; }
 	"=" { return EQ; }
+	"(" { return LPAREN;}
+	")" {return RPAREN;}
         "list" {return LIST; }
 	"quit" {return QUIT;}
 	*   { return QUIT; }
+
+
+	"cos" {return COS;}
+	"sin" {return SIN;}
+	"tan" {return TAN;}
+	"cot" {return COT;}
+
+	"pi" {return PI;}
+
 	*/
 }
 
