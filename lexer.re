@@ -26,8 +26,8 @@ int lex(char *equery)
 	re2c:define:YYCTYPE = char;
 	re2c:yyfill:enable = 0;
 
-	int = [-+]?[0-9]+;
-	float = [-+]?[0-9]+('.'[0-9]+)('e'[+-]?[0-9]+)? ;
+	int = [0-9]+;
+	float = [0-9]+('.'[0-9]+)('e'[+-]?[0-9]+)? ;
 	var = [A-Z]+;
 	*/
 
@@ -50,8 +50,8 @@ int lex(char *equery)
 	}
 
 
-	"p" { return PLUS; }
-	"m" { return MINUS;  }
+	"+" { return PLUS; }
+	"-" { return MINUS;  }
 	"*" { return MULT; }
 	"/" { return DIV; }
 	"=" { return EQ; }
@@ -65,12 +65,15 @@ int lex(char *equery)
 	"cos" {return COS;}
 	"acos" {return ACOS;}
 	"cosh" {return COSH;}
+
 	"sin" {return SIN;}
 	"asin" {return ASIN;}
 	"sinh" {return SINH;}
+
 	"tan" {return TAN;}
 	"atan" {return ATAN;}
 	"tanh" {return TANH;}
+
 	"cot" {return COT;}
 
 	"pi" {return PI;}
@@ -88,13 +91,11 @@ int main(int argc, char **argv)
 	tkn = malloc(sizeof(struct token_info));
 	tkn->name = (char *)malloc(sizeof(char) * MAX_VARNAME_LEN);
 	parser = ParseAlloc(malloc);
-
 	while (1) {
 		printf(">>>");
 		scanf("%s", query);
 		equery = (char *)(((char *)query) + strlen(query));
 		YYCURSOR = exsp = query;
-
 		while (token != EOL) {
 			token = lex(equery);
 			if (token == QUIT)

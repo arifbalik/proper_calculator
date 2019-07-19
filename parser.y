@@ -75,6 +75,8 @@ expression(A) ::= expression(B) DIV expression(C). {
         else
                 printf("Math Error!");
 }
+expression(A) ::= MINUS expression(B). { A.val = -B.val; }
+expression(A) ::= PLUS expression(B). { A.val = B.val; }
 
 expression(A) ::= LPAREN expression(B) RPAREN. { A.val = B.val; }
 
@@ -85,6 +87,7 @@ constant(A) ::= PI. {A.val = M_PI;}
 expression(A) ::= number(B). {A.val = B.val;}
 number ::= INT.
 number ::= FLOAT.
+
 
 
 
