@@ -76,6 +76,25 @@ int lex(char *equery)
 
 	"cot" {return COT;}
 
+
+	"exp" {return EXP;}
+	"log" {return LOG;}
+	"ln" {return LN;}
+
+	"pow" {return POW;}
+	"sqrt" {return SQRT;}
+	"cbrt" {return CBRT;}
+
+	"ceil" {return CEIL;}
+	"floor" {return FLOOR;}
+	"mod" {return MOD;}
+
+	"abs" {return ABS;}
+
+	"," { return COMMA; }
+
+
+
 	"pi" {return PI;}
 
 	*/
