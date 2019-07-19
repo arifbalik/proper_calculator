@@ -1,52 +1,65 @@
-/*
-        
-
- */
 #include "euler.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "errors.h"
 
-struct symbol_table stbl[50];
+struct symbol_table stbl[MAX_VAR_QTY];
 static int vrc = 0;
+char *errmsg;
 
+int terr(int code, char *msg)
+{
+	printf("euler(error): %s\n", msg);
+	__err = MXVQ;
+	return __err;
+}
 void list(void)
 {
-	int i = vrc;
-	if (i < 0)
+	int idx = vrc;
+	if (idx < 0)
 		return;
-	while (i--) {
-		printf("Name: %s, vvalue: %f\n", stbl[i].name, stbl[i].val);
+	while (idx--) {
+		printf("Name: %s, vvalue: %f\n", stbl[idx].name, stbl[idx].val);
 	}
 }
-
 int lookup(char *vname)
 {
-	int i = vrc - 1;
-	if (i < 0)
-		return 0;
-	while (strcmp(vname, (stbl + i)->name) != 0) {
-		i--;
-		if (i < 0) {
-			return -1;
-		}
+	int idx = vrc - 1;
+	if (idx < 0)
+		return NVF;
+	while (strcmp(vname, (stbl + idx)->name) != 0) {
+		idx--;
+		if (idx < 0)
+			return NVF;
 	}
-	return i;
+	return idx;
 }
 
 double get_var_val(char *vname)
 {
-	return stbl[lookup(vname)].val;
+	int idx = lookup(vname);
+	if (idx < 0) {
+		errmsg = (char *)malloc(sizeof(char) * 30);
+		sprintf(errmsg, "No variable found named: %s", vname);
+		terr(NVF, errmsg);
+		free(errmsg);
+		return 0;
+	} else {
+		return stbl[idx].val;
+	}
 }
 
 double add(char *vname, double vval)
 {
-	if (lookup(vname) != -1 && vrc > 0) {
-		printf("Given Name: %s, index: %d, Found name:%s vval:%f\n",
-		       vname, lookup(vname), (stbl + lookup(vname))->name,
-		       (stbl + lookup(vname))->val);
-		(stbl + lookup(vname))->val = vval;
-		printf("Updated Value: %f\n", (stbl + lookup(vname))->val);
+	int idx = -1; /* arbitrary negative value */
+	if (vrc >= MAX_VAR_QTY) {
+		terr(MXVQ, "Max variable quantity has been reached!");
+		return MXVQ;
+	}
+	idx = lookup(vname);
+	if (idx >= 0 && vrc > 0) {
+		(stbl + idx)->val = vval;
 		return vval;
 	}
 

@@ -2,7 +2,7 @@
         File info
  */
 #ifndef __VARIABLES__
-#define __VARIABLES__
+#define __VARIABLES__ 
 
 void list(void);
 int lookup(char *vname);
