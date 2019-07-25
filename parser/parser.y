@@ -4,7 +4,7 @@
 #include <assert.h>
 #include "includes.h"
 #include "variables.h"
-#include "euler/euler.h"
+#include "euler/inc/euler.h"
 
 int __err;
 }

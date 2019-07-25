@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "parser.h"
 #include "includes.h"
+#include "../euler/inc/variables.h"
+#include "../arch/arm/stm32f103c8/print.h"
 
 #define GETSV(bstr, estr) strndup(estr, bstr - estr)
 #define GETFV(bstr, estr) atof(GETSV(bstr, estr))
@@ -16,7 +19,7 @@ static int fch = 0; /* flag to indicate first variable name in the query line */
 
 int lex(char *equery)
 {
-	const char *YYMARKER, *o1, *o2, *o3, *o4;
+	const char *YYMARKER, *o1, *o2;
 
 	if (YYCURSOR >= equery) {
 		return EOL;
@@ -32,20 +35,15 @@ int lex(char *equery)
 	*/
 
 	/*!re2c
+	@o1 int @o2 {
+		sprintf(tkn.name, "%.*s",(int)(o2 - o1));
 
-	oct = [0-9]{1,3};
-        dot = ".";
-
-        @o1 int @o2 {
-		sprintf(tkn.name, "%.*s%.*s",(int)(o2 - o1), o1);
             return INT;
         }
-
-
-	float {
-		//tkn.val = GETFV(YYCURSOR, exsp);
-                return FLOAT;
-	}
+	@o1 float @o2 {
+		sprintf(tkn.name, "%.*s",(int)(o2 - o1));
+            return FLOAT;
+        }
 	var {
                 //strcpy(tkn.name,GETSV(YYCURSOR, exsp));
 		if(fch == 0){
@@ -106,14 +104,36 @@ int lex(char *equery)
 
 	*/
 }
-
-int main()
+float stof(const char *s);
+float stof(const char *s)
 {
-	char *query = "125";
+	float rez = 0, fact = 1;
+	if (*s == '-') {
+		s++;
+		fact = -1;
+	}
+	for (int point_seen = 0; *s; s++) {
+		if (*s == '.') {
+			point_seen = 1;
+			continue;
+		}
+		int d = *s - '0';
+		if (d >= 0 && d <= 9) {
+			if (point_seen)
+				fact /= 10.0f;
+			rez = rez * 10.0f + (float)d;
+		}
+	}
+	return rez * fact;
+}
+
+int cmd(char *query)
+{
 	char *equery;
 	void *parser;
 	int token = -3;
 	char tk[30];
+	float no;
 
 	//parser = ParseAlloc(malloc);
 
@@ -122,23 +142,27 @@ int main()
 
 	while (token != EOL) {
 		token = lex(equery);
-		sprintf(tk, "%d\n", token);
 		switch (token) {
 		case PI:
-			puts("PI=3.14\n");
+			console_puts("PI=3.14\n");
 			break;
 		case INT:
-			sprintf(tk, "INT val=%f\n", atof(tkn.name));
-			puts(tk);
+			sprintf(tk, "INT val=%d\n", atoi(tkn.name));
+			console_puts(tk);
+			break;
+		case FLOAT:
+			no = stof(tkn.name);
+			sprintf(tk, "FLOAT val=%f\n", 1.25f + 1.25f);
+			console_puts(tk);
 			break;
 		case EOL:
-			//puts("EOL\n");
+			//console_puts("EOL\n");
 			break;
 		default:
-			puts("Error\n");
+			console_puts("Error\n");
 			break;
 		}
-		//puts(tk);
+		//console_puts(tk);
 		//Parse(parser, token, *tkn);
 		exsp = YYCURSOR;
 	}

@@ -1,0 +1,6 @@
+[submodule "arch/arm/m3/libopencm3"]
+	path = arch/arm/m3/libopencm3
+	url = https://github.com/libopencm3/libopencm3.git
+[submodule "arch/arm/libopencm3"]
+	path = arch/arm/libopencm3
+	url = https://github.com/libopencm3/libopencm3.git
