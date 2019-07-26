@@ -1,6 +1,6 @@
 
 ARCH?=arm
-MCU?=stm32f103c8
+MCU?=stm32f746ng
 CMD?=
 
 SRC=parser
@@ -14,11 +14,11 @@ all: $(PARSER).c $(LEXER).c
 
 $(LEXER).c : $(PARSER).c
 	@echo "Compiling the lexer.."
-	@re2c --tags -i -o $(LEXER).c $(LEXER).re
+	@re2c --tags -W -o $(LEXER).c $(LEXER).re
 
 $(PARSER).c:
 	@echo "Compiling the parser.."
-	@lemon -c $(PARSER).y
+	@lemon -c -s $(PARSER).y
 
 clean:
 	rm $(LEXER).c graphviz.txt $(PARSER).c $(PARSER).h $(PARSER).out -rf ../build

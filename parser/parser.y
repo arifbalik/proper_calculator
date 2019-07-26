@@ -1,19 +1,30 @@
 %include {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wredundant-decls"
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#pragma GCC diagnostic ignored "-Wmissing-prototypes"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wsign-compare"
+
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <assert.h>
+#include <math.h>
 #include "includes.h"
-#include "variables.h"
-#include "euler/inc/euler.h"
+#include "../euler/inc/variables.h"
+#include "../euler/inc/euler.h"
+#include "../arch/arm/stm32f746ng/print.h"
 
 int __err;
+char print[180];
+
+char 	gcvt (double value, int ndigit, char *buf);
 }
 
-%token_type { struct token_info }
+%token_type { token_info }
 
-%code {
 
-}
 
 %nonassoc EQ.
 %left PLUS MINUS.
@@ -32,7 +43,9 @@ program ::= line.
 
 line ::= expression(C). {
         if(__err >= 0){
-                printf("%f\n", C.val);
+                gcvt(C.val, 4, print);
+                console_puts(print);
+                console_puts("\n");
                 C.val = 0;
 
         }else{
@@ -79,7 +92,7 @@ math_function(A) ::= ABS f_form(B). { A.val = E_ABS(B.val); }
 expression(A) ::= math_function(B). { A.val = B.val; }
 
 expression(A) ::= VAR(B). { A.val = get_var_val(B.name, -1); }
-expression(A) ::= VAR EQ expression(B). { A.val = add_var(fvar, B.val); }
+expression(A) ::= VAR(B) EQ expression(C). { A.val = add_var(B.name, C.val); }
 
 
 expression(A) ::= expression(B) PLUS expression(C). { A.val = B.val + C.val; }
@@ -117,3 +130,7 @@ number ::= FLOAT.
 
 
 expression ::= DUMMY.
+
+%code {
+#pragma GCC diagnostic pop
+}

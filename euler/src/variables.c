@@ -2,16 +2,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "includes.h"
-#include "errors.h"
+#include "../parser/includes.h"
+#include "../parser/errors.h"
 
-struct symbol_table stbl[MAX_VAR_QTY];
+symbol_table stbl[MAX_VAR_QTY];
 static int vrc = 0;
 char *errmsg;
+char *emsg;
 
-int terr(int code, char *msg)
+void list_vars(void);
+int lookup_vars(char *vname);
+double add_var(char *vname, double vval);
+double get_var_val(char *vname, int idx);
+void get_var_name(int idx);
+
+static int terr(int code, char *msg)
 {
-	printf("euler(error): %s\n", msg);
+	console_puts("euler(error): ");
+	console_puts(msg);
+	console_puts("\n");
 	__err = code;
 	return __err;
 }
@@ -21,7 +30,12 @@ void list_vars(void)
 	if (idx < 0)
 		return;
 	while (idx--) {
-		printf("Name: %s, value: %f\n", stbl[idx].name, stbl[idx].val);
+		console_puts("Name: ");
+		console_puts(stbl[idx].name);
+		console_puts(" value: ");
+		gcvt(stbl[idx].val, 4, emsg);
+		console_puts(emsg);
+		console_puts("\n");
 	}
 }
 int lookup_vars(char *vname)
@@ -29,7 +43,7 @@ int lookup_vars(char *vname)
 	int idx = vrc - 1;
 	if (idx < 0)
 		return NVF;
-	while (strcmp(vname, (stbl + idx)->name) != 0) {
+	while (strcmp(vname, stbl[idx].name) != 0) {
 		idx--;
 		if (idx < 0)
 			return NVF;
@@ -65,12 +79,13 @@ double add_var(char *vname, double vval)
 	/* Update if variable already exists. */
 	idx = lookup_vars(vname);
 	if (idx >= 0 && vrc > 0) {
-		(stbl + idx)->val = vval;
+		stbl[idx].val = vval;
 		return vval;
 	}
 
-	(stbl + vrc)->name = (char *)malloc(sizeof(char) * MAX_VARNAME_LEN);
-	strcpy((stbl + vrc)->name, vname);
-	(stbl + vrc)->val = vval;
+	strcpy(stbl[vrc].name, vname);
+	stbl[vrc].val = vval;
 	vrc++;
+
+	return stbl[vrc - 1].val;
 }

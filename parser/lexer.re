@@ -5,11 +5,14 @@
 #include "parser.h"
 #include "includes.h"
 #include "../euler/inc/variables.h"
-#include "../arch/arm/stm32f103c8/print.h"
+#include "../arch/arm/stm32f746ng/print.h"
 
 #define GETSV(bstr, estr) strndup(estr, bstr - estr)
 #define GETFV(bstr, estr) atof(GETSV(bstr, estr))
 #define GETIV(bstr, estr) atoi(GETSV(bstr, estr))
+
+float stof(const char *s);
+int lex(char *equery);
 
 const char *YYCURSOR;
 const char *exsp;
@@ -19,13 +22,17 @@ static int fch = 0; /* flag to indicate first variable name in the query line */
 
 int lex(char *equery)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat="
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 	const char *YYMARKER, *o1, *o2;
 
 	if (YYCURSOR >= equery) {
 		return EOL;
 	}
-	/*!stags:re2c format = 'const char *@@;'; */
-	/*!re2c
+/*!stags:re2c format = 'const char *@@;'; */
+/*!re2c
 	re2c:define:YYCTYPE = char;
 	re2c:yyfill:enable = 0;
 
@@ -34,24 +41,29 @@ int lex(char *equery)
 	var = [A-Z]+;
 	*/
 
-	/*!re2c
+/*!re2c
 	@o1 int @o2 {
-		sprintf(tkn.name, "%.*s",(int)(o2 - o1));
 
+
+		sprintf(tkn.name, "%.*s",(int)(o2 - o1));
+		tkn.val = stof(tkn.name);
             return INT;
         }
 	@o1 float @o2 {
 		sprintf(tkn.name, "%.*s",(int)(o2 - o1));
+		tkn.val = stof(tkn.name);
             return FLOAT;
         }
-	var {
-                //strcpy(tkn.name,GETSV(YYCURSOR, exsp));
+	@o1 var @o2{
+                sprintf(tkn.name, "%.*s",(int)(o2 - o1));
 		if(fch == 0){
 			fch = 1;
-			//strcpy(fvar, tkn.name);
+			strcpy(fvar, tkn.name);
 		}
 		return VAR;
 	}
+
+
 
 
 	"+" { return PLUS; }
@@ -103,8 +115,9 @@ int lex(char *equery)
 
 
 	*/
+#pragma GCC diagnostic pop
 }
-float stof(const char *s);
+
 float stof(const char *s)
 {
 	float rez = 0, fact = 1;
@@ -129,41 +142,25 @@ float stof(const char *s)
 
 int cmd(char *query)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
 	char *equery;
 	void *parser;
 	int token = -3;
 	char tk[30];
+	char *tmp;
 	float no;
 
-	//parser = ParseAlloc(malloc);
+	parser = (void *)ParseAlloc(malloc);
 
 	equery = (char *)(((char *)query) + strlen(query));
 	YYCURSOR = exsp = query;
 
 	while (token != EOL) {
 		token = lex(equery);
-		switch (token) {
-		case PI:
-			console_puts("PI=3.14\n");
-			break;
-		case INT:
-			sprintf(tk, "INT val=%d\n", atoi(tkn.name));
-			console_puts(tk);
-			break;
-		case FLOAT:
-			no = stof(tkn.name);
-			sprintf(tk, "FLOAT val=%f\n", 1.25f + 1.25f);
-			console_puts(tk);
-			break;
-		case EOL:
-			//console_puts("EOL\n");
-			break;
-		default:
-			console_puts("Error\n");
-			break;
-		}
+
 		//console_puts(tk);
-		//Parse(parser, token, *tkn);
+		Parse(parser, token, tkn);
 		exsp = YYCURSOR;
 	}
 	fch = 0;
@@ -171,6 +168,7 @@ int cmd(char *query)
 	strcpy(tkn.name, " ");
 	token = -3;
 
-	//ParseFree(parser, free);
+	ParseFree(parser, free);
 	return (0);
+#pragma GCC diagnostic pop
 }

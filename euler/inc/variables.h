@@ -19,6 +19,6 @@ void get_var_name(int idx);
            when we call A.name (which is a struct) we get the name of C.
            It is maybe because the structre.
            */
-char fvar[MAX_VARNAME_LEN];
+static char fvar[MAX_VARNAME_LEN];
 
 #endif /* __VARIABLES__ */
