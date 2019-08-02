@@ -1,16 +1,18 @@
 MCU=stm32f746ng
 
-PROJECT = ../../../build/$(MCU)
+EULER_DIR = ../../../euler
 BUILD_DIR = ../../../build
+PROJECT = $(BUILD_DIR)/$(MCU)
 
-SHARED_DIR = ../../../build
-CFILES =   ../../../euler/src/variables.c ../../../parser/parser.c ../../../parser/lexer.c $(MCU).c
+
+SHARED_DIR = $(BUILD_DIR)
+CFILES =   $(EULER_DIR)/src/variables.c $(EULER_DIR)/parser/parser.c $(EULER_DIR)/parser/lexer.c $(MCU).c
 AFILES +=
 
 LDLIBS += -lm
 
 # TODO - you will need to edit these two lines!
-DEVICE=stm32f746ng
+DEVICE=$(MCU)
 
 # You shouldn't have to edit anything below here.
 VPATH += $(SHARED_DIR)

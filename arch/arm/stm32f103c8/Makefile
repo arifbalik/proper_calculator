@@ -1,15 +1,20 @@
-PROJECT = ../../../build/stm32f103c8
-BUILD_DIR = ../../../build
+MCU=stm32f103c8
 
-SHARED_DIR = ../../../build
-CFILES =   ../../../parser/lexer.c stm32f103c8.c
+EULER_DIR = ../../../euler
+BUILD_DIR = ../../../build
+PROJECT = $(BUILD_DIR)/$(MCU)
+
+
+SHARED_DIR = $(BUILD_DIR)
+CFILES =   $(EULER_DIR)/src/variables.c $(EULER_DIR)/parser/parser.c $(EULER_DIR)/parser/lexer.c $(MCU).c
 AFILES +=
 
-ARCH_FLAGS = -mfloat-abi=hard -mfpu=fpv4-sp-d16
+ARCH_FLAGS = -mfloat-abi=softfp #this series has no hard float
+
+LDLIBS += -lm
 
 # TODO - you will need to edit these two lines!
-DEVICE=stm32f103x8
-OOCD_FILE = board/stm32f103-generic.cfg
+DEVICE=$(MCU)
 
 # You shouldn't have to edit anything below here.
 VPATH += $(SHARED_DIR)
@@ -19,6 +24,3 @@ OPENCM3_DIR=../libopencm3
 include $(OPENCM3_DIR)/mk/genlink-config.mk
 include ../rules.mk
 include $(OPENCM3_DIR)/mk/genlink-rules.mk
-
-re2c:
-	re2c -i -o re2c.c re2c.re

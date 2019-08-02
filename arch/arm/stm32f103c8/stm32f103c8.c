@@ -25,7 +25,7 @@
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/usart.h>
-#include "../../../parser/includes.h"
+#include "../../../euler/inc/euler.h"
 
 void console_putc(char c);
 char console_getc(void);
@@ -178,19 +178,28 @@ int console_gets(char *s, int len)
  */
 int main(void)
 {
-	char buf[128];
-	int len;
-
-	clock_setup(); /* initialize our clock */
-	gpio_setup();
+	char buf[128], print[128];
+	ersl_t result;
+	clock_setup();
 	usart_setup();
 
 	while (1) {
-		console_puts(">>>");
-		len = console_gets(buf, 128);
-		console_putc('\n');
-		if (len) {
-			cmd(buf);
+		if (console_gets(buf, 128)) {
+			if (parse_query(buf, &result) < 0) {
+				console_puts(
+					serr(result.error)); /* print error */
+			} else {
+				switch (result.type) {
+				case FRACTION:
+					gcvt(result.result.fraction, 4, print);
+					console_puts(print);
+					break;
+				default:
+					console_puts(
+						"unsupported result type!\n");
+					break;
+				}
+			}
 		}
 	}
 }

@@ -1,31 +1,31 @@
 
 ARCH?=arm
-MCU?=stm32f746ng
-CMD?=
+MCU?=
+CMD?= -i
 
-SRC=parser
+SRC=euler/parser
 PARSER=$(SRC)/parser
 LEXER=$(SRC)/lexer
 
-C_FILES = variables.c
+BUILD_DIR = build
+
+C_FILES= euler/src/variables.c $(LEXER).c $(PARSER).c
 
 all: $(PARSER).c $(LEXER).c
-	rm $(PARSER).out
+	cd arch/$(ARCH)/$(MCU) && $(MAKE)
 
 $(LEXER).c : $(PARSER).c
 	@echo "Compiling the lexer.."
 	@re2c --tags -W -o $(LEXER).c $(LEXER).re
 
-$(PARSER).c:
+$(PARSER).c: clean
 	@echo "Compiling the parser.."
 	@lemon -c -s $(PARSER).y
 
 clean:
-	rm $(LEXER).c graphviz.txt $(PARSER).c $(PARSER).h $(PARSER).out -rf ../build
-	cd arch/$(ARCH)/$(MCU) && $(MAKE) clean
+	rm $(LEXER).c graphviz.txt $(PARSER).c $(PARSER).h $(PARSER).out -rf $(BUILD_DIR)
+	cd arch/arm/stm32f103c8 && $(MAKE) $(CMD) clean
+	cd arch/arm/stm32f746ng && $(MAKE) $(CMD) clean
 
 graph:
 	re2c -D -o graphviz.txt $(LEXER).re
-
-target:
-	cd arch/$(ARCH)/$(MCU) && $(MAKE) $(CMD)
