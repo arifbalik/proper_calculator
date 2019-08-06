@@ -11,18 +11,6 @@ static uint8_t vrbc = 0;
 
 static int lookup_vars(char *vname);
 
-char *serr(int8_t err)
-{
-	switch (err) {
-	case MXVQ:
-		return strdup("Max variable length has been reached!");
-	case NVF:
-		return strdup("Not found!");
-	default:
-		return strdup("Unkown error!");
-	}
-}
-
 void list_vars(void)
 {
 	register int8_t idx = vrbc;

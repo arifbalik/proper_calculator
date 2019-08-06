@@ -1,24 +1,36 @@
 #include "parser.h"
 #include "lexer.h"
 
-token_val tknv;
+#define BACKUPQ YYCURSOR = addr
+#define FILL_LEX(q) YYCURSOR = q
 
-const char *YYCURSOR;
+char *raw_after_equal; /* to hold the raw input after equal. Nedded for functions */
 
-static int lex(void)
+void free_raw_after_equal(void)
+{
+	free(raw_after_equal);
+}
+char *get_raw_after_equal(void)
+{
+	return raw_after_equal;
+}
+
+char *YYCURSOR, *o1, *o2, *o3, *o4;
+
+static int lex(token_val *tknv)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat="
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 
-	const char *YYMARKER, *o1, *o2;
+	char *YYMARKER;
 
 	/* reset token table */
-	tknv.val = 0;
-	*tknv.name = '\x00';
+	tknv->val = 0;
+	*tknv->name = '\x00';
 
 	// Settings
-	/*!stags:re2c format = 'const char *@@;'; */
+	/*!stags:re2c format = 'char *@@;'; */
 	/*!re2c
 		re2c:define:YYCTYPE = char;
 		re2c:yyfill:enable = 0;
@@ -28,25 +40,25 @@ static int lex(void)
 
 		int = [0-9]+;
 		float = [0-9]+('.'[0-9]+)('e'[+-]?[0-9]+)? ;
-		var = [A-Z]+;
+		letter = [a-z];
 
 
 	// Number Defs.
 
 		@o1 int @o2 {
-			sprintf(tknv.name, "%.*s",(int)(o2 - o1), o1);
-			tknv.val = atof(tknv.name);
+			sprintf(tknv->name, "%.*s",(int)(o2 - o1), o1);
+			tknv->val = atof(tknv->name);
 			return INT;
 		}
 
 		@o1 float @o2 {
-			sprintf(tknv.name, "%.*s",(int)(o2 - o1), o1);
-			tknv.val = atof(tknv.name);
+			sprintf(tknv->name, "%.*s",(int)(o2 - o1), o1);
+			tknv->val = atof(tknv->name);
 			return FLOAT;
 		}
-		@o1 var @o2{
-			sprintf(tknv.name, "%.*s",(int)(o2 - o1), o1);
-			return VAR;
+		@o1 letter @o2{
+			sprintf(tknv->name, "%.*s",(int)(o2 - o1), o1);
+			return LETTER;
 		}
 
 
@@ -56,11 +68,16 @@ static int lex(void)
 		"-" { return MINUS;  }
 		"*" { return MULT; }
 		"/" { return DIV; }
-		"=" { return EQ; }
-		"(" { return LPAREN;}
+		"=" {
+			raw_after_equal = (char *)malloc(sizeof(char) * strlen(YYCURSOR));
+			strcpy(raw_after_equal, YYCURSOR);
+			return EQ;
+		}
+		"(" { return LPAREN; }
 		")" {return RPAREN;}
 		"," { return COMMA; }
 
+		* { return UNKNOWN; }
 
 
 
@@ -101,7 +118,7 @@ static int lex(void)
 	// Constant Defs.
 
 		"pi" {
-			tknv.val = M_PI;
+			tknv->val = M_PI;
 			return CONST;
 		}
 
@@ -110,43 +127,108 @@ static int lex(void)
 		"integrate" {
 			return INTEGRATE;
 		}
-		"from" {
+		("from") {
 			return FROM;
 		}
-		"to" {
+		("to") {
 			return TO;
+		}
+
+	// User function
+		("eval") { return EVAL; }
+		("steps") { return STEPS; }
+
+
+	// Function placement
+
+		@o1 (letter) @o2 '('  [^a-z]+ ')'@o3   {
+			return FN_CALL;
 		}
 
 	// System Defs.
 
 		"list" {return LIST; }
 		"quit" {return QUIT;}
-		*   { return UNKNOWN; }
 		"\x00" {return EOL;}
-	*/
 
+	*/
 #pragma GCC diagnostic pop
 }
 
-int parse_query(char *query, ersl_t *ersl)
+// static void pfncpr(const char *query)
+// {
+// 	char *tmp; /* we'll use it for lexer and store the result in original query var. */
+// 	token_val dummy; /* just for function call */
+//
+// 	/* TODO: determine how much space tmp should allocate */
+// 	tmp = (char *)malloc(sizeof(char) * strlen(query) * 4);
+//
+// 	strcpy(tmp, query);
+// 	YYCURSOR = tmp;
+//
+// 	place_flag =
+// 		1; /* when we call lex with this flag set to 1 it search for functions */
+// 	while (lex(&dummy, query) != EOL) {
+// 		/* There might be new function to be pre-parsed.
+// 		 * So we call it again too find out.
+// 		 */
+// 		if (place_flag == 2) {
+// 			strcpy(tmp, query); /* fill tmp with pre-parsed query */
+// 			YYCURSOR = tmp;
+// 		}
+// 		place_flag = 1;
+// 	}
+// 	place_flag = 0;
+// 	YYCURSOR = query; /* store the final result */
+// }
+
+static void free_ersl(ersl_t *ersl)
+{
+	/* reset euler result */
+	ersl->status = 0;
+	ersl->type = 0;
+	ersl->resultn.fraction = 0;
+}
+
+void parser_restart(void *parser)
+{
+	parse_free(parser, free);
+	parser = parse_alloc(malloc);
+}
+void parse_query(char *query, ersl_t *ersl)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
 
-	int token;
+	uint8_t token;
+	token_val tknv;
 	void *parser = parse_alloc(malloc);
+	char *addr = query;
 
-	YYCURSOR = query;
+	free_ersl(ersl);
+	//pfncpr(query);
+	FILL_LEX(query);
+	while (1) {
+		token = lex(&tknv);
 
-	ersl->error = 0; /* reset error flag */
-
-	while ((token = lex()) != EOL) {
+		switch (token) {
+		case FN_CALL: /* function expand */
+			BACKUPQ;
+			ersl->status = fnexp(o1, o2, o3, YYCURSOR);
+			if (ersl->status < 0)
+				goto end;
+			parser_restart(parser);
+			continue;
+		case EOL:
+			parse(parser, 0, tknv, ersl);
+			goto end;
+		default:
+			break;
+		}
 		parse(parser, token, tknv, ersl);
 	}
-	parse(parser, 0, tknv, ersl);
-
+end:
 	parse_free(parser, free);
 
-	return ersl->error;
 #pragma GCC diagnostic pop
 }

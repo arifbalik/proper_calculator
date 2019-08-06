@@ -16,11 +16,17 @@ typedef union {
 	double val;
 } token_val;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall"
 void *ParseAlloc(void *(*mallocProc)(YYMALLOCARGTYPE));
 void Parse(void *yyp, /* The parser */
 	   int yymajor, /* The major token code number */
 	   token_val yyminor, /* The value for the token */
 	   ersl_t *euler /* Optional %extra_argument parameter */
 );
+#pragma GCC diagnostic pop
+
+void free_raw_after_equal(void);
+char *get_raw_after_equal(void);
 
 #endif /* __LEXER__ */

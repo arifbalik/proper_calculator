@@ -2,7 +2,6 @@
 #define __VARIABLES__
 
 /* Symbol table defines */
-#define MAX_QUERY_SIZE 20
 #define MAX_VAR_QTY 10
 #define MAX_VARNAME_LEN 10
 
