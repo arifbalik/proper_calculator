@@ -1,0 +1,7 @@
+image: ubuntu
+sh: sudo apt-get update && sudo apt-get install gcc
+
+build_script:
+        cd proper_calculator
+        make clean
+        make ARCH=linux
