@@ -43,10 +43,6 @@ static char *fn_place(char *s, const char *oldW, const char *newW)
 	return result;
 }
 
-void fnevn(char fname, double num, double *result)
-{
-	uint8_t idx = (uint8_t)(fname - 97);
-}
 int8_t fnexp(char *o1, char *o2, char *o3, char *query)
 {
 	char fname = o1[0];

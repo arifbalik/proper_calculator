@@ -5,7 +5,7 @@ LEXER=$(SRC)/parser/lexer
 
 BUILD_DIR = ../../build
 
-C_FILES= $(SRC)/src/variables.c $(SRC)/src/function.c $(SRC)/src/error.c $(LEXER).c $(PARSER).c main.c 
+C_FILES= $(SRC)/src/*.c $(LEXER).c $(PARSER).c main.c 
 
 all: $(PARSER).c $(LEXER).c
 	mkdir $(BUILD_DIR)
