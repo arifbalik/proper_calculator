@@ -1,6 +1,7 @@
 # Proper Scientific Calculator
 
-##Introduction
+## Introduction
+
 This is an attempt to create a better, well documented, well designed open source mathematical expression parser and a scientific calculator.
 
 There are very nice projects out there, we like to mention them below;
@@ -15,14 +16,15 @@ This math engine (we will call it **euler** from now on) we implemented in this 
 
 **Euler** uses **re2c** lexer and **lemon** parser generator for parsing, and implements some of *GNU Scientific Library* code. It uses **C** language and as long as it lasts it will continue to use **C** (nerd alert!)
 
-###Currently Supported Platforms
+### Currently Supported Platforms
 
--Linux
--STM32F746NG
+- Linux
+- STM32F746NG
 
 But one can easily implement their own architecture. For more details please refer to the **Wiki Page**.
 
 ##Getting Started on Linux
+
 To see the capabilities, _euler_ can be run on most of the linux distributions with a simple make command.
 
 First clone the repo to your machine.
@@ -42,6 +44,6 @@ After this command, _euler_ welcome message will show up and program will wait f
 
 Syntax of _euler_ and more on building and implementing a custom project can be found on the Wiki Page.
 
-#Contributors
+# Contributors
 
--Arif Balik
+- Arif Balik
