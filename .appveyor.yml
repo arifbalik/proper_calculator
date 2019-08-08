@@ -1,6 +1,5 @@
 image: ubuntu
-sh: sudo apt-get update && sudo apt-get install gcc
-
+test: off
 build_script:
         cd proper_calculator
         make clean
