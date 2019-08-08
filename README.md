@@ -1,5 +1,7 @@
 # Proper Scientific Calculator
 
+[![Build status](https://ci.appveyor.com/api/projects/status/cmixc0p8csoy08n6?svg=true)](https://ci.appveyor.com/project/arifbalik/proper-calculator)
+
 ## Introduction
 
 This is an attempt to create a better, well documented, well designed open source mathematical expression parser and a scientific calculator.
