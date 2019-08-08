@@ -1,6 +1,5 @@
 image: ubuntu
 test: off
 build_script:
-        cd proper_calculator
         make clean
         make ARCH=linux
