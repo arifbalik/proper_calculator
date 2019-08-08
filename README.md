@@ -23,7 +23,7 @@ This math engine (we will call it **euler** from now on) we implemented in this 
 
 But one can easily implement their own architecture. For more details please refer to the **Wiki Page**.
 
-##Getting Started on Linux
+## Getting Started on Linux
 
 To see the capabilities, _euler_ can be run on most of the linux distributions with a simple make command.
 
