@@ -4,45 +4,22 @@
 
 int main(int argc, char const **argv)
 {
-	char query[80], print[180], tmp;
+	char *query = (char *)malloc(sizeof(char) * 80);
 	ersl_t euler;
-	euler.type = 0;
-	int i = 0;
+	uint8_t i = 0;
 	while (1) {
 		i = 0;
 		memset(query, '\0', 80);
 		printf(">>>");
-		while ((tmp = getc(stdin)) != '\n') {
-			if (tmp == ' ') {
-				continue;
-			} else
-				query[i] = tmp;
-			i++;
-			if (i >= 80)
-				i = 0;
-		}
-		parse_query(query, &euler);
-
-		switch (euler.type) {
-		case FRACTION:
-			gcvt(euler.resultn.fraction, 10, print);
-			printf("%s\n", print);
-			break;
-		case FN_EVAL:
-			printf("var\t\t|val\n");
-			for (size_t i = 0; i < 20; i++) {
-				printf("%f\t|%f\n",
-				       euler.resultn.fn_eval[i].var,
-				       euler.resultn.fn_eval[i].result);
+		while ((query[i] = getc(stdin)) != '\n') {
+			if (query[i] != ' ') {
+				i++;
 			}
-			break;
-		case NO_RESULT:
-			printf("ok\n");
-			break;
-		default:
-			printf("%s\n", serr(euler.status));
-			break;
 		}
+		query[i] = '\0';
+		printf("query %s, i: %d\n", query, i);
+		parse_query(query, &euler);
+		printf("result : %f\n", euler.resultn.fraction);
 	}
 
 	return 0;
