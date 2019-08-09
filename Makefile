@@ -16,7 +16,7 @@ all: $(PARSER).c $(LEXER).c
 
 $(LEXER).c : $(PARSER).c
 	@echo "Compiling the lexer.."
-	@re2c --tags -W -o $(LEXER).c $(LEXER).re
+	@re2c -W- -T -o $(LEXER).c $(LEXER).re
 
 $(PARSER).c: clean
 	@echo "Compiling the parser.."
