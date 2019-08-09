@@ -4,6 +4,7 @@ build_script:
         - cd arch/arm/libopencm3
         - git submodule init
         - git submodule update
+        - sudo apt-get install libc6 binutils-arm-none-eabi gcc-arm-none-eabi
         - make -j24 TARGETS="stm32/f1 stm32/f7"
         - cd ../../../
         - make
