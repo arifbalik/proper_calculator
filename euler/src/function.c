@@ -8,13 +8,21 @@ typedef struct {
 /* a function only has one letter name so naturally max number of functions is 26 */
 static function fn[26];
 
-static char *fn_place(char *query, const char *rep_o, const char *rep_n)
+static char *fn_place(char *query, const char *rep_o, const char *rep_n,
+		      int8_t err)
 {
 	char *result;
 	int i, cnt = 0;
-	int rep_nlen = strlen(rep_n);
-	int rep_olen = strlen(rep_o);
+	int rep_nlen;
+	int rep_olen;
 
+	if (rep_n == NULL || rep_o == NULL) {
+		err = EMPTYQ;
+		return query;
+	}
+
+	rep_nlen = strlen(rep_n);
+	rep_olen = strlen(rep_o);
 	// Counting the number of times old word
 	// occur in the string
 	for (i = 0; query[i] != '\0'; i++) {
@@ -47,6 +55,7 @@ int8_t fnexp(char *o1, char *o2, char *o3, char *query)
 {
 	char fname = o1[0];
 	uint8_t idx = (uint8_t)(fname - 97);
+	int8_t err = 0;
 	if (fn[idx].dvar == '\0')
 		return FNF;
 	char *dvar = (char *)malloc(sizeof(char) + 1);
@@ -70,21 +79,26 @@ int8_t fnexp(char *o1, char *o2, char *o3, char *query)
 	fncall[(int8_t)(o3 - o1)] = '\0';
 	fnparam[(int8_t)(o3 - o2)] = '\0';
 
-	strcpy(query, fn_place(query, fncall, fn[idx].query));
+	strcpy(query, fn_place(query, fncall, fn[idx].query, err));
 
-	strcpy(query, fn_place(query, dvar, fnparam));
+	strcpy(query, fn_place(query, dvar, fnparam, err));
 
 	free(fnparam);
 	free(fncall);
 	free(dvar);
 
-	return 0;
+	return err;
 }
 
 int8_t add_func(char fname, char dvar, char *query)
 {
 	uint8_t idx = (uint8_t)(fname - 97);
-	uint8_t len = strlen(query);
+	uint8_t len;
+
+	if (query == NULL)
+		return EMPTYQ;
+
+	len = strlen(query);
 
 	fn[idx].query = (char *)malloc((sizeof(char) * len) + 3);
 	fn[idx].query[len + 2] = '\0';
