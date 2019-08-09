@@ -2,22 +2,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define LINE 80
+
 int main(int argc, char const **argv)
 {
-	char *query = (char *)malloc(sizeof(char) * 80);
+	char *query = (char *)malloc(sizeof(char) * LINE);
 	ersl_t euler;
 
 	while (1) {
 		uint8_t i = 0;
-		memset(query, '\0', 80);
+		char ch = 0;
+		memset(query, '\0', LINE);
 		printf(">>>");
-		while ((query[i] = getchar()) != EOF && query[i] != '\n') {
-			if (query[i] != ' ') {
-				i++;
-			}
+
+		for (i = 0;
+		     (i < LINE) && ((ch = getchar()) != EOF) && (ch != '\n');
+		     ++i) {
+			query[i] = ch;
 		}
-		query[i] = '\0';
-		printf("query %s, i: %d\n", query, i);
+
+		query[i] = '\0'; /* a string should always end with '\0' ! */
+
 		parse_query(query, &euler);
 		printf("result : %f\n", euler.resultn.fraction);
 	}
