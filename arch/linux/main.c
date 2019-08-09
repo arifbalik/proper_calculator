@@ -11,7 +11,7 @@ int main(int argc, char const **argv)
 		i = 0;
 		memset(query, '\0', 80);
 		printf(">>>");
-		while ((query[i] = getc(stdin)) != '\n') {
+		while ((query[i] = getchar()) != EOF && query[i] != '\n') {
 			if (query[i] != ' ') {
 				i++;
 			}
