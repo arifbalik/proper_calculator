@@ -49,10 +49,9 @@ int8_t fnexp(char *o1, char *o2, char *o3, char *query)
 	uint8_t idx = (uint8_t)(fname - 97);
 	if (fn[idx].dvar == '\0')
 		return FNF;
-
-	char *dvar = (char *)malloc(sizeof(char));
-	char *fncall = (char *)malloc(sizeof(char) * (int8_t)(o3 - o1));
-	char *fnparam = (char *)malloc(sizeof(char) * (int8_t)(o3 - o1));
+	char *dvar = (char *)malloc(sizeof(char) + 1);
+	char *fncall = (char *)malloc(sizeof(char) * (int8_t)(o3 - o1) + 1);
+	char *fnparam = (char *)malloc(sizeof(char) * (int8_t)(o3 - o2) + 1);
 
 	strncpy(dvar, &fn[idx].dvar, 1);
 	*(dvar + 1) = '\0';
@@ -65,18 +64,15 @@ int8_t fnexp(char *o1, char *o2, char *o3, char *query)
 	 * end -> o3
 	 */
 
-	memset(fncall, '\0', sizeof(fncall));
-	memset(fnparam, '\0', sizeof(fnparam));
-
 	strncpy(fncall, o1, (o3 - o1));
 	strncpy(fnparam, o2, (o3 - o2));
 
+	fncall[(int8_t)(o3 - o1)] = '\0';
+	fnparam[(int8_t)(o3 - o2)] = '\0';
+
 	strcpy(query, fn_place(query, fncall, fn[idx].query));
-	// printf("expand: %s, eval: %s, dvar: %s, o3-o1: %d\n", query, fncall,
-	//        fn[idx].query, (int8_t)(o3 - o1));
 
 	strcpy(query, fn_place(query, dvar, fnparam));
-	//printf("subs.: %s, eval: %s, dvar: %s\n", query, fnparam, dvar);
 
 	free(fnparam);
 	free(fncall);
@@ -90,13 +86,12 @@ int8_t add_func(char fname, char dvar, char *query)
 	uint8_t idx = (uint8_t)(fname - 97);
 	uint8_t len = strlen(query);
 
-	fn[idx].query = (char *)malloc((sizeof(char) * len) + 1);
-
-	fn[idx].query[len] = '\0';
+	fn[idx].query = (char *)malloc((sizeof(char) * len) + 3);
+	fn[idx].query[len + 2] = '\0';
 
 	fn[idx].query[0] = '(';
 	strncpy(&fn[idx].query[1], query, len);
-	fn[idx].query[len - 1] = ')';
+	fn[idx].query[len + 1] = ')';
 
 	fn[idx].dvar = dvar;
 

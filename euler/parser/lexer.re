@@ -180,7 +180,7 @@ void parse_query(char *query, ersl_t *ersl)
 	char *addr = query;
 
 	free_ersl(ersl);
-	//pfncpr(query);
+
 	FILL_LEX(query);
 	while (1) {
 		token = lex(&tknv);
@@ -188,10 +188,12 @@ void parse_query(char *query, ersl_t *ersl)
 		switch (token) {
 		case FN_CALL: /* function expand */
 			BACKUPQ;
+			printf("fncall\n");
 			ersl->status = fnexp(o1, o2, o3, YYCURSOR);
 			if (ersl->status < 0)
 				goto end;
-			parser_restart(parser);
+			//parser_restart(parser);
+			parse(parser, 0, tknv, ersl);
 			continue;
 		case EOL:
 			parse(parser, 0, tknv, ersl);
