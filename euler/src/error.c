@@ -13,8 +13,6 @@ char *serr(int8_t err)
 		return strdup("Cannot evaluate function!");
 	case UNDEFR:
 		return strdup("Undefined result type!");
-	case EMPTYQ:
-		return strdup("Empty Query!");
 	default:
 		return strdup("Unkown error!");
 	}

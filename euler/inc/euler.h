@@ -27,7 +27,6 @@ typedef enum {
 
 	/* Euler std. errors */
 	MTHE = CHAR_MIN, /* Math Error */
-	EMPTYQ, /* Empty Query */
 
 	/* Variable errors */
 	MXVQ, /* Max Variable Quantity Has Been Reaced */

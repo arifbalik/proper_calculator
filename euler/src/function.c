@@ -12,15 +12,8 @@ static char *fn_place(char *query, const char *rep_o, const char *rep_n)
 {
 	char *result;
 	int i, cnt = 0;
-	int rep_nlen;
-	int rep_olen;
-
-	if (rep_n == '\0' || rep_o == '\0') {
-		return EMPTYQ;
-	}
-
-	rep_nlen = strlen(rep_n);
-	rep_olen = strlen(rep_o);
+	int rep_nlen = strlen(rep_n);
+	int rep_olen = strlen(rep_o);
 
 	// Counting the number of times old word
 	// occur in the string
@@ -91,13 +84,7 @@ int8_t fnexp(char *o1, char *o2, char *o3, char *query)
 int8_t add_func(char fname, char dvar, char *query)
 {
 	uint8_t idx = (uint8_t)(fname - 97);
-	uint8_t len;
-
-	if (query == '\0') {
-		return EMPTYQ;
-	}
-
-	len = strlen(query);
+	uint8_t len = strlen(query);
 
 	fn[idx].query = (char *)malloc((sizeof(char) * len) + 3);
 	fn[idx].query[len + 2] = '\0';
