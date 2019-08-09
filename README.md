@@ -2,7 +2,6 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/cmixc0p8csoy08n6?svg=true)](https://ci.appveyor.com/project/arifbalik/proper-calculator) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d20996c73bc24168b8e67f459447e375)](https://www.codacy.com/app/arifbalik/proper_calculator?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=arifbalik/proper_calculator&amp;utm_campaign=Badge_Grade)
 
-
 ## Introduction
 This is an attempt to create a better, well documented, well designed open source mathematical expression parser and a scientific calculator.
 
