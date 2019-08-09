@@ -69,8 +69,9 @@ static int lex(token_val *tknv)
 		"*" { return MULT; }
 		"/" { return DIV; }
 		"=" {
-			raw_after_equal = (char *)malloc(sizeof(char) * strlen(YYCURSOR));
-			strcpy(raw_after_equal, YYCURSOR);
+			raw_after_equal = (char *)malloc(sizeof(char) * strlen(YYCURSOR) + 1);
+			raw_after_equal[strlen(YYCURSOR)] = '\0';
+			strncpy(raw_after_equal, YYCURSOR, strlen(YYCURSOR));
 			return EQ;
 		}
 		"(" { return LPAREN; }
