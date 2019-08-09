@@ -32,7 +32,7 @@ static char *fn_place(char *query, const char *rep_o, const char *rep_n)
 	i = 0;
 	while (*query) {
 		// compare the substring with the result
-		if (strstr(query, rep_o) == s) {
+		if (strstr(query, rep_o) == query) {
 			strcpy(&result[i], rep_n);
 			i += rep_nlen;
 			s += rep_olen;
