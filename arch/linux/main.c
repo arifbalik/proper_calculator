@@ -6,7 +6,7 @@
 
 int main(int argc, char const **argv)
 {
-	char *query = (char *)malloc(sizeof(char) * LINE);
+	char *query = (char *)malloc(sizeof(char) * LINE + 1);
 	ersl_t euler;
 
 	while (1) {
@@ -16,7 +16,7 @@ int main(int argc, char const **argv)
 		printf(">>>");
 
 		for (i = 0;
-		     (i <= LINE) && ((ch = getchar()) != EOF) && (ch != '\n');
+		     (i < LINE) && ((ch = getchar()) != EOF) && (ch != '\n');
 		     ++i) {
 			query[i] = ch;
 		}
