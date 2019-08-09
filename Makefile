@@ -1,5 +1,5 @@
 
-ARCH?=arm
+ARCH?=linux
 MCU?=
 CMD?= -i
 
