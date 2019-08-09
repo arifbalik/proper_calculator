@@ -4,7 +4,6 @@
 
 
 ## Introduction
-
 This is an attempt to create a better, well documented, well designed open source mathematical expression parser and a scientific calculator.
 
 There are very nice projects out there, we like to mention them below;
@@ -21,8 +20,8 @@ This math engine (we will call it **euler** from now on) we implemented in this 
 
 ### Currently Supported Platforms
 
-- Linux
--  STM32F746NG
+-   Linux
+-     STM32F746NG
 
 But one can easily implement their own architecture. For more details please refer to the **Wiki Page**.
 
@@ -49,4 +48,4 @@ Syntax of *euler* and more on building and implementing a custom project can be 
 
 ## Contributors
 
--  Arif Balik
+-   Arif Balik
