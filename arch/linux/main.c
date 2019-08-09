@@ -15,8 +15,8 @@ int main(int argc, char const **argv)
 		memset(query, '\0', LINE);
 		printf(">>>");
 
-		for (i = 0;
-		     (i < LINE) && ((ch = getchar()) != EOF) && (ch != '\n');
+		for (i = 0; (i < LINE) && ((ch = getchar()) != EOF) &&
+			    (ch != '\n') && ch != NULL;
 		     ++i) {
 			query[i] = ch;
 		}
