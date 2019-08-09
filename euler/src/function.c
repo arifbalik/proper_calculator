@@ -35,9 +35,9 @@ static char *fn_place(char *query, const char *rep_o, const char *rep_n)
 		if (strstr(query, rep_o) == query) {
 			strcpy(&result[i], rep_n);
 			i += rep_nlen;
-			s += rep_olen;
+			query += rep_olen;
 		} else
-			result[i++] = *s++;
+			result[i++] = *query++;
 	}
 	result[i] = '\0';
 	return result;
