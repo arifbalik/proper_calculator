@@ -21,7 +21,7 @@ This math engine (we will call it **euler** from now on) we implemented in this 
 ### Currently Supported Platforms
 
 -   Linux
--     STM32F746NG
+-   STM32F746NG
 
 But one can easily implement their own architecture. For more details please refer to the **Wiki Page**.
 
@@ -32,14 +32,14 @@ To see the capabilities, *euler* can be run on most of the linux distributions w
 First clone the repo to your machine.
 
 ```bash
-git clone https://github.com/arifbalik/proper_calculator.git
+  git clone https://github.com/arifbalik/proper_calculator.git
 ```
 
 Then enter the directory and call make as follows;
 
 ```bash
-cd proper_calculator
-make clean && make ARCH=linux
+  cd proper_calculator
+  make clean && make ARCH=linux
 ```
 
 After this command, *euler* welcome message will show up and program will wait for an input.
