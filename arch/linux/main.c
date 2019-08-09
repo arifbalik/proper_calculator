@@ -16,7 +16,7 @@ int main(int argc, char const **argv)
 		printf(">>>");
 
 		for (i = 0;
-		     (i < LINE) && ((ch = getchar()) != EOF) && (ch != '\n');
+		     (i <= LINE) && ((ch = getchar()) != EOF) && (ch != '\n');
 		     ++i) {
 			query[i] = ch;
 		}
