@@ -156,33 +156,6 @@ static int lex(token_val *tknv)
 #pragma GCC diagnostic pop
 }
 
-// static void pfncpr(const char *query)
-// {
-// 	char *tmp; /* we'll use it for lexer and store the result in original query var. */
-// 	token_val dummy; /* just for function call */
-//
-// 	/* TODO: determine how much space tmp should allocate */
-// 	tmp = (char *)malloc(sizeof(char) * strlen(query) * 4);
-//
-// 	strcpy(tmp, query);
-// 	YYCURSOR = tmp;
-//
-// 	place_flag =
-// 		1; /* when we call lex with this flag set to 1 it search for functions */
-// 	while (lex(&dummy, query) != EOL) {
-// 		/* There might be new function to be pre-parsed.
-// 		 * So we call it again too find out.
-// 		 */
-// 		if (place_flag == 2) {
-// 			strcpy(tmp, query); /* fill tmp with pre-parsed query */
-// 			YYCURSOR = tmp;
-// 		}
-// 		place_flag = 1;
-// 	}
-// 	place_flag = 0;
-// 	YYCURSOR = query; /* store the final result */
-// }
-
 static void free_ersl(ersl_t *ersl)
 {
 	/* reset euler result */
