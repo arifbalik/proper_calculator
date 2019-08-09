@@ -16,13 +16,14 @@ static char *fn_place(char *query, const char *rep_o, const char *rep_n,
 	int rep_nlen;
 	int rep_olen;
 
-	if (rep_n == NULL || rep_o == NULL) {
+	if (rep_n != NULL && rep_o != NULL) {
+		rep_nlen = strlen(rep_n);
+		rep_olen = strlen(rep_o);
+	} else {
 		err = EMPTYQ;
 		return query;
 	}
 
-	rep_nlen = strlen(rep_n);
-	rep_olen = strlen(rep_o);
 	// Counting the number of times old word
 	// occur in the string
 	for (i = 0; query[i] != '\0'; i++) {
