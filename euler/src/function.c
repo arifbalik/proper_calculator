@@ -8,34 +8,34 @@ typedef struct {
 /* a function only has one letter name so naturally max number of functions is 26 */
 static function fn[26];
 
-static char *fn_place(char *s, const char *oldW, const char *newW)
+static char *fn_place(char *query, const char *rep_o, const char *rep_n)
 {
 	char *result;
 	int i, cnt = 0;
-	int newWlen = strlen(newW);
-	int oldWlen = strlen(oldW);
+	int rep_nlen = strlen(rep_n);
+	int rep_olen = strlen(rep_o);
 
 	// Counting the number of times old word
 	// occur in the string
-	for (i = 0; s[i] != '\0'; i++) {
-		if (strstr(&s[i], oldW) == &s[i]) {
+	for (i = 0; query[i] != '\0'; i++) {
+		if (strstr(&query[i], rep_o) == &query[i]) {
 			cnt++;
 
 			// Jumping to index after the old word.
-			i += oldWlen - 1;
+			i += rep_olen - 1;
 		}
 	}
 
 	// Making new string of enough length
-	result = (char *)malloc(i + cnt * (newWlen - oldWlen) + 1);
+	result = (char *)malloc(i + cnt * (rep_nlen - rep_olen) + 1);
 
 	i = 0;
-	while (*s) {
+	while (*query) {
 		// compare the substring with the result
-		if (strstr(s, oldW) == s) {
-			strcpy(&result[i], newW);
-			i += newWlen;
-			s += oldWlen;
+		if (strstr(query, rep_o) == s) {
+			strcpy(&result[i], rep_n);
+			i += rep_nlen;
+			s += rep_olen;
 		} else
 			result[i++] = *s++;
 	}
