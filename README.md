@@ -2,7 +2,6 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/cmixc0p8csoy08n6?svg=true)](https://ci.appveyor.com/project/arifbalik/proper-calculator) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d20996c73bc24168b8e67f459447e375)](https://www.codacy.com/app/arifbalik/proper_calculator?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=arifbalik/proper_calculator&amp;utm_campaign=Badge_Grade)
 
-
 ## Introduction
 This is an attempt to create a better, well documented, well designed open source mathematical expression parser and a scientific calculator.
 
@@ -21,7 +20,7 @@ This math engine (we will call it **euler** from now on) we implemented in this 
 ### Currently Supported Platforms
 
 -   Linux
--     STM32F746NG
+-   STM32F746NG
 
 But one can easily implement their own architecture. For more details please refer to the **Wiki Page**.
 
@@ -32,14 +31,14 @@ To see the capabilities, *euler* can be run on most of the linux distributions w
 First clone the repo to your machine.
 
 ```bash
-git clone https://github.com/arifbalik/proper_calculator.git
+  git clone https://github.com/arifbalik/proper_calculator.git
 ```
 
 Then enter the directory and call make as follows;
 
 ```bash
-cd proper_calculator
-make clean && make ARCH=linux
+  cd proper_calculator
+  make clean && make ARCH=linux
 ```
 
 After this command, *euler* welcome message will show up and program will wait for an input.
