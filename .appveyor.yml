@@ -1,4 +1,4 @@
-image: ubuntu
+image: Ubuntu1804
 test: off
 build_script:
         - cd arch/arm/libopencm3

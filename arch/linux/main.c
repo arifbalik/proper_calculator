@@ -6,13 +6,10 @@ int main(int argc, char const **argv)
 {
 	char query[80], print[180], tmp;
 	ersl_t euler;
-	int i = 0;
 	euler.type = 0;
+	int i = 0;
 	while (1) {
-		i = 0;
-		for (size_t i = 0; i < 80; i++) {
-			query[i] = '\x00';
-		}
+		memset(query, '\0', 80);
 		printf(">>>");
 		while ((tmp = getc(stdin)) != '\n') {
 			if (tmp == ' ') {
@@ -20,6 +17,8 @@ int main(int argc, char const **argv)
 			} else
 				query[i] = tmp;
 			i++;
+			if (i >= 80)
+				i = 0;
 		}
 		parse_query(query, &euler);
 
