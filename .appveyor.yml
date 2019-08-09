@@ -1,4 +1,4 @@
 image: ubuntu
 test: off
 build_script:
-        make -i clean && make ARCH=linux
+        make
