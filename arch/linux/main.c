@@ -9,6 +9,7 @@ int main(int argc, char const **argv)
 	euler.type = 0;
 	int i = 0;
 	while (1) {
+		i = 0;
 		memset(query, '\0', 80);
 		printf(">>>");
 		while ((tmp = getc(stdin)) != '\n') {
