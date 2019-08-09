@@ -9,7 +9,7 @@ C_FILES= $(SRC)/src/*.c $(LEXER).c $(PARSER).c main.c
 
 all: $(PARSER).c $(LEXER).c
 	mkdir $(BUILD_DIR)
-	gcc -o $(BUILD_DIR)/linux $(C_FILES) -lm
+	gcc -o $(BUILD_DIR)/linux $(C_FILES) -lm -ggdb3
 	cd $(BUILD_DIR)
 
 clean:
