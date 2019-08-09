@@ -88,13 +88,15 @@ int8_t fnexp(char *o1, char *o2, char *o3, char *query)
 int8_t add_func(char fname, char dvar, char *query)
 {
 	uint8_t idx = (uint8_t)(fname - 97);
+	uint8_t len = strlen(query);
 
-	fn[idx].query = (char *)malloc(sizeof(char) * strlen(query));
+	fn[idx].query = (char *)malloc((sizeof(char) * len) + 1);
+
+	fn[idx].query[len] = '\0';
 
 	fn[idx].query[0] = '(';
-	strcpy(&fn[idx].query[1], query);
-	fn[idx].query[strlen(fn[idx].query)] = ')';
-	fn[idx].query[strlen(fn[idx].query) + 1] = '\0';
+	strncpy(&fn[idx].query[1], query, len);
+	fn[idx].query[len - 1] = ')';
 
 	fn[idx].dvar = dvar;
 
