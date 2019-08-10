@@ -9,7 +9,7 @@
 #include "const.h"
 #include "trig.h"
 
-#define MAX_QUERY_SIZE 20
+#define MAX_QUERY_LENGTH 80
 
 /* Error defs. */
 typedef enum {
