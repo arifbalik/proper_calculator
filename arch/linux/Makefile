@@ -1,11 +1,11 @@
 
 SRC=../../euler
-PARSER=$(SRC)/parser/parser
-LEXER=$(SRC)/parser/lexer
+PARSER=$(SRC)/parser/grammar
+LEXER=$(SRC)/parser/tokenizer
 
 BUILD_DIR = ../../build
 
-C_FILES= $(SRC)/src/*.c $(LEXER).c $(PARSER).c main.c
+C_FILES=  $(LEXER).c $(PARSER).c main.c
 
 all: $(PARSER).c $(LEXER).c
 	mkdir $(BUILD_DIR)

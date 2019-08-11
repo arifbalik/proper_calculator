@@ -4,12 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include "variables.h"
-#include "function.h"
-#include "const.h"
-#include "trig.h"
-
 #define MAX_QUERY_LENGTH 80
+#include "../parser/symbol_table.h"
+
+#define __double double
 
 /* Error defs. */
 typedef enum {
@@ -26,8 +24,9 @@ typedef enum {
 	_FEX, /* Function Expand */
 
 	/* Euler std. errors */
-	MTHE = CHAR_MIN, /* Math Error */
+	MTHE = -128, /* Math Error */
 	EMPTYQ, /* Empty Query */
+	SYMNF, /* Symbol Not Found */
 
 	/* Variable errors */
 	MXVQ, /* Max Variable Quantity Has Been Reaced */
@@ -39,13 +38,7 @@ typedef enum {
 	UNDEFR /* Undefined Eesult Type */
 } estatus_t;
 
-typedef enum {
-	NO_RESULT = CHAR_MIN,
-	FN_EVAL,
-	INTEGER,
-	FRACTION,
-	MATRIX
-} etype_t;
+typedef enum { NO_RESULT = -128, FN_EVAL, INTEGER, FRACTION, MATRIX } etype_t;
 
 /* Results will be stored here by the parser */
 typedef union {
@@ -63,4 +56,3 @@ typedef struct {
 } ersl_t;
 
 void parse_query(char *query, ersl_t *ersl);
-char *serr(int8_t err);

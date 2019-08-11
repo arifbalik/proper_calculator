@@ -4,8 +4,8 @@ MCU?=
 CMD?= -i
 
 SRC=euler/parser
-PARSER=$(SRC)/parser
-LEXER=$(SRC)/lexer
+PARSER=$(SRC)/grammar
+LEXER=$(SRC)/tokenizer
 
 BUILD_DIR = build
 
@@ -24,8 +24,6 @@ $(PARSER).c: clean
 
 clean:
 	rm $(LEXER).c graphviz.txt $(PARSER).c $(PARSER).h $(PARSER).out -rf $(BUILD_DIR)
-	cd arch/arm/stm32f103c8 && $(MAKE) $(CMD) clean
-	cd arch/arm/stm32f746ng && $(MAKE) $(CMD) clean
 
 graph:
 	re2c -D -o graphviz.txt $(LEXER).re

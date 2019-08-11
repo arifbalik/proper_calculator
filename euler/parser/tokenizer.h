@@ -10,11 +10,7 @@
 /* Terminal symbols */
 #define EOL 0 /* End of the query */
 #define UNKNOWN -2
-
-typedef union {
-	char name[10]; /* TODO: Connect this length to variables.h. This length defined in variables.h */
-	double val;
-} token_val;
+#define ERROR -3
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wall"
