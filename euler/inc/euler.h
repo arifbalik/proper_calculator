@@ -45,7 +45,6 @@ typedef union {
 	double fraction;
 	double **matrix;
 	char *var;
-	fn_eval_table fn_eval[20];
 } numerical_t;
 
 typedef struct {

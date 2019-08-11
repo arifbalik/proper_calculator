@@ -12,7 +12,7 @@
 
 }
 
-%type elar { __double }
+%token_type { __double }
 %extra_argument { ersl_t *euler }
 %start_symbol   query
 %stack_overflow {printf("stack_overflow\n");}
@@ -27,9 +27,13 @@
 %wildcard ANY.
 
 /* Elementart Arithmetic */
-query ::= elar.
+query ::= elar(B). {
+        euler->resultn.fraction = B;
+}
+query ::= LETTER. //dummy
 
 /* Basic Algebra Arithmetic */
+elar(A) ::= LPAREN elar(B) RPAREN.        { A = B;       }
 elar(A) ::= INT(B).                       { A = B;       }
 elar(A) ::= FLOAT(B).                     { A = B;       }
 elar(A) ::= CONST(B).                     { A = B;       }

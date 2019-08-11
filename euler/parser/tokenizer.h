@@ -17,7 +17,7 @@
 void *ParseAlloc(void *(*mallocProc)(YYMALLOCARGTYPE));
 void Parse(void *yyp, /* The parser */
 	   int yymajor, /* The major token code number */
-	   token_val yyminor, /* The value for the token */
+	   double yyminor, /* The value for the token */
 	   ersl_t *euler /* Optional %extra_argument parameter */
 );
 #pragma GCC diagnostic pop

@@ -6,7 +6,7 @@
 
 int main(int argc, char const **argv)
 {
-	char *query = (char *)malloc(sizeof(char) * LINE + 1);
+	char query[LINE + 1] = { '\0' };
 	ersl_t euler;
 
 	while (1) {
@@ -18,7 +18,10 @@ int main(int argc, char const **argv)
 		for (i = 0; (i < LINE) && ((ch = getchar()) != EOF) &&
 			    (ch != '\n') && ch != '\0';
 		     ++i) {
-			query[i] = ch;
+			if (ch != ' ')
+				query[i] = ch;
+			else
+				i--;
 		}
 
 		query[i] = '\0'; /* a string should always end with '\0' ! */

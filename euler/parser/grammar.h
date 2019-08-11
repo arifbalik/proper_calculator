@@ -1,0 +1,13 @@
+#define EQ                               1
+#define PLUS                             2
+#define MINUS                            3
+#define MULT                             4
+#define DIV                              5
+#define LAPREN                           6
+#define RPAREN                           7
+#define ANY                              8
+#define LETTER                           9
+#define LPAREN                          10
+#define INT                             11
+#define FLOAT                           12
+#define CONST                           13
