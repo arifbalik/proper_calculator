@@ -1,18 +1,9 @@
 %include {
 #include <assert.h>
 #include "tokenizer.h"
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wredundant-decls"
-#pragma GCC diagnostic ignored "-Wstrict-prototypes"
-#pragma GCC diagnostic ignored "-Wmissing-prototypes"
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wsign-compare"
-
-
 }
 
-%token_type { __double }
+%token_type { double }
 %extra_argument { ersl_t *euler }
 %start_symbol   query
 %stack_overflow {printf("stack_overflow\n");}
@@ -21,31 +12,30 @@
 /* Priorities */
 %nonassoc EQ.
 %left PLUS MINUS.
-%left MULT DIV.
+%left MULT DIV MOD FACT.
+%left EXP.
 %left LAPREN RPAREN.
 
 %wildcard ANY.
 
-/* Elementart Arithmetic */
+/* Elementary Arithmetic */
 query ::= elar(B). {
         euler->resultn.fraction = B;
+        euler->type = FRACTION;
 }
-query ::= LETTER. //dummy
 
-/* Basic Algebra Arithmetic */
-elar(A) ::= LPAREN elar(B) RPAREN.        { A = B;       }
+/* Elementary Arithmetic */
+elar(A) ::= LETTER. { A = 1; }
 elar(A) ::= INT(B).                       { A = B;       }
 elar(A) ::= FLOAT(B).                     { A = B;       }
 elar(A) ::= CONST(B).                     { A = B;       }
 elar(A) ::= MINUS elar(B).                { A = -B;      }
 elar(A) ::= PLUS elar(B).                 { A = B;       }
+elar(A) ::= LPAREN elar(B) RPAREN.        { A = B;       }
 elar(A) ::= elar(B)    PLUS      elar(C). { A = B + C;   }
 elar(A) ::= elar(B)    MINUS     elar(C). { A = B - C;   }
 elar(A) ::= elar(B)    MULT      elar(C). { A = B * C;   }
 elar(A) ::= elar(B)    DIV       elar(C). { A = (C != 0) ? (B / C) : (euler->status = MTHE); }
-
-
-
-%code {
-#pragma GCC diagnostic pop
-}
+elar(A) ::= elar(B)    EXP       elar(C). { A=B; for(uint8_t i = 1; i < C; i++) A *= B; }
+elar(A) ::= elar(B)    MOD       elar(C). { A = fmod(B, C); }
+elar(A) ::= elar(B)    FACT.              { A = 1; for(uint8_t i = B; i > 0; i--) A *= i; }

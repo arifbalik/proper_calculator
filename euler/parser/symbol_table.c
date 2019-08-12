@@ -41,12 +41,6 @@ int8_t symbol_table_append(uint8_t token, char *addr)
 		return -1;
 	}
 
-	/* EOL check */
-	if (token == 0) {
-		table_index = 0;
-		return 0;
-	}
-
 	symbol_table[table_index].token = token;
 	symbol_table[table_index].p = addr;
 
@@ -57,15 +51,18 @@ int8_t symbol_table_append(uint8_t token, char *addr)
 	printf("%d \t| %p \t| %s \t\t|%f\n", symbol_table[table_index].token,
 	       symbol_table[table_index].p, tmp, val);
 
+	/* EOL check */
+	if (token == 0) {
+		table_index = 0;
+		return 0;
+	}
+
 	return token;
 }
 
 int8_t get_last_matched_token(void)
 {
-	if (table_index >= 1)
-		return symbol_table[table_index - 1].token;
-	else
-		return 0;
+	return symbol_table[table_index].token;
 }
 
 double get_double_value(void)

@@ -35,8 +35,11 @@ static int lex(void)
 		"-" @o1 { return symbol_table_append(MINUS, o1);  }
 		"*" @o1 { return symbol_table_append(MULT, o1); }
 		"/" @o1 { return symbol_table_append(DIV, o1); }
+		"^" @o1 { return symbol_table_append(EXP, o1); }
+		"!" @o1 { return symbol_table_append(FACT, o1); }
+		"#" @o1 { return symbol_table_append(MOD, o1); }
 		"(" @o1 { return symbol_table_append(LPAREN, o1); }
-		")" @o1 { return symbol_table_append(RPAREN, o1);}
+		")" @o1 { return symbol_table_append(RPAREN, o1); }
 
 	// System Defs.
 
@@ -74,7 +77,10 @@ void parse_query(char *query, ersl_t *ersl)
 
 	printf("token \t| addr \t\t| string \t| float\n");
 	printf("rsv \t| %p \t| NULL \t\t|NaN\n", query);
+
 	while (lex() != EOL) {
+		parse(parser, get_last_matched_token(), get_double_value(),
+		      ersl);
 	}
 	parse(parser, 0, 0, ersl);
 end:

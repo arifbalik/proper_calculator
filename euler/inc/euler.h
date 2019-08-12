@@ -7,8 +7,6 @@
 #define MAX_QUERY_LENGTH 80
 #include "../parser/symbol_table.h"
 
-#define __double double
-
 /* Error defs. */
 typedef enum {
 	NONE = 255,

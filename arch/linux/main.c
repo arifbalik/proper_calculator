@@ -27,7 +27,8 @@ int main(int argc, char const **argv)
 		query[i] = '\0'; /* a string should always end with '\0' ! */
 
 		parse_query(query, &euler);
-		printf("result : %f\n", euler.resultn.fraction);
+		if (euler.type == FRACTION)
+			printf("result : %f\n", euler.resultn.fraction);
 	}
 
 	return 0;
