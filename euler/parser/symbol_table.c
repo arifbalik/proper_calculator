@@ -1,5 +1,6 @@
 #include "../inc/euler.h"
 #include "grammar.h"
+#include <stdio.h> /* temporary */
 
 static symbol_table_t symbol_table[MAX_QUERY_LENGTH];
 static uint8_t table_index = 0;
@@ -51,10 +52,10 @@ int8_t symbol_table_append(uint8_t token, char *addr)
 	printf("%d \t| %p \t| %s \t\t|%f\n", symbol_table[table_index].token,
 	       symbol_table[table_index].p, tmp, val);
 
-	/* EOL check */
-	if (token == 0) {
+	/* EOQ check */
+	if (token == EOQ) {
 		table_index = 0;
-		return 0;
+		return EOQ;
 	}
 
 	return token;
@@ -68,7 +69,6 @@ int8_t get_last_matched_token(void)
 double get_double_value(void)
 {
 	char sval[MAX_QUERY_LENGTH];
-	uint8_t read_n_bytes = 0;
 
 	if (symbol_table[table_index].token != INT &&
 	    symbol_table[table_index].token != FLOAT) {
@@ -76,12 +76,10 @@ double get_double_value(void)
 	}
 
 	if (table_index >= 1) {
-		read_n_bytes = (uint8_t)(symbol_table[table_index].p -
-					 symbol_table[table_index - 1].p);
 		get_string_value(sval, symbol_table[table_index - 1].p,
 				 (uint8_t)(symbol_table[table_index].p -
 					   symbol_table[table_index - 1].p));
-		return atof(sval);
+		return _atof(sval);
 	}
 
 	else

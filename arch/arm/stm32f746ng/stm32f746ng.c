@@ -105,21 +105,7 @@ int main(void)
 
 	while (1) {
 		if (console_gets(buf, 128)) {
-			if (parse_query(buf, &result) < 0) {
-				console_puts(
-					serr(result.error)); /* print error */
-			} else {
-				switch (result.type) {
-				case FRACTION:
-					gcvt(result.result.fraction, 4, print);
-					console_puts(print);
-					break;
-				default:
-					console_puts(
-						"unsupported result type!\n");
-					break;
-				}
-			}
+			parse_query(buf, &result);
 		}
 	}
 }

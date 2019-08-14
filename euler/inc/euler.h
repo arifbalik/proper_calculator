@@ -1,12 +1,12 @@
 #include <math.h>
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdint.h>
 #define MAX_QUERY_LENGTH 80
 #include "../parser/symbol_table.h"
+#include "_atof.h"
 
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
 /* Error defs. */
 typedef enum {
 	NONE = 255,
@@ -36,7 +36,14 @@ typedef enum {
 	UNDEFR /* Undefined Eesult Type */
 } estatus_t;
 
-typedef enum { NO_RESULT = -128, FN_EVAL, INTEGER, FRACTION, MATRIX } etype_t;
+typedef enum {
+	NO_RESULT = -128,
+	FN_EVAL,
+	INTEGER,
+	FRACTION,
+	BINARY,
+	MATRIX
+} etype_t;
 
 /* Results will be stored here by the parser */
 typedef union {

@@ -20,10 +20,12 @@ $(LEXER).c : $(PARSER).c
 
 $(PARSER).c: clean
 	@echo "Compiling the parser.."
-	@lemon -c -s $(PARSER).y
+	@gcc -o  $(SRC)/lemon/lemon $(SRC)/lemon/lemon.c
+	@./$(SRC)/lemon/lemon -c -s -p $(PARSER).y
 
 clean:
-	rm $(LEXER).c graphviz.txt $(PARSER).c $(PARSER).h $(PARSER).out -rf $(BUILD_DIR)
+	rm $(LEXER).c graphviz.txt $(PARSER).c $(PARSER).h $(PARSER).out $(SRC)/lemon/lemon -rf $(BUILD_DIR)
+	cd arch/$(ARCH)/$(MCU) && $(MAKE) clean
 
 graph:
 	re2c -D -o graphviz.txt $(LEXER).re

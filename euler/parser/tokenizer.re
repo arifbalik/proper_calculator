@@ -1,5 +1,15 @@
 #include "grammar.h"
 #include "tokenizer.h"
+#include <stdio.h> /* temporary */
+
+/* Just change of notation */
+#define parse Parse
+#define parse_free ParseFree
+#define parse_alloc ParseAlloc
+
+void *ParseAlloc(void);
+void Parse(void *, int, double, ersl_t *);
+void ParseFree(void *);
 
 #define FILL_LEX(q) YYCURSOR = q
 
@@ -7,7 +17,7 @@ char *YYCURSOR;
 
 static int lex(void)
 {
-	char *YYMARKER, *o1;
+	char *YYMARKER;
 
 	// Settings
 	/*!stags:re2c format = 'char *@@;'; */
@@ -25,26 +35,32 @@ static int lex(void)
 
 	// Number Defs.
 
-		int @o1 { return symbol_table_append(INT, o1); }
-		float @o1 { return symbol_table_append(FLOAT, o1); }
-		letter @o1 { return symbol_table_append(LETTER, o1); }
+		int  { return symbol_table_append(INT, YYCURSOR); }
+		float  { return symbol_table_append(FLOAT, YYCURSOR); }
+		letter  { return symbol_table_append(LETTER, YYCURSOR); }
 
 	// Arithmetic Operator and Misc. Defs.
 
-		"+" @o1 { return symbol_table_append(PLUS, o1); }
-		"-" @o1 { return symbol_table_append(MINUS, o1);  }
-		"*" @o1 { return symbol_table_append(MULT, o1); }
-		"/" @o1 { return symbol_table_append(DIV, o1); }
-		"^" @o1 { return symbol_table_append(EXP, o1); }
-		"!" @o1 { return symbol_table_append(FACT, o1); }
-		"#" @o1 { return symbol_table_append(MOD, o1); }
-		"(" @o1 { return symbol_table_append(LPAREN, o1); }
-		")" @o1 { return symbol_table_append(RPAREN, o1); }
+		"+"  { return symbol_table_append(PLUS, YYCURSOR); }
+		"-"  { return symbol_table_append(MINUS, YYCURSOR);  }
+		"*"  { return symbol_table_append(MULT, YYCURSOR); }
+		"/"  { return symbol_table_append(DIV, YYCURSOR); }
+		"^"  { return symbol_table_append(EXP, YYCURSOR); }
+		"!"  { return symbol_table_append(FACT, YYCURSOR); }
+		"#"  { return symbol_table_append(MOD, YYCURSOR); }
+		"("  { return symbol_table_append(LPAREN, YYCURSOR); }
+		")"  { return symbol_table_append(RPAREN, YYCURSOR); }
+
+	// Boolean Operators
+
+		"&"  { return symbol_table_append(AND, YYCURSOR); }
+		"|"  { return symbol_table_append(OR, YYCURSOR); }
+		"~"  { return symbol_table_append(NOT, YYCURSOR); }
 
 	// System Defs.
 
-		"\x00" @o1 { return symbol_table_append(EOL, o1); }
-		* { return UNKNOWN; }
+		"\x00"  { return symbol_table_append(EOQ, YYCURSOR); }
+		* { return symbol_table_append(UNKNOWN, YYCURSOR); }
 
 	*/
 }
@@ -59,14 +75,13 @@ static void clear_ersl(ersl_t *ersl)
 
 void parser_restart(void *parser)
 {
-	parse_free(parser, free);
-	parser = parse_alloc(malloc);
+	parse_free(parser);
+	parser = parse_alloc();
 }
 
 void parse_query(char *query, ersl_t *ersl)
 {
-	void *parser = parse_alloc(malloc);
-	char *addr = query;
+	void *parser = parse_alloc();
 
 	clear_ersl(ersl);
 	symbol_table_clear();
@@ -78,11 +93,11 @@ void parse_query(char *query, ersl_t *ersl)
 	printf("token \t| addr \t\t| string \t| float\n");
 	printf("rsv \t| %p \t| NULL \t\t|NaN\n", query);
 
-	while (lex() != EOL) {
+	while (lex() != EOQ) {
 		parse(parser, get_last_matched_token(), get_double_value(),
 		      ersl);
 	}
+	parse(parser, EOQ, 0, ersl);
 	parse(parser, 0, 0, ersl);
-end:
-	parse_free(parser, free);
+	parse_free(parser);
 }

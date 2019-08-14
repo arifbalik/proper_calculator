@@ -4,9 +4,8 @@ EULER_DIR = ../../../euler
 BUILD_DIR = ../../../build
 PROJECT = $(BUILD_DIR)/$(MCU)
 
-
 SHARED_DIR = $(BUILD_DIR)
-CFILES =   $(EULER_DIR)/src/variables.c $(EULER_DIR)/src/function.c $(EULER_DIR)/src/error.c $(EULER_DIR)/parser/parser.c $(EULER_DIR)/parser/lexer.c $(MCU).c
+CFILES= $(EULER_DIR)/src/*.c $(EULER_DIR)/parser/*.c $(MCU).c
 AFILES +=
 
 LDLIBS += -lm

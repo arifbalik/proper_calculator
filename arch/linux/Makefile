@@ -5,11 +5,11 @@ LEXER=$(SRC)/parser/tokenizer
 
 BUILD_DIR = ../../build
 
-C_FILES=  $(PARSER).c main.c
+C_FILES=  $(SRC)/src/*.c $(PARSER).c main.c
 
 all: $(PARSER).c $(LEXER).c
 	mkdir $(BUILD_DIR)
-	gcc -o $(BUILD_DIR)/linux $(C_FILES) -std=c11 -lm -ggdb3 -D_DEFAULT_SOURCE
+	gcc -o $(BUILD_DIR)/linux $(C_FILES) -Wall -Werror -std=c11 -lm -ggdb3 -D_DEFAULT_SOURCE
 	cd $(BUILD_DIR)
 
 clean:

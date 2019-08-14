@@ -25,16 +25,13 @@
 #include <stdio.h>
 #include <assert.h>
 /************ Begin %include sections from the grammar ************************/
-#line 1 "euler/parser/grammar.y"
-
-#include <assert.h>
-#include "tokenizer.h"
-#line 33 "euler/parser/grammar.c"
+%%
 /**************** End of %include directives **********************************/
 /* These constants specify the various numeric values for terminal symbols
 ** in a format understandable to "makeheaders".  This section is blank unless
 ** "lemon" is run with the "-m" command-line option.
 ***************** Begin makeheaders token definitions *************************/
+%%
 /**************** End makeheaders token definitions ***************************/
 
 /* The next sections is a series of control #defines.
@@ -92,39 +89,7 @@
 # define INTERFACE 1
 #endif
 /************* Begin control #defines *****************************************/
-#define YYCODETYPE unsigned char
-#define YYNOCODE 26
-#define YYACTIONTYPE unsigned char
-#define YYWILDCARD 19
-#define ParseTOKENTYPE  double 
-typedef union {
-  int yyinit;
-  ParseTOKENTYPE yy0;
-} YYMINORTYPE;
-#ifndef YYSTACKDEPTH
-#define YYSTACKDEPTH 100
-#endif
-#define ParseARG_SDECL  ersl_t *euler ;
-#define ParseARG_PDECL , ersl_t *euler 
-#define ParseARG_PARAM ,euler 
-#define ParseARG_FETCH  ersl_t *euler =yypParser->euler ;
-#define ParseARG_STORE yypParser->euler =euler ;
-#define ParseCTX_SDECL
-#define ParseCTX_PDECL
-#define ParseCTX_PARAM
-#define ParseCTX_FETCH
-#define ParseCTX_STORE
-#define YYNSTATE             43
-#define YYNRULE              23
-#define YYNTOKEN             22
-#define YY_MAX_SHIFT         42
-#define YY_MIN_SHIFTREDUCE   43
-#define YY_MAX_SHIFTREDUCE   65
-#define YY_ERROR_ACTION      66
-#define YY_ACCEPT_ACTION     67
-#define YY_NO_ACTION         68
-#define YY_MIN_REDUCE        69
-#define YY_MAX_REDUCE        91
+%%
 /************* End control #defines *******************************************/
 #define YY_NLOOKAHEAD ((int)(sizeof(yy_lookahead)/sizeof(yy_lookahead[0])))
 
@@ -191,105 +156,7 @@ typedef union {
 **  yy_default[]       Default action for each state.
 **
 *********** Begin parsing tables **********************************************/
-#define YY_ACTTAB_COUNT (344)
-static const YYACTIONTYPE yy_action[] = {
- /*     0 */    67,   32,   40,   29,   31,   41,   29,   83,   83,   83,
- /*    10 */    83,   83,    9,    7,    5,   22,    6,   33,   83,   29,
- /*    20 */    83,   78,   78,   78,   78,   78,   78,   78,   78,   78,
- /*    30 */    78,   34,   78,   29,   78,   82,   82,   82,   82,   82,
- /*    40 */    82,   82,   82,   82,   82,   35,   82,   29,   82,   84,
- /*    50 */    84,   84,   84,   84,    9,    7,    5,   22,    6,   23,
- /*    60 */    84,   29,   84,   85,   85,   85,   85,   85,   85,   85,
- /*    70 */    85,   85,    6,   24,   85,   29,   85,   91,   91,   91,
- /*    80 */    91,   91,   91,   91,   91,   91,   91,   25,   91,   29,
- /*    90 */    91,   90,   90,   90,   90,   90,   90,   90,   90,   90,
- /*   100 */    90,   26,   90,   29,   90,   89,   89,   89,   89,   89,
- /*   110 */    89,   89,   89,   89,   89,   19,   89,   29,   89,   88,
- /*   120 */    88,   88,   88,   88,   88,   88,   88,   88,    6,   27,
- /*   130 */    88,   29,   88,   87,   87,   87,   87,   87,   87,   87,
- /*   140 */    87,   87,   87,   18,   87,   29,   87,   86,   86,   86,
- /*   150 */    86,   86,   86,   86,   86,   86,    6,   36,   86,   29,
- /*   160 */    86,   81,   81,   81,   81,   81,    9,    7,    5,   22,
- /*   170 */     6,   15,   81,   29,   81,   80,   80,   80,   80,   80,
- /*   180 */     9,    7,    5,   22,    6,   37,   80,   29,   80,   79,
- /*   190 */    79,   79,   79,   79,   79,   79,   79,   79,   79,   70,
- /*   200 */    79,   39,   79,   77,   77,   77,   77,   77,   77,   77,
- /*   210 */    77,   77,   77,   16,   77,   69,   77,   76,   76,   76,
- /*   220 */    76,   76,   76,   76,   76,   76,   76,   68,   76,   68,
- /*   230 */    76,   14,    3,   38,   13,   11,    9,    7,    5,   22,
- /*   240 */     6,   68,   17,   14,    3,   38,   13,   11,    9,    7,
- /*   250 */     5,   22,    6,   12,    4,   68,   42,   13,   11,    9,
- /*   260 */     7,    5,   22,    6,   68,   75,   68,   75,   13,   11,
- /*   270 */     9,    7,    5,   22,    6,   68,   73,   68,   73,   13,
- /*   280 */    11,    9,    7,    5,   22,    6,   68,   74,   68,   74,
- /*   290 */    13,   11,    9,    7,    5,   22,    6,   68,   72,   68,
- /*   300 */    72,   13,   11,    9,    7,    5,   22,    6,   68,   71,
- /*   310 */    68,   71,   20,   21,   68,   28,   30,   68,   68,    2,
- /*   320 */     8,   10,   68,   68,   20,   21,   68,   28,   30,   68,
- /*   330 */    68,    1,    8,   10,   68,   68,   68,   68,   68,   68,
- /*   340 */    68,   68,   68,    1,
-};
-static const YYCODETYPE yy_lookahead[] = {
- /*     0 */    22,   23,   24,   25,   23,   24,   25,    7,    8,    9,
- /*    10 */    10,   11,   12,   13,   14,   15,   16,   23,   18,   25,
- /*    20 */    20,    7,    8,    9,   10,   11,   12,   13,   14,   15,
- /*    30 */    16,   23,   18,   25,   20,    7,    8,    9,   10,   11,
- /*    40 */    12,   13,   14,   15,   16,   23,   18,   25,   20,    7,
- /*    50 */     8,    9,   10,   11,   12,   13,   14,   15,   16,   23,
- /*    60 */    18,   25,   20,    7,    8,    9,   10,   11,   12,   13,
- /*    70 */    14,   15,   16,   23,   18,   25,   20,    7,    8,    9,
- /*    80 */    10,   11,   12,   13,   14,   15,   16,   23,   18,   25,
- /*    90 */    20,    7,    8,    9,   10,   11,   12,   13,   14,   15,
- /*   100 */    16,   23,   18,   25,   20,    7,    8,    9,   10,   11,
- /*   110 */    12,   13,   14,   15,   16,   23,   18,   25,   20,    7,
- /*   120 */     8,    9,   10,   11,   12,   13,   14,   15,   16,   23,
- /*   130 */    18,   25,   20,    7,    8,    9,   10,   11,   12,   13,
- /*   140 */    14,   15,   16,   23,   18,   25,   20,    7,    8,    9,
- /*   150 */    10,   11,   12,   13,   14,   15,   16,   23,   18,   25,
- /*   160 */    20,    7,    8,    9,   10,   11,   12,   13,   14,   15,
- /*   170 */    16,   23,   18,   25,   20,    7,    8,    9,   10,   11,
- /*   180 */    12,   13,   14,   15,   16,   23,   18,   25,   20,    7,
- /*   190 */     8,    9,   10,   11,   12,   13,   14,   15,   16,    0,
- /*   200 */    18,   20,   20,    7,    8,    9,   10,   11,   12,   13,
- /*   210 */    14,   15,   16,   18,   18,    0,   20,    7,    8,    9,
- /*   220 */    10,   11,   12,   13,   14,   15,   16,   26,   18,   26,
- /*   230 */    20,    7,    8,    9,   10,   11,   12,   13,   14,   15,
- /*   240 */    16,   26,   18,    7,    8,    9,   10,   11,   12,   13,
- /*   250 */    14,   15,   16,    7,    8,   26,   20,   10,   11,   12,
- /*   260 */    13,   14,   15,   16,   26,   18,   26,   20,   10,   11,
- /*   270 */    12,   13,   14,   15,   16,   26,   18,   26,   20,   10,
- /*   280 */    11,   12,   13,   14,   15,   16,   26,   18,   26,   20,
- /*   290 */    10,   11,   12,   13,   14,   15,   16,   26,   18,   26,
- /*   300 */    20,   10,   11,   12,   13,   14,   15,   16,   26,   18,
- /*   310 */    26,   20,    2,    3,   26,    5,    6,   26,   26,    9,
- /*   320 */    10,   11,   26,   26,    2,    3,   26,    5,    6,   26,
- /*   330 */    26,   21,   10,   11,   26,   26,   26,   26,   26,   26,
- /*   340 */    26,   26,   26,   21,   26,   26,   26,
-};
-#define YY_SHIFT_COUNT    (42)
-#define YY_SHIFT_MIN      (0)
-#define YY_SHIFT_MAX      (322)
-static const unsigned short int yy_shift_ofst[] = {
- /*     0 */   310,  310,  322,  322,  322,  322,  322,  322,  322,  322,
- /*    10 */   322,  322,  322,  322,  322,    0,   14,   28,   42,   56,
- /*    20 */    70,   84,   98,  112,  126,  140,  154,  168,  182,  196,
- /*    30 */   210,  224,  236,  247,  258,  269,  280,  291,  246,  199,
- /*    40 */   181,  195,  215,
-};
-#define YY_REDUCE_COUNT (14)
-#define YY_REDUCE_MIN   (-22)
-#define YY_REDUCE_MAX   (162)
-static const short yy_reduce_ofst[] = {
- /*     0 */   -22,  -19,   -6,    8,   22,   36,   50,   64,   78,   92,
- /*    10 */   106,  120,  134,  148,  162,
-};
-static const YYACTIONTYPE yy_default[] = {
- /*     0 */    66,   66,   66,   66,   66,   66,   66,   66,   66,   66,
- /*    10 */    66,   66,   66,   66,   66,   66,   66,   66,   66,   66,
- /*    20 */    66,   66,   66,   66,   66,   66,   66,   66,   66,   66,
- /*    30 */    66,   66,   66,   66,   66,   66,   66,   66,   66,   66,
- /*    40 */    66,   66,   66,
-};
+%%
 /********** End of lemon-generated parsing tables *****************************/
 
 /* The next table maps tokens (terminal symbols) into fallback tokens.
@@ -308,6 +175,7 @@ static const YYACTIONTYPE yy_default[] = {
 */
 #ifdef YYFALLBACK
 static const YYCODETYPE yyFallback[] = {
+%%
 };
 #endif /* YYFALLBACK */
 
@@ -395,32 +263,7 @@ void ParseTrace(FILE *TraceFILE, char *zTracePrompt){
 /* For tracing shifts, the names of all terminals and nonterminals
 ** are required.  The following table supplies these names */
 static const char *const yyTokenName[] = {
-  /*    0 */ "$",
-  /*    1 */ "EQ",
-  /*    2 */ "INT",
-  /*    3 */ "FLOAT",
-  /*    4 */ "UNKNOWN",
-  /*    5 */ "CONST",
-  /*    6 */ "LETTER",
-  /*    7 */ "AND",
-  /*    8 */ "OR",
-  /*    9 */ "NOT",
-  /*   10 */ "PLUS",
-  /*   11 */ "MINUS",
-  /*   12 */ "MULT",
-  /*   13 */ "DIV",
-  /*   14 */ "MOD",
-  /*   15 */ "FACT",
-  /*   16 */ "EXP",
-  /*   17 */ "LAPREN",
-  /*   18 */ "RPAREN",
-  /*   19 */ "ANY",
-  /*   20 */ "EOQ",
-  /*   21 */ "LPAREN",
-  /*   22 */ "query",
-  /*   23 */ "elar",
-  /*   24 */ "boolean",
-  /*   25 */ "number",
+%%
 };
 #endif /* defined(YYCOVERAGE) || !defined(NDEBUG) */
 
@@ -428,29 +271,7 @@ static const char *const yyTokenName[] = {
 /* For tracing reduce actions, the names of all rules are required.
 */
 static const char *const yyRuleName[] = {
- /*   0 */ "query ::= elar EOQ",
- /*   1 */ "query ::= boolean EOQ",
- /*   2 */ "boolean ::= elar AND elar",
- /*   3 */ "boolean ::= elar NOT AND elar",
- /*   4 */ "boolean ::= elar OR elar",
- /*   5 */ "boolean ::= elar NOT OR elar",
- /*   6 */ "boolean ::= NOT elar",
- /*   7 */ "elar ::= LETTER",
- /*   8 */ "elar ::= number",
- /*   9 */ "elar ::= LPAREN boolean RPAREN",
- /*  10 */ "elar ::= CONST",
- /*  11 */ "elar ::= MINUS elar",
- /*  12 */ "elar ::= PLUS elar",
- /*  13 */ "elar ::= LPAREN elar RPAREN",
- /*  14 */ "elar ::= elar PLUS elar",
- /*  15 */ "elar ::= elar MINUS elar",
- /*  16 */ "elar ::= elar MULT elar",
- /*  17 */ "elar ::= elar DIV elar",
- /*  18 */ "elar ::= elar EXP elar",
- /*  19 */ "elar ::= elar MOD elar",
- /*  20 */ "elar ::= elar FACT",
- /*  21 */ "number ::= FLOAT",
- /*  22 */ "number ::= INT",
+%%
 };
 #endif /* NDEBUG */
 
@@ -577,19 +398,7 @@ static void yy_destructor(
     ** inside the C code.
     */
 /********* Begin destructor definitions ***************************************/
-      /* Default NON-TERMINAL Destructor */
-    case 22: /* query */
-    case 23: /* elar */
-    case 24: /* boolean */
-    case 25: /* number */
-{
-#line 22 "euler/parser/grammar.y"
-
-        euler->type = euler->type;
-
-#line 591 "euler/parser/grammar.c"
-}
-      break;
+%%
 /********* End destructor definitions *****************************************/
     default:  break;   /* If no destructor action specified: do nothing */
   }
@@ -809,9 +618,7 @@ static void yyStackOverflow(yyParser *yypParser){
    /* Here code is inserted which will execute if the parser
    ** stack every overflows */
 /******** Begin %stack_overflow code ******************************************/
-#line 9 "euler/parser/grammar.y"
-printf("stack_overflow\n");
-#line 815 "euler/parser/grammar.c"
+%%
 /******** End %stack_overflow code ********************************************/
    ParseARG_STORE /* Suppress warning about unused %extra_argument var */
    ParseCTX_STORE
@@ -883,57 +690,13 @@ static void yy_shift(
 /* For rule J, yyRuleInfoLhs[J] contains the symbol on the left-hand side
 ** of that rule */
 static const YYCODETYPE yyRuleInfoLhs[] = {
-    22,  /* (0) query ::= elar EOQ */
-    22,  /* (1) query ::= boolean EOQ */
-    24,  /* (2) boolean ::= elar AND elar */
-    24,  /* (3) boolean ::= elar NOT AND elar */
-    24,  /* (4) boolean ::= elar OR elar */
-    24,  /* (5) boolean ::= elar NOT OR elar */
-    24,  /* (6) boolean ::= NOT elar */
-    23,  /* (7) elar ::= LETTER */
-    23,  /* (8) elar ::= number */
-    23,  /* (9) elar ::= LPAREN boolean RPAREN */
-    23,  /* (10) elar ::= CONST */
-    23,  /* (11) elar ::= MINUS elar */
-    23,  /* (12) elar ::= PLUS elar */
-    23,  /* (13) elar ::= LPAREN elar RPAREN */
-    23,  /* (14) elar ::= elar PLUS elar */
-    23,  /* (15) elar ::= elar MINUS elar */
-    23,  /* (16) elar ::= elar MULT elar */
-    23,  /* (17) elar ::= elar DIV elar */
-    23,  /* (18) elar ::= elar EXP elar */
-    23,  /* (19) elar ::= elar MOD elar */
-    23,  /* (20) elar ::= elar FACT */
-    25,  /* (21) number ::= FLOAT */
-    25,  /* (22) number ::= INT */
+%%
 };
 
 /* For rule J, yyRuleInfoNRhs[J] contains the negative of the number
 ** of symbols on the right-hand side of that rule. */
 static const signed char yyRuleInfoNRhs[] = {
-   -2,  /* (0) query ::= elar EOQ */
-   -2,  /* (1) query ::= boolean EOQ */
-   -3,  /* (2) boolean ::= elar AND elar */
-   -4,  /* (3) boolean ::= elar NOT AND elar */
-   -3,  /* (4) boolean ::= elar OR elar */
-   -4,  /* (5) boolean ::= elar NOT OR elar */
-   -2,  /* (6) boolean ::= NOT elar */
-   -1,  /* (7) elar ::= LETTER */
-   -1,  /* (8) elar ::= number */
-   -3,  /* (9) elar ::= LPAREN boolean RPAREN */
-   -1,  /* (10) elar ::= CONST */
-   -2,  /* (11) elar ::= MINUS elar */
-   -2,  /* (12) elar ::= PLUS elar */
-   -3,  /* (13) elar ::= LPAREN elar RPAREN */
-   -3,  /* (14) elar ::= elar PLUS elar */
-   -3,  /* (15) elar ::= elar MINUS elar */
-   -3,  /* (16) elar ::= elar MULT elar */
-   -3,  /* (17) elar ::= elar DIV elar */
-   -3,  /* (18) elar ::= elar EXP elar */
-   -3,  /* (19) elar ::= elar MOD elar */
-   -2,  /* (20) elar ::= elar FACT */
-   -1,  /* (21) number ::= FLOAT */
-   -1,  /* (22) number ::= INT */
+%%
 };
 
 static void yy_accept(yyParser*);  /* Forward Declaration */
@@ -1019,126 +782,7 @@ static YYACTIONTYPE yy_reduce(
   **     break;
   */
 /********** Begin reduce actions **********************************************/
-        YYMINORTYPE yylhsminor;
-      case 0: /* query ::= elar EOQ */
-#line 29 "euler/parser/grammar.y"
-{
-        euler->resultn.fraction = yymsp[-1].minor.yy0;
-        euler->type = FRACTION;
-}
-#line 1030 "euler/parser/grammar.c"
-        break;
-      case 1: /* query ::= boolean EOQ */
-#line 34 "euler/parser/grammar.y"
-{
-        euler->resultn.fraction = yymsp[-1].minor.yy0;
-        euler->type = BINARY;
-}
-#line 1038 "euler/parser/grammar.c"
-        break;
-      case 2: /* boolean ::= elar AND elar */
-#line 40 "euler/parser/grammar.y"
-{ yylhsminor.yy0 = (int)yymsp[-2].minor.yy0 & (int)yymsp[0].minor.yy0; }
-#line 1043 "euler/parser/grammar.c"
-  yymsp[-2].minor.yy0 = yylhsminor.yy0;
-        break;
-      case 3: /* boolean ::= elar NOT AND elar */
-#line 41 "euler/parser/grammar.y"
-{ yylhsminor.yy0 = ~((int)yymsp[-3].minor.yy0 & (int)yymsp[0].minor.yy0); }
-#line 1049 "euler/parser/grammar.c"
-  yymsp[-3].minor.yy0 = yylhsminor.yy0;
-        break;
-      case 4: /* boolean ::= elar OR elar */
-#line 42 "euler/parser/grammar.y"
-{ yylhsminor.yy0 = (int)yymsp[-2].minor.yy0 | (int)yymsp[0].minor.yy0; }
-#line 1055 "euler/parser/grammar.c"
-  yymsp[-2].minor.yy0 = yylhsminor.yy0;
-        break;
-      case 5: /* boolean ::= elar NOT OR elar */
-#line 43 "euler/parser/grammar.y"
-{ yylhsminor.yy0 = ~((int)yymsp[-3].minor.yy0 | (int)yymsp[0].minor.yy0); }
-#line 1061 "euler/parser/grammar.c"
-  yymsp[-3].minor.yy0 = yylhsminor.yy0;
-        break;
-      case 6: /* boolean ::= NOT elar */
-#line 44 "euler/parser/grammar.y"
-{ yymsp[-1].minor.yy0 =  ~(int)yymsp[0].minor.yy0; }
-#line 1067 "euler/parser/grammar.c"
-        break;
-      case 7: /* elar ::= LETTER */
-#line 49 "euler/parser/grammar.y"
-{ yymsp[0].minor.yy0 = 1; }
-#line 1072 "euler/parser/grammar.c"
-        break;
-      case 8: /* elar ::= number */
-      case 10: /* elar ::= CONST */ yytestcase(yyruleno==10);
-      case 21: /* number ::= FLOAT */ yytestcase(yyruleno==21);
-      case 22: /* number ::= INT */ yytestcase(yyruleno==22);
-#line 50 "euler/parser/grammar.y"
-{ yylhsminor.yy0 = yymsp[0].minor.yy0;       }
-#line 1080 "euler/parser/grammar.c"
-  yymsp[0].minor.yy0 = yylhsminor.yy0;
-        break;
-      case 9: /* elar ::= LPAREN boolean RPAREN */
-      case 13: /* elar ::= LPAREN elar RPAREN */ yytestcase(yyruleno==13);
-#line 51 "euler/parser/grammar.y"
-{ yymsp[-2].minor.yy0 = yymsp[-1].minor.yy0;       }
-#line 1087 "euler/parser/grammar.c"
-        break;
-      case 11: /* elar ::= MINUS elar */
-#line 53 "euler/parser/grammar.y"
-{ yymsp[-1].minor.yy0 = -yymsp[0].minor.yy0;      }
-#line 1092 "euler/parser/grammar.c"
-        break;
-      case 12: /* elar ::= PLUS elar */
-#line 54 "euler/parser/grammar.y"
-{ yymsp[-1].minor.yy0 = yymsp[0].minor.yy0;       }
-#line 1097 "euler/parser/grammar.c"
-        break;
-      case 14: /* elar ::= elar PLUS elar */
-#line 56 "euler/parser/grammar.y"
-{ yylhsminor.yy0 = yymsp[-2].minor.yy0 + yymsp[0].minor.yy0;   }
-#line 1102 "euler/parser/grammar.c"
-  yymsp[-2].minor.yy0 = yylhsminor.yy0;
-        break;
-      case 15: /* elar ::= elar MINUS elar */
-#line 57 "euler/parser/grammar.y"
-{ yylhsminor.yy0 = yymsp[-2].minor.yy0 - yymsp[0].minor.yy0;   }
-#line 1108 "euler/parser/grammar.c"
-  yymsp[-2].minor.yy0 = yylhsminor.yy0;
-        break;
-      case 16: /* elar ::= elar MULT elar */
-#line 58 "euler/parser/grammar.y"
-{ yylhsminor.yy0 = yymsp[-2].minor.yy0 * yymsp[0].minor.yy0;   }
-#line 1114 "euler/parser/grammar.c"
-  yymsp[-2].minor.yy0 = yylhsminor.yy0;
-        break;
-      case 17: /* elar ::= elar DIV elar */
-#line 59 "euler/parser/grammar.y"
-{ yylhsminor.yy0 = (yymsp[0].minor.yy0 != 0) ? (yymsp[-2].minor.yy0 / yymsp[0].minor.yy0) : (euler->status = MTHE); }
-#line 1120 "euler/parser/grammar.c"
-  yymsp[-2].minor.yy0 = yylhsminor.yy0;
-        break;
-      case 18: /* elar ::= elar EXP elar */
-#line 60 "euler/parser/grammar.y"
-{ yylhsminor.yy0=yymsp[-2].minor.yy0; for(uint8_t i = 1; i < yymsp[0].minor.yy0; i++) yylhsminor.yy0 *= yymsp[-2].minor.yy0; }
-#line 1126 "euler/parser/grammar.c"
-  yymsp[-2].minor.yy0 = yylhsminor.yy0;
-        break;
-      case 19: /* elar ::= elar MOD elar */
-#line 61 "euler/parser/grammar.y"
-{ yylhsminor.yy0 = fmod(yymsp[-2].minor.yy0, yymsp[0].minor.yy0); }
-#line 1132 "euler/parser/grammar.c"
-  yymsp[-2].minor.yy0 = yylhsminor.yy0;
-        break;
-      case 20: /* elar ::= elar FACT */
-#line 62 "euler/parser/grammar.y"
-{ yylhsminor.yy0 = 1; for(uint8_t i = yymsp[-1].minor.yy0; i > 0; i--) yylhsminor.yy0 *= i; }
-#line 1138 "euler/parser/grammar.c"
-  yymsp[-1].minor.yy0 = yylhsminor.yy0;
-        break;
-      default:
-        break;
+%%
 /********** End reduce actions ************************************************/
   };
   assert( yyruleno<sizeof(yyRuleInfoLhs)/sizeof(yyRuleInfoLhs[0]) );
@@ -1179,9 +823,7 @@ static void yy_parse_failed(
   /* Here code is inserted which will be executed whenever the
   ** parser fails */
 /************ Begin %parse_failure code ***************************************/
-#line 10 "euler/parser/grammar.y"
-printf("parser failed\n");
-#line 1185 "euler/parser/grammar.c"
+%%
 /************ End %parse_failure code *****************************************/
   ParseARG_STORE /* Suppress warning about unused %extra_argument variable */
   ParseCTX_STORE
@@ -1200,6 +842,7 @@ static void yy_syntax_error(
   ParseCTX_FETCH
 #define TOKEN yyminor
 /************ Begin %syntax_error code ****************************************/
+%%
 /************ End %syntax_error code ******************************************/
   ParseARG_STORE /* Suppress warning about unused %extra_argument variable */
   ParseCTX_STORE
@@ -1225,6 +868,7 @@ static void yy_accept(
   /* Here code is inserted which will be executed whenever the
   ** parser accepts */
 /*********** Begin %parse_accept code *****************************************/
+%%
 /*********** End %parse_accept code *******************************************/
   ParseARG_STORE /* Suppress warning about unused %extra_argument variable */
   ParseCTX_STORE
