@@ -1,5 +1,6 @@
 #include "grammar.h"
 #include "tokenizer.h"
+#include <stdlib.h> /* only for parser */
 #include <stdio.h> /* temporary */
 
 /* Just change of notation */
@@ -7,9 +8,9 @@
 #define parse_free ParseFree
 #define parse_alloc ParseAlloc
 
-void *ParseAlloc(void);
+void *ParseAlloc(void *(*allocProc)(size_t));
 void Parse(void *, int, double, ersl_t *);
-void ParseFree(void *);
+void ParseFree(void *, void (*freeProc)(void *));
 
 #define FILL_LEX(q) YYCURSOR = q
 
@@ -75,13 +76,14 @@ static void clear_ersl(ersl_t *ersl)
 
 void parser_restart(void *parser)
 {
-	parse_free(parser);
-	parser = parse_alloc();
+	parse_free(parser, free);
+	parser = parse_alloc(malloc);
 }
 
 void parse_query(char *query, ersl_t *ersl)
 {
-	void *parser = parse_alloc();
+	void *parser = parse_alloc(malloc);
+	char tmp[MAX_QUERY_LENGTH];
 
 	clear_ersl(ersl);
 	symbol_table_clear();
@@ -90,14 +92,16 @@ void parse_query(char *query, ersl_t *ersl)
 
 	symbol_table_init(query);
 
-	printf("token \t| addr \t\t| string \t| float\n");
-	printf("rsv \t| %p \t| NULL \t\t|NaN\n", query);
+	printf("token \t| string \t| float\n");
+	printf("rsv \t| NULL \t\t|NaN\n");
 
 	while (lex() != EOQ) {
-		parse(parser, get_last_matched_token(), get_double_value(),
-		      ersl);
+		parse(parser, get_last_matched_token(), get_if_double(), ersl);
+		get_last_token_string(tmp);
+		printf("%d \t| %s \t\t|%f\n", get_last_matched_token(), tmp,
+		       get_if_double());
 	}
 	parse(parser, EOQ, 0, ersl);
 	parse(parser, 0, 0, ersl);
-	parse_free(parser);
+	parse_free(parser, free);
 }

@@ -25,7 +25,6 @@ $(PARSER).c: clean
 
 clean:
 	rm $(LEXER).c graphviz.txt $(PARSER).c $(PARSER).h $(PARSER).out $(SRC)/lemon/lemon -rf $(BUILD_DIR)
-	cd arch/$(ARCH)/$(MCU) && $(MAKE) clean
 
 graph:
 	re2c -D -o graphviz.txt $(LEXER).re

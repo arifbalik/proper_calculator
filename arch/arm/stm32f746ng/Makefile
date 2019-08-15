@@ -5,7 +5,7 @@ BUILD_DIR = ../../../build
 PROJECT = $(BUILD_DIR)/$(MCU)
 
 SHARED_DIR = $(BUILD_DIR)
-CFILES= $(EULER_DIR)/src/*.c $(EULER_DIR)/parser/*.c $(MCU).c
+CFILES= $(EULER_DIR)/src/*.c $(EULER_DIR)/parser/tokenizer.c $(EULER_DIR)/parser/grammar.c $(EULER_DIR)/parser/symbol_table.c $(MCU).c
 AFILES +=
 
 LDLIBS += -lm

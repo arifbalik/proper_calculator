@@ -1,6 +1,5 @@
 #include "../inc/euler.h"
 #include "grammar.h"
-#include <stdio.h> /* temporary */
 
 static symbol_table_t symbol_table[MAX_QUERY_LENGTH];
 static uint8_t table_index = 0;
@@ -33,9 +32,6 @@ int8_t symbol_table_get(uint8_t idx, char *addr)
 }
 int8_t symbol_table_append(uint8_t token, char *addr)
 {
-	char tmp[MAX_QUERY_LENGTH];
-	double val = 0;
-
 	table_index++;
 
 	if (table_index >= MAX_QUERY_LENGTH) {
@@ -44,13 +40,6 @@ int8_t symbol_table_append(uint8_t token, char *addr)
 
 	symbol_table[table_index].token = token;
 	symbol_table[table_index].p = addr;
-
-	get_string_value(tmp, symbol_table[table_index - 1].p,
-			 (uint8_t)(symbol_table[table_index].p -
-				   symbol_table[table_index - 1].p));
-	val = get_double_value();
-	printf("%d \t| %p \t| %s \t\t|%f\n", symbol_table[table_index].token,
-	       symbol_table[table_index].p, tmp, val);
 
 	/* EOQ check */
 	if (token == EOQ) {
@@ -66,7 +55,12 @@ int8_t get_last_matched_token(void)
 	return symbol_table[table_index].token;
 }
 
-double get_double_value(void)
+int8_t get_token(uint8_t idx)
+{
+	return symbol_table[idx].token;
+}
+
+double get_if_double(void)
 {
 	char sval[MAX_QUERY_LENGTH];
 
@@ -76,9 +70,7 @@ double get_double_value(void)
 	}
 
 	if (table_index >= 1) {
-		get_string_value(sval, symbol_table[table_index - 1].p,
-				 (uint8_t)(symbol_table[table_index].p -
-					   symbol_table[table_index - 1].p));
+		get_last_token_string(sval);
 		return _atof(sval);
 	}
 
@@ -86,7 +78,13 @@ double get_double_value(void)
 		return 0;
 }
 
-void get_string_value(char *target, char *p, uint8_t n)
+void get_last_token_string(char *target)
+{
+	get_string(target, symbol_table[table_index - 1].p,
+		   (uint8_t)(symbol_table[table_index].p -
+			     symbol_table[table_index - 1].p));
+}
+void get_string(char *target, char *p, uint8_t n)
 {
 	uint8_t idx = 0;
 
