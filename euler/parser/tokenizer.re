@@ -1,16 +1,15 @@
 #include "grammar.h"
 #include "tokenizer.h"
-#include <stdlib.h> /* only for parser */
-#include <stdio.h> /* temporary */
+#include <stdio.h>
 
 /* Just change of notation */
 #define parse Parse
 #define parse_free ParseFree
 #define parse_alloc ParseAlloc
 
-void *ParseAlloc(void *(*allocProc)(size_t));
+void *ParseAlloc(void);
 void Parse(void *, int, double, ersl_t *);
-void ParseFree(void *, void (*freeProc)(void *));
+void ParseFree(void *);
 
 #define FILL_LEX(q) YYCURSOR = q
 
@@ -34,7 +33,10 @@ static int lex(void)
 		letter = [a-z];
 
 
-	// Number Defs.
+	// Number Defs. and Constants
+
+		"pi" { return symbol_table_append(PI, YYCURSOR); }
+		("e")  { return symbol_table_append(E, YYCURSOR); }
 
 		int  { return symbol_table_append(INT, YYCURSOR); }
 		float  { return symbol_table_append(FLOAT, YYCURSOR); }
@@ -57,7 +59,15 @@ static int lex(void)
 		"&"  { return symbol_table_append(AND, YYCURSOR); }
 		"|"  { return symbol_table_append(OR, YYCURSOR); }
 		"~"  { return symbol_table_append(NOT, YYCURSOR); }
+		"(+)" { return symbol_table_append(XOR, YYCURSOR); }
 
+	// Binary Relations
+
+		"<" { return symbol_table_append(SMALLER, YYCURSOR); }
+		">" { return symbol_table_append(GREATER, YYCURSOR); }
+		"==" { return symbol_table_append(ISEQ, YYCURSOR); }
+		"&&" { return symbol_table_append(BAND, YYCURSOR); }
+		"||" { return symbol_table_append(BOR, YYCURSOR); }
 	// System Defs.
 
 		"\x00"  { return symbol_table_append(EOQ, YYCURSOR); }
@@ -74,15 +84,9 @@ static void clear_ersl(ersl_t *ersl)
 	ersl->resultn.fraction = 0;
 }
 
-void parser_restart(void *parser)
-{
-	parse_free(parser, free);
-	parser = parse_alloc(malloc);
-}
-
 void parse_query(char *query, ersl_t *ersl)
 {
-	void *parser = parse_alloc(malloc);
+	void *parser = parse_alloc();
 	char tmp[MAX_QUERY_LENGTH];
 
 	clear_ersl(ersl);
@@ -92,16 +96,14 @@ void parse_query(char *query, ersl_t *ersl)
 
 	symbol_table_init(query);
 
-	printf("token \t| string \t| float\n");
-	printf("rsv \t| NULL \t\t|NaN\n");
-
+	printf("token \t| string \t| float\nrsv \t| NULL \t\t|NaN\n");
 	while (lex() != EOQ) {
-		parse(parser, get_last_matched_token(), get_if_double(), ersl);
+		parse(parser, get_last_matched_token(), get_if_number(), ersl);
 		get_last_token_string(tmp);
 		printf("%d \t| %s \t\t|%f\n", get_last_matched_token(), tmp,
-		       get_if_double());
+		       get_if_number());
 	}
 	parse(parser, EOQ, 0, ersl);
 	parse(parser, 0, 0, ersl);
-	parse_free(parser, free);
+	parse_free(parser);
 }

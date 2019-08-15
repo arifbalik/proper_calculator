@@ -60,7 +60,7 @@ int8_t get_token(uint8_t idx)
 	return symbol_table[idx].token;
 }
 
-double get_if_double(void)
+double get_if_number(void)
 {
 	char sval[MAX_QUERY_LENGTH];
 

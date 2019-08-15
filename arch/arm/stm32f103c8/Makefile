@@ -6,7 +6,7 @@ PROJECT = $(BUILD_DIR)/$(MCU)
 
 
 SHARED_DIR = $(BUILD_DIR)
-CFILES =   $(EULER_DIR)/src/variables.c $(EULER_DIR)/parser/parser.c $(EULER_DIR)/parser/lexer.c $(MCU).c
+CFILES =$(EULER_DIR)/src/*.c $(EULER_DIR)/parser/tokenizer.c $(EULER_DIR)/parser/grammar.c $(EULER_DIR)/parser/symbol_table.c $(MCU).c
 AFILES +=
 
 ARCH_FLAGS = -mfloat-abi=softfp #this series has no hard float

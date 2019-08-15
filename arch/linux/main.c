@@ -44,6 +44,9 @@ int main(int argc, char const **argv)
 
 			printf("\n");
 		}
+		else if (euler.type == BOOL) {
+			printf("%d\n", (int)euler.resultn.fraction);
+		}
 	}
 
 	return 0;

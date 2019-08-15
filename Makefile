@@ -9,8 +9,6 @@ LEXER=$(SRC)/tokenizer
 
 BUILD_DIR = build
 
-C_FILES= euler/src/variables.c $(LEXER).c $(PARSER).c
-
 all: $(PARSER).c $(LEXER).c
 	cd arch/$(ARCH)/$(MCU) && $(MAKE)
 

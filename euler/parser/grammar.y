@@ -1,6 +1,7 @@
 %include {
 #include <assert.h>
 #include "tokenizer.h"
+#include "../inc/constant.h"
 }
 
 %token_type { double }
@@ -8,15 +9,16 @@
 %start_symbol   query
 %stack_overflow {printf("stack_overflow\n");}
 %parse_failure {printf("parser failed\n");}
+%parse_failure {printf("syntax error\n");}
 
 /* Priorities */
 %nonassoc EQ INT FLOAT UNKNOWN.
 %left CONST.
 %left LETTER.
-%left AND OR NOT.
 %left PLUS MINUS.
 %left MULT DIV MOD FACT.
 %left EXP.
+%left AND OR NOT GREATER SMALLER XOR BAND BOR ISEQ.
 %left LAPREN RPAREN.
 
 %default_destructor {
@@ -31,24 +33,28 @@ query ::= elar(B) EOQ. {
         euler->type = FRACTION;
 }
 
-query ::= boolean(B) EOQ. {
-        euler->resultn.fraction = B;
-        euler->type = BINARY;
-}
+
 
 /* Boolean Operators */
-boolean(A) ::= elar(B) AND elar(C). { A = (int)B & (int)C; }
-boolean(A) ::= elar(B) NOT AND elar(C). { A = ~((int)B & (int)C); }
-boolean(A) ::= elar(B) OR elar(C). { A = (int)B | (int)C; }
-boolean(A) ::= elar(B) NOT OR elar(C). { A = ~((int)B | (int)C); }
-boolean(A) ::= NOT elar(B). { A =  ~(int)B; }
+elar(A) ::= elar(B) AND elar(C). { A = (int)B & (int)C; }
+elar(A) ::= elar(B) NOT AND elar(C). { A = ~((int)B & (int)C); }
+elar(A) ::= elar(B) OR elar(C). { A = (int)B | (int)C; }
+elar(A) ::= elar(B) NOT OR elar(C). { A = ~((int)B | (int)C); }
+elar(A) ::= elar(B) XOR elar(C). { A = ((int)B ^ (int)C); }
+elar(A) ::= elar(B) GREATER GREATER elar(C). { A = ((int)B >> (int)C); }
+elar(A) ::= elar(B) SMALLER SMALLER elar(C). { A = ((int)B << (int)C); }
+elar(A) ::= NOT elar(B). { A =  ~(int)B; }
 
-
+/* Binary Relations */
+elar(A) ::= elar(B) BAND elar(C). { A = ((int)B && (int)C); }
+elar(A) ::= elar(B) BOR elar(C). { A = ((int)B || (int)C); }
+elar(A) ::= elar(B) ISEQ elar(C). { A = ((int)B == (int)C); }
+elar(A) ::= elar(B) GREATER elar(C). { A = ((int)B > (int)C); }
+elar(A) ::= elar(B) SMALLER elar(C). { A = ((int)B < (int)C); }
 
 /* Elementary Arithmetic */
 elar(A) ::= LETTER. { A = 1; }
 elar(A) ::= number(B).                    { A = B;       }
-elar(A) ::= LPAREN boolean(B) RPAREN.     { A = B;       }
 elar(A) ::= CONST(B).                     { A = B;       }
 elar(A) ::= MINUS elar(B).                { A = -B;      }
 elar(A) ::= PLUS elar(B).                 { A = B;       }
@@ -63,3 +69,7 @@ elar(A) ::= elar(B)    FACT.              { A = 1; for(uint8_t i = B; i > 0; i--
 
 number(A) ::= FLOAT(B).                     { A = B;       }
 number(A) ::= INT(B).                       { A = B;       }
+number(A) ::= constant(B).                  { A = B;       }
+
+constant(A) ::= PI. { A = _PI; }
+constant(A) ::= E. { A = _E; }

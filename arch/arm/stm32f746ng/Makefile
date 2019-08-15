@@ -7,6 +7,7 @@ PROJECT = $(BUILD_DIR)/$(MCU)
 SHARED_DIR = $(BUILD_DIR)
 CFILES= $(EULER_DIR)/src/*.c $(EULER_DIR)/parser/tokenizer.c $(EULER_DIR)/parser/grammar.c $(EULER_DIR)/parser/symbol_table.c $(MCU).c
 AFILES +=
+INCLUDES += -I$(EULER_DIR)/inc -I$(EULER_DIR)/parser 
 
 LDLIBS += -lm
 

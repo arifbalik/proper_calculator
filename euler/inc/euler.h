@@ -42,6 +42,7 @@ typedef enum {
 	INTEGER,
 	FRACTION,
 	BINARY,
+	BOOL,
 	MATRIX
 } etype_t;
 
