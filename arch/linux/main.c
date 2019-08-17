@@ -27,8 +27,8 @@ int main(int argc, char const **argv)
 		}
 
 		query[i] = '\0'; /* a string should always end with '\0' ! */
-
-		parse_query(query, &euler);
+		euler.ascii = query;
+		parse_query(&euler);
 		if (euler.type == FRACTION)
 			printf("result : %f\n", euler.resultn.fraction);
 		else if (euler.type == BINARY) {
@@ -43,8 +43,7 @@ int main(int argc, char const **argv)
 			}
 
 			printf("\n");
-		}
-		else if (euler.type == BOOL) {
+		} else if (euler.type == BOOL) {
 			printf("%d\n", (int)euler.resultn.fraction);
 		}
 	}

@@ -3,6 +3,11 @@
 #define MAX_QUERY_LENGTH 80
 #include "../parser/symbol_table.h"
 #include "_atof.h"
+#include "_itoa.h"
+#include "_strcpy.h"
+#include "_strlen.h"
+#include "strplace.h"
+#include <stdio.h>
 
 #ifndef NULL
 #define NULL ((void *)0)
@@ -15,9 +20,7 @@ typedef enum {
 	 * Usually lexer uses them.
 	 */
 	_PDONE, /* Parse Done */
-	_PINP, /* Parse In Proggress */
-	_PERR, /* Parse Error */
-	_APQ, /* Append To New Query */
+	_PAGAIN, /* Parse Again */
 
 	_FEX, /* Function Expand */
 
@@ -57,7 +60,8 @@ typedef struct {
 	etype_t type; /* Developer should check this type before any action */
 	numerical_t resultn; /* Numerical results will be stored here */
 	estatus_t status; /* Developer can use this to debug the engine */
+	char *ascii; /* The query */
 
 } ersl_t;
 
-void parse_query(char *query, ersl_t *ersl);
+void parse_query(ersl_t *ersl);

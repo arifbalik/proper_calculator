@@ -1,6 +1,7 @@
 %include {
 #include <assert.h>
 #include "tokenizer.h"
+#include "grammar.h"
 #include "../inc/constant.h"
 }
 
@@ -12,7 +13,7 @@
 %parse_failure {printf("syntax error\n");}
 
 /* Priorities */
-%nonassoc EQ INT FLOAT UNKNOWN.
+%nonassoc EQ INT FLOAT UNKNOWN TO SIGMA.
 %left CONST.
 %left LETTER.
 %left PLUS MINUS.
@@ -33,6 +34,32 @@ query ::= elar(B) EOQ. {
         euler->type = FRACTION;
 }
 
+
+/* Iterated Functions. */
+query ::= SIGMA ANY COMMA LETTER EQ number(B) TO number(C). {
+        char fn[MAX_QUERY_LENGTH];
+        char str[MAX_QUERY_LENGTH];
+        char letter = get_letter();
+        double res = 0;
+
+        if(count_token(COMMA) > 1){
+                /* error */
+                euler->status = MTHE;
+                goto end;
+        }
+        get_string_between_tokens(SIGMA, COMMA, fn);
+        for(uint8_t i = B; i<=C; i++){
+                strplace(fn, str, letter, i);
+                _strcpy(euler->ascii, str, MAX_QUERY_LENGTH);
+                parse_query(euler);
+                res += euler->resultn.fraction;
+        }
+        euler->resultn.fraction = res;
+        euler->status = FRACTION;
+        end:
+        euler->status = euler->status;
+
+}
 
 
 /* Boolean Operators */

@@ -18,5 +18,8 @@ double get_if_number(void);
 void symbol_table_init(char *addr);
 void get_string(char *target, char *p, uint8_t n);
 void get_last_token_string(char *target);
+uint8_t count_token(uint8_t token);
+void get_string_between_tokens(uint8_t ftoken, uint8_t ltoken, char *s);
+char get_letter(void);
 
 #endif /* __SYMBOL_TABLE__ */

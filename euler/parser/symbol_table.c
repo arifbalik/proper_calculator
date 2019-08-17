@@ -1,5 +1,6 @@
 #include "../inc/euler.h"
 #include "grammar.h"
+#include <stdio.h>
 
 static symbol_table_t symbol_table[MAX_QUERY_LENGTH];
 static uint8_t table_index = 0;
@@ -94,4 +95,59 @@ void get_string(char *target, char *p, uint8_t n)
 		n--;
 	}
 	*(target + idx) = '\0';
+}
+
+uint8_t count_token(uint8_t token)
+{
+	uint8_t idx = table_index;
+	uint8_t count = 0;
+
+	while (idx--) {
+		if (symbol_table[idx].token == token)
+			count++;
+	}
+	return count;
+}
+
+char get_letter(void)
+{
+	uint8_t idx = 0;
+	char letter = '\0';
+
+	while (symbol_table[idx].token != LETTER)
+		idx++;
+
+	letter = symbol_table[idx].p[-1];
+
+	return letter;
+}
+
+void get_string_between_tokens(uint8_t ftoken, uint8_t ltoken, char *s)
+{
+	uint8_t idx = 0;
+	char *addr_begin = NULL, *addr_end = NULL, *addr_temp = NULL;
+
+	while (symbol_table[idx].token != ftoken)
+		idx++;
+
+	if (symbol_table[idx].token != ftoken)
+		return;
+
+	addr_begin = symbol_table[idx].p;
+
+	while (symbol_table[idx].token != ltoken)
+		idx++;
+
+	if (symbol_table[idx].token != ltoken)
+		return;
+
+	addr_end = symbol_table[idx].p - 1;
+
+	addr_temp = addr_begin;
+	idx = 0;
+	while ((addr_temp + idx) < addr_end) {
+		*(s + idx) = *(addr_temp + idx);
+		idx++;
+	}
+	*(s + idx) = '\0';
 }
