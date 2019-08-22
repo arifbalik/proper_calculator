@@ -8,7 +8,7 @@ void strplace(char *s, char *dest, char old, int number)
 	_strcpy(dest, s, MAX_QUERY_LENGTH);
 	lenq = _strlen(dest, MAX_QUERY_LENGTH);
 
-	_itoa(number, new);
+	ftoa(number, new, DOUBLE_PRECISION);
 	lenn = _strlen(new, MAX_QUERY_LENGTH);
 
 	while (k < lenq) {
@@ -24,4 +24,35 @@ void strplace(char *s, char *dest, char old, int number)
 	temp[i] = '\0';
 
 	_strcpy(dest, temp, MAX_QUERY_LENGTH);
+}
+char *str_replace(char *s, char *oldW, char *newW, char *result)
+{
+	int i, cnt = 0;
+	int newWlen = _strlen(newW, MAX_QUERY_LENGTH);
+	int oldWlen = _strlen(oldW, MAX_QUERY_LENGTH);
+
+	// Counting the number of times old word
+	// occur in the string
+	for (i = 0; s[i] != '\0'; i++) {
+		if (_strstr(&s[i], oldW) == &s[i]) {
+			cnt++;
+
+			// Jumping to index after the old word.
+			i += oldWlen - 1;
+		}
+	}
+
+	i = 0;
+	while (*s) {
+		// compare the substring with the result
+		if (_strstr(s, oldW) == s) {
+			_strcpy(&result[i], newW, MAX_QUERY_LENGTH);
+			i += newWlen;
+			s += oldWlen;
+		} else
+			result[i++] = *s++;
+	}
+
+	result[i] = '\0';
+	return result;
 }

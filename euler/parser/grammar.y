@@ -3,6 +3,7 @@
 #include "tokenizer.h"
 #include "grammar.h"
 #include "../inc/constant.h"
+
 }
 
 %token_type { double }
@@ -13,14 +14,14 @@
 %parse_failure {printf("syntax error\n");}
 
 /* Priorities */
-%nonassoc EQ INT FLOAT UNKNOWN TO SIGMA.
+%nonassoc EQ INT FLOAT UNKNOWN TO SIGMA PROD.
 %left CONST.
 %left LETTER.
 %left PLUS MINUS.
 %left MULT DIV MOD FACT.
 %left EXP.
 %left AND OR NOT GREATER SMALLER XOR BAND BOR ISEQ.
-%left LAPREN RPAREN.
+%left LPAREN RPAREN.
 
 %default_destructor {
         euler->type = euler->type;
@@ -36,35 +37,54 @@ query ::= elar(B) EOQ. {
 
 
 /* Iterated Functions. */
-query ::= SIGMA ANY COMMA LETTER EQ number(B) TO number(C). {
-        char fn[MAX_QUERY_LENGTH];
-        char str[MAX_QUERY_LENGTH];
-        char letter = get_letter();
-        double res = 0;
+elar(A) ::= SIGMA LPAREN ANY COMMA LETTER COMMA number(B) COMMA number(C) RPAREN. {
 
-        if(count_token(COMMA) > 1){
-                /* error */
-                euler->status = MTHE;
-                goto end;
+        char fn[MAX_QUERY_LENGTH];
+        char query[MAX_QUERY_LENGTH];
+	ersl_t tmp;
+	double result = 0;
+
+        st_get_string_between_tokens(&(euler->symbol_table), LPAREN, COMMA, fn, 1);
+
+        while(B <= C){
+                strplace(fn, query, st_get_letter(&(euler->symbol_table)), (int)B);
+                tmp.ascii = query;
+                parse_query(&tmp);
+                result += tmp.resultn.fraction;
+                B++;
         }
-        get_string_between_tokens(SIGMA, COMMA, fn);
-        for(uint8_t i = B; i<=C; i++){
-                strplace(fn, str, letter, i);
-                _strcpy(euler->ascii, str, MAX_QUERY_LENGTH);
-                parse_query(euler);
-                res += euler->resultn.fraction;
+
+        A = result;
+
+
+}
+
+elar(A) ::= PROD LPAREN ANY COMMA LETTER COMMA number(B) COMMA number(C) RPAREN. {
+
+        char fn[MAX_QUERY_LENGTH];
+        char query[MAX_QUERY_LENGTH];
+	ersl_t tmp;
+	double result = 0;
+
+        st_get_string_between_tokens(&(euler->symbol_table), LPAREN, COMMA, fn, 1);
+
+        while(B <= C){
+                strplace(fn, query, st_get_letter(&(euler->symbol_table)), (int)B);
+                tmp.ascii = query;
+                parse_query(&tmp);
+                result *= tmp.resultn.fraction;
+                B++;
         }
-        euler->resultn.fraction = res;
-        euler->status = FRACTION;
-        end:
-        euler->status = euler->status;
+
+        A = result;
+
 
 }
 
 
 /* Boolean Operators */
 elar(A) ::= elar(B) AND elar(C). { A = (int)B & (int)C; }
-elar(A) ::= elar(B) NOT AND elar(C). { A = ~((int)B & (int)C); }
+elar(A) ::= elar(B) NOT AND elar(C). { A = ~((int)B & (int)C);  }
 elar(A) ::= elar(B) OR elar(C). { A = (int)B | (int)C; }
 elar(A) ::= elar(B) NOT OR elar(C). { A = ~((int)B | (int)C); }
 elar(A) ::= elar(B) XOR elar(C). { A = ((int)B ^ (int)C); }
@@ -86,11 +106,11 @@ elar(A) ::= CONST(B).                     { A = B;       }
 elar(A) ::= MINUS elar(B).                { A = -B;      }
 elar(A) ::= PLUS elar(B).                 { A = B;       }
 elar(A) ::= LPAREN elar(B) RPAREN.        { A = B;       }
-elar(A) ::= elar(B)    PLUS      elar(C). { A = B + C;   }
+elar(A) ::= elar(B)    PLUS      elar(C). { euler->resultn.fraction = A = B + C;   }
 elar(A) ::= elar(B)    MINUS     elar(C). { A = B - C;   }
 elar(A) ::= elar(B)    MULT      elar(C). { A = B * C;   }
-elar(A) ::= elar(B)    DIV       elar(C). { A = (C != 0) ? (B / C) : (euler->status = MTHE); }
-elar(A) ::= elar(B)    EXP       elar(C). { A=B; for(uint8_t i = 1; i < C; i++) A *= B; }
+elar(A) ::= elar(B)    DIV       elar(C). { A = (C != 0) ? (B / C) : (0); euler->status = MTHE; }
+elar(A) ::= elar(B)    EXP       elar(C). {A = pow(B,C); }
 elar(A) ::= elar(B)    MOD       elar(C). { A = fmod(B, C); }
 elar(A) ::= elar(B)    FACT.              { A = 1; for(uint8_t i = B; i > 0; i--) A *= i; }
 

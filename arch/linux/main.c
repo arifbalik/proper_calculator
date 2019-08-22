@@ -10,7 +10,9 @@ int main(int argc, char const **argv)
 	char query[LINE + 1] = { '\0' };
 	ersl_t euler;
 	int c, k;
-
+	printf("char * %ld, uint8_t %ld\n", sizeof(char *), sizeof(uint8_t));
+	printf("size of euler %ld, size of symbol_table %ld, sizeof token table %ld\n",
+	       sizeof(euler), sizeof(euler.symbol_table), sizeof(token_t));
 	while (1) {
 		uint8_t i = 0;
 		char ch = 0;
@@ -30,7 +32,7 @@ int main(int argc, char const **argv)
 		euler.ascii = query;
 		parse_query(&euler);
 		if (euler.type == FRACTION)
-			printf("result : %f\n", euler.resultn.fraction);
+			printf("result : %.15f\n", euler.resultn.fraction);
 		else if (euler.type == BINARY) {
 			printf("result : ");
 			for (c = 31; c >= 0; c--) {

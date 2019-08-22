@@ -2,20 +2,28 @@
 #include "tokenizer.h"
 #include <stdio.h>
 
-/* Just change of notation */
-#define parse Parse
-#define parse_free ParseFree
-#define parse_alloc ParseAlloc
-
-void *ParseAlloc(void);
-void Parse(void *, int, double, ersl_t *);
-void ParseFree(void *);
-
-#define FILL_LEX(q) YYCURSOR = q
-
 char *YYCURSOR;
 
-static int lex(void)
+#define TOKENIZE_AND_FILL_ST(query, e)                                         \
+	init_parser(e, query);                                                 \
+	while (lex(&(e->symbol_table)) != EOQ)
+
+#define PUSH_TOKEN_STREAM_TO_PARSER(st, e, p)                                  \
+	token = 0;                                                             \
+	while (token != EOQ) {                                                 \
+		token = st_get_next_token(st, p);                              \
+		parse(parser, token, st_get_number(st), e);                    \
+	}                                                                      \
+	FINISH_PARSING(e)
+
+#define FINISH_PARSING(e) parse(parser, 0, 0, e)
+
+void fill_lex(char *q)
+{
+	YYCURSOR = q;
+}
+
+int lex(symbol_table_t *symbol_table)
 {
 	char *YYMARKER;
 
@@ -34,89 +42,91 @@ static int lex(void)
 
 
 	// Verbs.
-		"to" { return symbol_table_append(TO, YYCURSOR); }
+		"to" { return st_append(symbol_table, TO, YYCURSOR, __no_priority); }
 
 	// Iterated Functions.
 
-		"sum" { return symbol_table_append(SIGMA, YYCURSOR); }
+		"sum" { return st_append(symbol_table, SIGMA, YYCURSOR, __func_begin); }
+		"prod" { return st_append(symbol_table, PROD, YYCURSOR, __func_begin); }
 
 	// Number Defs. and Constants
 
-		"pi" { return symbol_table_append(PI, YYCURSOR); }
-		("e")  { return symbol_table_append(E, YYCURSOR); }
+		"pi" { return st_append(symbol_table, PI, YYCURSOR, __no_priority); }
+		("e")  { return st_append(symbol_table, E, YYCURSOR, __no_priority); }
 
-		int  { return symbol_table_append(INT, YYCURSOR); }
-		float  { return symbol_table_append(FLOAT, YYCURSOR); }
-		letter  { return symbol_table_append(LETTER, YYCURSOR); }
+		int  { return st_append(symbol_table, INT, YYCURSOR, __no_priority); }
+		float  { return st_append(symbol_table, FLOAT, YYCURSOR, __no_priority); }
+		letter  { return st_append(symbol_table, LETTER, YYCURSOR, __no_priority); }
 
 	// Arithmetic Operator and Misc. Defs.
 
-		"+"  { return symbol_table_append(PLUS, YYCURSOR); }
-		"-"  { return symbol_table_append(MINUS, YYCURSOR);  }
-		"*"  { return symbol_table_append(MULT, YYCURSOR); }
-		"/"  { return symbol_table_append(DIV, YYCURSOR); }
-		"^"  { return symbol_table_append(EXP, YYCURSOR); }
-		"!"  { return symbol_table_append(FACT, YYCURSOR); }
-		"#"  { return symbol_table_append(MOD, YYCURSOR); }
-		"("  { return symbol_table_append(LPAREN, YYCURSOR); }
-		")"  { return symbol_table_append(RPAREN, YYCURSOR); }
-		","  { return symbol_table_append(COMMA, YYCURSOR); }
-		"="  { return symbol_table_append(EQ, YYCURSOR); }
+		"+"  { return st_append(symbol_table, PLUS, YYCURSOR, __no_priority); }
+		"-"  { return st_append(symbol_table, MINUS, YYCURSOR, __no_priority);  }
+		"*"  { return st_append(symbol_table, MULT, YYCURSOR, __no_priority); }
+		"/"  { return st_append(symbol_table, DIV, YYCURSOR, __no_priority); }
+		"^"  { return st_append(symbol_table, EXP, YYCURSOR, __no_priority); }
+		"!"  { return st_append(symbol_table, FACT, YYCURSOR, __no_priority); }
+		"#"  { return st_append(symbol_table, MOD, YYCURSOR, __no_priority); }
+		"("  { return st_append(symbol_table, LPAREN, YYCURSOR, __no_priority); }
+		")"  { return st_append(symbol_table, RPAREN, YYCURSOR, __no_priority); }
+		","  { return st_append(symbol_table, COMMA, YYCURSOR, __no_priority); }
+		"="  { return st_append(symbol_table, EQ, YYCURSOR, __no_priority); }
 
 	// Boolean Operators
 
-		"&"  { return symbol_table_append(AND, YYCURSOR); }
-		"|"  { return symbol_table_append(OR, YYCURSOR); }
-		"~"  { return symbol_table_append(NOT, YYCURSOR); }
-		"(+)" { return symbol_table_append(XOR, YYCURSOR); }
+		"&"  { return st_append(symbol_table, AND, YYCURSOR, __no_priority); }
+		"|"  { return st_append(symbol_table, OR, YYCURSOR, __no_priority); }
+		"~"  { return st_append(symbol_table, NOT, YYCURSOR, __no_priority); }
+		"(+)" { return st_append(symbol_table, XOR, YYCURSOR, __no_priority); }
 
 	// Binary Relations
 
-		"<" { return symbol_table_append(SMALLER, YYCURSOR); }
-		">" { return symbol_table_append(GREATER, YYCURSOR); }
-		"==" { return symbol_table_append(ISEQ, YYCURSOR); }
-		"&&" { return symbol_table_append(BAND, YYCURSOR); }
-		"||" { return symbol_table_append(BOR, YYCURSOR); }
+		"<" { return st_append(symbol_table, SMALLER, YYCURSOR, __no_priority); }
+		">" { return st_append(symbol_table, GREATER, YYCURSOR, __no_priority); }
+		"==" { return st_append(symbol_table, ISEQ, YYCURSOR, __no_priority); }
+		"&&" { return st_append(symbol_table, BAND, YYCURSOR, __no_priority); }
+		"||" { return st_append(symbol_table, BOR, YYCURSOR, __no_priority); }
 
 	// System Defs.
 
-		"\x00"  { return symbol_table_append(EOQ, YYCURSOR); }
-		* { return symbol_table_append(UNKNOWN, YYCURSOR); }
+		"\x00"  { return st_append(symbol_table, EOQ, YYCURSOR, __no_priority); }
+		* { return st_append(symbol_table, UNKNOWN, YYCURSOR, __no_priority); }
 
 	*/
 }
 
-static void clear_ersl(ersl_t *ersl)
+void init_parser(ersl_t *euler, char *q)
 {
-	/* reset euler result */
-	ersl->status = 0;
-	ersl->type = 0;
-	//ersl->resultn.fraction = 0;
+	euler->status = NONE;
+	euler->type = 0;
+	euler->resultn.fraction = 0;
+	st_init(&(euler->symbol_table), q);
+	fill_lex(q);
 }
 
-void parse_query(ersl_t *ersl)
+void parse_query(ersl_t *euler)
 {
-	void *parser;
-	char tmp[MAX_QUERY_LENGTH];
+	uint8_t token = 0;
+	void *parser = parse_alloc();
+	char _query_internal[MAX_QUERY_LENGTH];
+	char number[MAX_QUERY_LENGTH];
+	char final_query[MAX_QUERY_LENGTH];
+	init_parser(euler, euler->ascii);
 
-	parser = parse_alloc();
+	/* Create symbol table */
+	TOKENIZE_AND_FILL_ST(euler->ascii, euler);
 
-	clear_ersl(ersl);
-	symbol_table_clear();
+	while (st_markdown_func(&(euler->symbol_table), _query_internal)) {
+		PUSH_TOKEN_STREAM_TO_PARSER(&(euler->symbol_table), euler, 1);
 
-	FILL_LEX(ersl->ascii);
+		ftoa(euler->resultn.fraction, number, DOUBLE_PRECISION);
+		str_replace(euler->ascii, _query_internal, number, final_query);
+		_strcpy(euler->symbol_table.token[0].p, final_query,
+			MAX_QUERY_LENGTH);
 
-	symbol_table_init(ersl->ascii);
-
-	//printf("token \t| string \t| float\nrsv \t| NULL \t\t|NaN\n");
-	while (lex() != EOQ) {
-		parse(parser, get_last_matched_token(), get_if_number(), ersl);
-		get_last_token_string(tmp);
-		printf("%d \t| %s \t\t|%f\n", get_last_matched_token(), tmp,
-		       get_if_number());
+		TOKENIZE_AND_FILL_ST(euler->ascii, euler);
+		//st_print(&(euler->symbol_table));
 	}
 
-	parse(parser, EOQ, 0, ersl);
-	parse(parser, 0, 0, ersl);
-	parse_free(parser);
+	PUSH_TOKEN_STREAM_TO_PARSER(&(euler->symbol_table), euler, 0);
 }

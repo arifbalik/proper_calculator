@@ -6,12 +6,16 @@
 #include "_itoa.h"
 #include "_strcpy.h"
 #include "_strlen.h"
+#include "_strstr.h"
 #include "strplace.h"
 #include <stdio.h>
 
 #ifndef NULL
 #define NULL ((void *)0)
 #endif
+
+#define DOUBLE_PRECISION 10
+
 /* Error defs. */
 typedef enum {
 	NONE = 255,
@@ -61,7 +65,10 @@ typedef struct {
 	numerical_t resultn; /* Numerical results will be stored here */
 	estatus_t status; /* Developer can use this to debug the engine */
 	char *ascii; /* The query */
+	double (*func)(void);
+	symbol_table_t symbol_table;
 
-} ersl_t;
+} __attribute__((packed)) ersl_t;
 
 void parse_query(ersl_t *ersl);
+void euler_init(void);

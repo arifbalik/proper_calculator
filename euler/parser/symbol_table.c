@@ -1,91 +1,41 @@
-#include "../inc/euler.h"
+
 #include "grammar.h"
+#include "tokenizer.h"
 #include <stdio.h>
 
-static symbol_table_t symbol_table[MAX_QUERY_LENGTH];
-static uint8_t table_index = 0;
+#define _TABLE_OVERFLOW(i, top) (i >= top)
+#define _END_OF_TABLE(i, top) (i == top)
 
-void symbol_table_init(char *addr)
+/* Find the begginning of partial expression by looking the modulus (every
+ * partial expression beggining has an odd number).
+ * Return 0 if nothing is found.
+ */
+static uint8_t st_get_partial_index(symbol_table_t *symbol_table)
 {
-	symbol_table[0].p = addr;
-	symbol_table[0].token = 0;
+	uint8_t idx = symbol_table->cur;
+
+	while ((symbol_table->token[idx].priority % 2) == 0 && idx > 0) {
+		idx--;
+	}
+	return idx;
 }
 
-void symbol_table_clear(void)
+/* Initialize all the members of symbol_table to their defult values */
+static void st_clear(symbol_table_t *symbol_table)
 {
 	uint8_t i = MAX_QUERY_LENGTH - 1;
 	while (i >= 0 && i < MAX_QUERY_LENGTH) {
-		symbol_table[i].token = 0;
-		symbol_table[i].p = NULL;
+		symbol_table->token[i].no = 0;
+		symbol_table->token[i].priority = 0;
+		symbol_table->token[i].p = NULL;
 		i--;
 	}
+	symbol_table->top = 0;
+	symbol_table->cur = 0;
 }
 
-int8_t symbol_table_get(uint8_t idx, char *addr)
-{
-	if (symbol_table[idx].p == NULL) {
-		return -1;
-	}
-
-	addr = symbol_table[idx].p;
-
-	return symbol_table[idx].token;
-}
-int8_t symbol_table_append(uint8_t token, char *addr)
-{
-	table_index++;
-
-	if (table_index >= MAX_QUERY_LENGTH) {
-		return -1;
-	}
-
-	symbol_table[table_index].token = token;
-	symbol_table[table_index].p = addr;
-
-	/* EOQ check */
-	if (token == EOQ) {
-		table_index = 0;
-		return EOQ;
-	}
-
-	return token;
-}
-
-int8_t get_last_matched_token(void)
-{
-	return symbol_table[table_index].token;
-}
-
-int8_t get_token(uint8_t idx)
-{
-	return symbol_table[idx].token;
-}
-
-double get_if_number(void)
-{
-	char sval[MAX_QUERY_LENGTH];
-
-	if (symbol_table[table_index].token != INT &&
-	    symbol_table[table_index].token != FLOAT) {
-		return 0;
-	}
-
-	if (table_index >= 1) {
-		get_last_token_string(sval);
-		return _atof(sval);
-	}
-
-	else
-		return 0;
-}
-
-void get_last_token_string(char *target)
-{
-	get_string(target, symbol_table[table_index - 1].p,
-		   (uint8_t)(symbol_table[table_index].p -
-			     symbol_table[table_index - 1].p));
-}
-void get_string(char *target, char *p, uint8_t n)
+static void st_get_string(symbol_table_t *symbol_table, char *target, char *p,
+			  uint8_t n)
 {
 	uint8_t idx = 0;
 
@@ -97,57 +47,222 @@ void get_string(char *target, char *p, uint8_t n)
 	*(target + idx) = '\0';
 }
 
-uint8_t count_token(uint8_t token)
+/* Clear symbol_table and load first index with beggining of the query address */
+void st_init(symbol_table_t *symbol_table, char *addr)
 {
-	uint8_t idx = table_index;
+	st_clear(symbol_table);
+	symbol_table->token[0].p = addr;
+	symbol_table->token[0].no = 0;
+	symbol_table->token[0].priority = 0;
+	symbol_table->cur = 0;
+	symbol_table->top = 0;
+}
+
+/* Finds the end of the function in the query if any.
+ * By the syntax rules, every function expression has paranthesis,
+ * so this function finds the __func_begin priority flag and searches for
+ * RPAREN and marks RPAREN token index as __func_end. If no function expression,
+ * or any paranthesis found it returns zero.
+ * If marking process is successful function loads marked expression in query.
+ * This function should be called until it returns 0 to markdown every
+ * function expression. And for every successful call, parser should be called,
+ * since current position is changed to marked expression in every call.
+ */
+uint8_t st_markdown_func(symbol_table_t *symbol_table, char *query)
+{
+	uint8_t idx = 0, pcount = 0;
+	char *from, *to;
+
+	/* Search for lastly marked position and continue from tehre */
+	idx = symbol_table->top;
+	while (symbol_table->token[idx].priority != __func_end && idx > 0) {
+		idx--;
+	}
+
+	/* find if any marked function declaration */
+	while (symbol_table->token[idx].priority != __func_begin) {
+		idx++;
+		if (_END_OF_TABLE(idx, symbol_table->top)) {
+			return 0;
+		}
+	}
+
+	/* set cur for partial parsing, when next token is required it will return
+	 * the token from the marked posiiton */
+	st_set_cur(symbol_table, idx - 1);
+	from = symbol_table->token[idx - 1].p;
+	idx++;
+	pcount = 0; /* look for one RPAREN. For this, next token shpuld be,
+	of course a LPAREN */
+	while (!_TABLE_OVERFLOW(idx, symbol_table->top)) {
+		/* if there is another LPAREN then ignore the next RPAREN */
+		if (symbol_table->token[idx].no == LPAREN) {
+			pcount++;
+		}
+		if (symbol_table->token[idx].no == RPAREN) {
+			pcount--;
+		}
+		if (pcount == 0)
+			break;
+		idx++;
+	}
+	if (pcount != 0)
+		return 0;
+
+	to = symbol_table->token[idx].p;
+	symbol_table->token[idx].priority = __func_end;
+
+	st_get_string(symbol_table, query, from, (uint8_t)(to - from));
+
+	return 1; /* call again */
+}
+
+void st_print(symbol_table_t *symbol_table)
+{
+	uint8_t idx = 1;
+	char s[MAX_QUERY_LENGTH];
+	printf("Symbol Table. Entry : %d\n", symbol_table->top);
+	printf("token\t |addr\t\t| str \t| priority\n");
+	while (idx <= symbol_table->top) {
+		st_get_string(symbol_table, s, symbol_table->token[idx - 1].p,
+			      (uint8_t)(symbol_table->token[idx].p -
+					symbol_table->token[idx - 1].p));
+		printf("%d\t |%p\t| %s \t| %d\n", symbol_table->token[idx].no,
+		       symbol_table->token[idx].p, s,
+		       symbol_table->token[idx].priority);
+		idx++;
+	}
+}
+
+/* Append new token to the symbol_table along with the beggining of the address
+ * of matched token and priority if any. It returns token no on success and
+ * zero if table is full.
+ */
+uint8_t st_append(symbol_table_t *symbol_table, uint8_t token, char *addr,
+		  int8_t priority)
+{
+	symbol_table->top++;
+
+	if (_TABLE_OVERFLOW(symbol_table->top, MAX_QUERY_LENGTH)) {
+		return 0;
+	}
+
+	symbol_table->token[symbol_table->top].no = token;
+	symbol_table->token[symbol_table->top].p = addr;
+	symbol_table->token[symbol_table->top].priority = priority;
+
+	return token;
+}
+
+/* Returns the next token in the table. Next token is determined by cur member
+ * of symbol_table struct.
+ */
+uint8_t st_get_next_token(symbol_table_t *symbol_table, uint8_t ispartial)
+{
+	if (ispartial &&
+	    (symbol_table->token[symbol_table->cur].priority % 2) == 0 &&
+	    symbol_table->token[symbol_table->cur].priority != 0) {
+		return EOQ;
+	}
+	st_set_cur(symbol_table, symbol_table->cur + 1);
+
+	return symbol_table->token[symbol_table->cur].no;
+}
+
+/* returns the current token value if its a number */
+double st_get_number(symbol_table_t *symbol_table)
+{
+	char sval[MAX_QUERY_LENGTH];
+
+	if (symbol_table->token[symbol_table->cur].no != INT &&
+	    symbol_table->token[symbol_table->cur].no != FLOAT) {
+		return 0;
+	}
+
+	if (symbol_table->cur >= 1) {
+		st_get_token_string(symbol_table, sval);
+		return _atof(sval);
+	}
+
+	else
+		return 0;
+}
+
+/* returns the current token string */
+void st_get_token_string(symbol_table_t *symbol_table, char *target)
+{
+	if (symbol_table->token[symbol_table->cur].no == EOQ) {
+		_strcpy(target, "(null)", MAX_QUERY_LENGTH);
+		return;
+	}
+	if (symbol_table->cur == 0)
+		return;
+	st_get_string(symbol_table, target,
+		      symbol_table->token[symbol_table->cur - 1].p,
+		      (uint8_t)(symbol_table->token[symbol_table->cur].p -
+				symbol_table->token[symbol_table->cur - 1].p));
+}
+
+/* Counts how many times a token occurerd in the table */
+uint8_t st_count_token(symbol_table_t *symbol_table, uint8_t token)
+{
+	uint8_t idx = symbol_table->top;
 	uint8_t count = 0;
 
 	while (idx--) {
-		if (symbol_table[idx].token == token)
+		if (symbol_table->token[idx].no == token)
 			count++;
 	}
 	return count;
 }
 
-char get_letter(void)
+/* returns the current token value if its a letter */
+char st_get_letter(symbol_table_t *symbol_table)
 {
-	uint8_t idx = 0;
+	uint8_t idx = symbol_table->cur;
 	char letter = '\0';
 
-	while (symbol_table[idx].token != LETTER)
-		idx++;
+	while (symbol_table->token[idx].no != LETTER && idx > 0)
+		idx--;
 
-	letter = symbol_table[idx].p[-1];
+	letter = symbol_table->token[idx].p[-1];
 
 	return letter;
 }
 
-void get_string_between_tokens(uint8_t ftoken, uint8_t ltoken, char *s)
+void st_get_string_between_tokens(symbol_table_t *symbol_table, uint8_t ftoken,
+				  uint8_t ltoken, char *s, uint8_t ispartial)
 {
-	uint8_t idx = 0;
-	char *addr_begin = NULL, *addr_end = NULL, *addr_temp = NULL;
+	uint8_t idx = (ispartial) ? st_get_partial_index(symbol_table) :
+				    symbol_table->cur;
+	char *addr_begin = NULL, *addr_end = NULL;
 
-	while (symbol_table[idx].token != ftoken)
+	while (symbol_table->token[idx].no != ftoken)
 		idx++;
 
-	if (symbol_table[idx].token != ftoken)
+	if (symbol_table->token[idx].no != ftoken)
 		return;
 
-	addr_begin = symbol_table[idx].p;
+	addr_begin = symbol_table->token[idx].p;
 
-	while (symbol_table[idx].token != ltoken)
+	while (symbol_table->token[idx].no != ltoken)
 		idx++;
 
-	if (symbol_table[idx].token != ltoken)
+	if (symbol_table->token[idx].no != ltoken)
 		return;
 
-	addr_end = symbol_table[idx].p - 1;
+	addr_end = symbol_table->token[idx].p - 1;
 
-	addr_temp = addr_begin;
-	idx = 0;
-	while ((addr_temp + idx) < addr_end) {
-		*(s + idx) = *(addr_temp + idx);
-		idx++;
-	}
-	*(s + idx) = '\0';
+	st_get_string(symbol_table, s, addr_begin,
+		      (uint8_t)(addr_end - addr_begin));
+}
+
+void st_set_cur(symbol_table_t *symbol_table, uint8_t idx)
+{
+	symbol_table->cur = idx;
+}
+
+void st_reset_cur(symbol_table_t *symbol_table)
+{
+	symbol_table->cur = 0;
 }
