@@ -8,7 +8,12 @@
 #include "_strlen.h"
 #include "_strstr.h"
 #include "strplace.h"
+
+//#define UNIX
+
+#ifdef UNIX
 #include <stdio.h>
+#endif
 
 #ifndef NULL
 #define NULL ((void *)0)

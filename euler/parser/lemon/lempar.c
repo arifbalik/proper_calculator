@@ -22,7 +22,6 @@
 ** The following is the concatenation of all %include directives from the
 ** input grammar file:
 */
-#include <stdio.h>
 #include <assert.h>
 /************ Begin %include sections from the grammar ************************/
 %%

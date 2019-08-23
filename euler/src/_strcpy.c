@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include "../inc/euler.h"
 
 char *_strcpy(char *tar, char *dest, uint8_t max)
 {

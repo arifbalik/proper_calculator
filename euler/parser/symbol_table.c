@@ -24,11 +24,13 @@ static uint8_t st_get_partial_index(symbol_table_t *symbol_table)
 static void st_clear(symbol_table_t *symbol_table)
 {
 	uint8_t i = MAX_QUERY_LENGTH - 1;
-	while (i >= 0 && i < MAX_QUERY_LENGTH) {
+	while (i < MAX_QUERY_LENGTH) {
 		symbol_table->token[i].no = 0;
 		symbol_table->token[i].priority = 0;
 		symbol_table->token[i].p = NULL;
 		i--;
+		if (i == 0)
+			break;
 	}
 	symbol_table->top = 0;
 	symbol_table->cur = 0;
@@ -119,6 +121,7 @@ uint8_t st_markdown_func(symbol_table_t *symbol_table, char *query)
 
 void st_print(symbol_table_t *symbol_table)
 {
+#ifdef UNIX
 	uint8_t idx = 1;
 	char s[MAX_QUERY_LENGTH];
 	printf("Symbol Table. Entry : %d\n", symbol_table->top);
@@ -132,6 +135,7 @@ void st_print(symbol_table_t *symbol_table)
 		       symbol_table->token[idx].priority);
 		idx++;
 	}
+#endif
 }
 
 /* Append new token to the symbol_table along with the beggining of the address

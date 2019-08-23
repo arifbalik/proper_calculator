@@ -98,14 +98,15 @@ int console_gets(char *s, int len)
 
 int main(void)
 {
-	char buf[128], print[128];
-	ersl_t result;
+	char buf[MAX_QUERY_LENGTH];
+	ersl_t euler;
 	clock_setup();
 	usart_setup();
 
 	while (1) {
 		if (console_gets(buf, 128)) {
-			parse_query(buf, &result);
+			euler.ascii = buf;
+			parse_query(&euler);
 		}
 	}
 }

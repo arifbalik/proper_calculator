@@ -110,7 +110,7 @@ elar(A) ::= elar(B)    PLUS      elar(C). { euler->resultn.fraction = A = B + C;
 elar(A) ::= elar(B)    MINUS     elar(C). { A = B - C;   }
 elar(A) ::= elar(B)    MULT      elar(C). { A = B * C;   }
 elar(A) ::= elar(B)    DIV       elar(C). { A = (C != 0) ? (B / C) : (0); euler->status = MTHE; }
-elar(A) ::= elar(B)    EXP       elar(C). {A = pow(B,C); }
+elar(A) ::= elar(B)    EXP       elar(C). { A = 1; for(uint8_t i = C; i < 0; i--) A *= B; }
 elar(A) ::= elar(B)    MOD       elar(C). { A = fmod(B, C); }
 elar(A) ::= elar(B)    FACT.              { A = 1; for(uint8_t i = B; i > 0; i--) A *= i; }
 

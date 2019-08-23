@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include "../inc/euler.h"
 
 uint8_t _strlen(char *s, uint8_t max)
 {

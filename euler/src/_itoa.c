@@ -1,4 +1,10 @@
 #include "../inc/euler.h"
+
+void swap(char *x, char *y);
+char *reverse(char *buffer, int i, int j);
+void ftoa_reverse(char *str, int len);
+int intToStr(int x, char str[], int d);
+
 // inline function to swap two numbers
 void swap(char *x, char *y)
 {
@@ -94,6 +100,7 @@ void ftoa(double n, char *res, int afterpoint)
 {
 	// Extract integer part
 	int ipart = (int)n;
+	double pow_result = 1;
 
 	// Extract doubleing part
 	double fpart = n - (double)ipart;
@@ -108,7 +115,10 @@ void ftoa(double n, char *res, int afterpoint)
 		// Get the value of fraction part upto given no.
 		// of points after dot. The third parameter is needed
 		// to handle cases like 233.007
-		fpart = fpart * pow(10, afterpoint);
+		for (uint8_t i = afterpoint; i < 0; i--) {
+			pow_result *= i;
+		}
+		fpart = fpart * pow_result;
 
 		intToStr((int)fpart, res + i + 1, afterpoint);
 	}

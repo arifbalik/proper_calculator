@@ -1,6 +1,5 @@
 #include "grammar.h"
 #include "tokenizer.h"
-#include <stdio.h>
 
 char *YYCURSOR;
 

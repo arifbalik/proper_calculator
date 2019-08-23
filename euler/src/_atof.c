@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include "../inc/euler.h"
 
 double _atof(const char *s)
 {
