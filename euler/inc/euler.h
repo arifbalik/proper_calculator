@@ -2,6 +2,7 @@
 #include <stdint.h>
 #define MAX_QUERY_LENGTH 80
 #include "../parser/symbol_table.h"
+#include "../parser/ast.h"
 #include "_atof.h"
 #include "_itoa.h"
 #include "_strcpy.h"
