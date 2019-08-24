@@ -27,7 +27,7 @@ void strplace(char *s, char *dest, char old, int number)
 }
 char *str_replace(char *s, char *oldW, char *newW, char *result)
 {
-	int i, cnt = 0;
+	int i;
 	int newWlen = _strlen(newW, MAX_QUERY_LENGTH);
 	int oldWlen = _strlen(oldW, MAX_QUERY_LENGTH);
 
@@ -35,8 +35,6 @@ char *str_replace(char *s, char *oldW, char *newW, char *result)
 	// occur in the string
 	for (i = 0; s[i] != '\0'; i++) {
 		if (_strstr(&s[i], oldW) == &s[i]) {
-			cnt++;
-
 			// Jumping to index after the old word.
 			i += oldWlen - 1;
 		}
