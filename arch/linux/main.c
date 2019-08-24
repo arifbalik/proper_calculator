@@ -10,9 +10,11 @@ int main(int argc, char const **argv)
 	char query[LINE + 1] = { '\0' };
 	ersl_t euler;
 	int c, k;
-	printf("char * %ld, uint8_t %ld\n", sizeof(char *), sizeof(uint8_t));
+	printf("char * %ld, uint8_t %ld\n", (long)sizeof(char *),
+	       (long)sizeof(uint8_t));
 	printf("size of euler %ld, size of symbol_table %ld, sizeof token table %ld\n",
-	       sizeof(euler), sizeof(euler.symbol_table), sizeof(token_t));
+	       (long)sizeof(euler), (long)sizeof(euler.symbol_table),
+	       (long)sizeof(token_t));
 	while (1) {
 		uint8_t i = 0;
 		char ch = 0;
