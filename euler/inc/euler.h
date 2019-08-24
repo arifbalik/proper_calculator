@@ -1,15 +1,25 @@
 #include <math.h>
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdint.h>
-#include "variables.h"
-#include "function.h"
-#include "const.h"
-#include "trig.h"
+#define MAX_QUERY_LENGTH 80
+#include "../parser/symbol_table.h"
+#include "_atof.h"
+#include "_itoa.h"
+#include "_strcpy.h"
+#include "_strlen.h"
+#include "_strstr.h"
+#include "strplace.h"
 
-#define MAX_QUERY_SIZE 20
+//#define UNIX
+
+#ifdef UNIX
+#include <stdio.h>
+#endif
+
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
+
+#define DOUBLE_PRECISION 10
 
 /* Error defs. */
 typedef enum {
@@ -19,15 +29,14 @@ typedef enum {
 	 * Usually lexer uses them.
 	 */
 	_PDONE, /* Parse Done */
-	_PINP, /* Parse In Proggress */
-	_PERR, /* Parse Error */
-	_APQ, /* Append To New Query */
+	_PAGAIN, /* Parse Again */
 
 	_FEX, /* Function Expand */
 
 	/* Euler std. errors */
-	MTHE = CHAR_MIN, /* Math Error */
+	MTHE = -128, /* Math Error */
 	EMPTYQ, /* Empty Query */
+	SYMNF, /* Symbol Not Found */
 
 	/* Variable errors */
 	MXVQ, /* Max Variable Quantity Has Been Reaced */
@@ -40,10 +49,12 @@ typedef enum {
 } estatus_t;
 
 typedef enum {
-	NO_RESULT = CHAR_MIN,
+	NO_RESULT = -128,
 	FN_EVAL,
 	INTEGER,
 	FRACTION,
+	BINARY,
+	BOOL,
 	MATRIX
 } etype_t;
 
@@ -52,15 +63,17 @@ typedef union {
 	double fraction;
 	double **matrix;
 	char *var;
-	fn_eval_table fn_eval[20];
 } numerical_t;
 
 typedef struct {
 	etype_t type; /* Developer should check this type before any action */
 	numerical_t resultn; /* Numerical results will be stored here */
 	estatus_t status; /* Developer can use this to debug the engine */
+	char *ascii; /* The query */
+	double (*func)(void);
+	symbol_table_t symbol_table;
 
-} ersl_t;
+} __attribute__((packed)) ersl_t;
 
-void parse_query(char *query, ersl_t *ersl);
-char *serr(int8_t err);
+void parse_query(ersl_t *ersl);
+void euler_init(void);

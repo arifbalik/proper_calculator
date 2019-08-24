@@ -4,12 +4,10 @@ MCU?=
 CMD?= -i
 
 SRC=euler/parser
-PARSER=$(SRC)/parser
-LEXER=$(SRC)/lexer
+PARSER=$(SRC)/grammar
+LEXER=$(SRC)/tokenizer
 
 BUILD_DIR = build
-
-C_FILES= euler/src/variables.c $(LEXER).c $(PARSER).c
 
 all: $(PARSER).c $(LEXER).c
 	cd arch/$(ARCH)/$(MCU) && $(MAKE)
@@ -20,12 +18,11 @@ $(LEXER).c : $(PARSER).c
 
 $(PARSER).c: clean
 	@echo "Compiling the parser.."
-	@lemon -c -s $(PARSER).y
+	@gcc -o  $(SRC)/lemon/lemon $(SRC)/lemon/lemon.c
+	@./$(SRC)/lemon/lemon -s -p $(PARSER).y
 
 clean:
-	rm $(LEXER).c graphviz.txt $(PARSER).c $(PARSER).h $(PARSER).out -rf $(BUILD_DIR)
-	cd arch/arm/stm32f103c8 && $(MAKE) $(CMD) clean
-	cd arch/arm/stm32f746ng && $(MAKE) $(CMD) clean
+	rm $(LEXER).c graphviz.txt $(PARSER).c $(PARSER).h $(PARSER).out $(SRC)/lemon/lemon -rf $(BUILD_DIR)
 
 graph:
 	re2c -D -o graphviz.txt $(LEXER).re

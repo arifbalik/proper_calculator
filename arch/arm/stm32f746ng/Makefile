@@ -4,10 +4,10 @@ EULER_DIR = ../../../euler
 BUILD_DIR = ../../../build
 PROJECT = $(BUILD_DIR)/$(MCU)
 
-
 SHARED_DIR = $(BUILD_DIR)
-CFILES =   $(EULER_DIR)/src/variables.c $(EULER_DIR)/src/function.c $(EULER_DIR)/src/error.c $(EULER_DIR)/parser/parser.c $(EULER_DIR)/parser/lexer.c $(MCU).c
-AFILES +=
+CSTD = -std=c11
+CFILES += $(EULER_DIR)/src/_atof.c $(EULER_DIR)/src/_itoa.c $(EULER_DIR)/src/_strcpy.c $(EULER_DIR)/src/_strlen.c $(EULER_DIR)/src/_strstr.c $(EULER_DIR)/src/strplace.c $(EULER_DIR)/parser/grammar.c $(EULER_DIR)/parser/tokenizer.c $(EULER_DIR)/parser/symbol_table.c $(MCU).c
+INCLUDES += -I$(EULER_DIR)/inc -I$(EULER_DIR)/parser
 
 LDLIBS += -lm
 
