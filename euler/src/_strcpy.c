@@ -4,7 +4,7 @@ char *_strcpy(char *tar, char *dest, uint8_t max)
 {
 	uint8_t idx = 0;
 
-	while (*(dest + idx) != '\0' && idx < max) {
+	while (idx < max && *(dest + idx) != '\0') {
 		*(tar + idx) = *(dest + idx);
 		idx++;
 	}
