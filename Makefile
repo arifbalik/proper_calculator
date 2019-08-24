@@ -19,7 +19,7 @@ $(LEXER).c : $(PARSER).c
 $(PARSER).c: clean
 	@echo "Compiling the parser.."
 	@gcc -o  $(SRC)/lemon/lemon $(SRC)/lemon/lemon.c
-	@./$(SRC)/lemon/lemon -c -s -p $(PARSER).y
+	@./$(SRC)/lemon/lemon -s -p $(PARSER).y
 
 clean:
 	rm $(LEXER).c graphviz.txt $(PARSER).c $(PARSER).h $(PARSER).out $(SRC)/lemon/lemon -rf $(BUILD_DIR)

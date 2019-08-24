@@ -205,7 +205,7 @@ typedef struct yyStackEntry yyStackEntry;
 
 /* The state of the parser is completely contained in an instance of
 ** the following structure */
-struct yyParser {
+typedef struct yyParser {
   yyStackEntry *yytos;          /* Pointer to top element of the stack */
 #ifdef YYTRACKMAXSTACKDEPTH
   int yyhwm;                    /* High-water mark of the stack */
@@ -223,8 +223,8 @@ struct yyParser {
   yyStackEntry yystack[YYSTACKDEPTH];  /* The parser's stack */
   yyStackEntry *yystackEnd;            /* Last entry in the stack */
 #endif
-};
-typedef struct yyParser yyParser;
+} yyParser;
+
 
 #ifndef NDEBUG
 #include <stdio.h>
