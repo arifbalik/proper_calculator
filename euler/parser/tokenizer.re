@@ -1,5 +1,10 @@
 #include "grammar.h"
 #include "tokenizer.h"
+#include "symbol_table.h"
+#include "../inc/_atof.h"
+#include "../inc/_itoa.h"
+#include "../inc/_strcpy.h"
+#include "../inc/strplace.h"
 
 char *YYCURSOR;
 
@@ -11,11 +16,11 @@ char *YYCURSOR;
 	token = 0;                                                             \
 	while (token != EOQ) {                                                 \
 		token = st_get_next_token(st, p);                              \
-		parse(parser, token, st_get_number(st), e);                    \
+		parse(parser, token, NULL, e);                                 \
 	}                                                                      \
 	FINISH_PARSING(e)
 
-#define FINISH_PARSING(e) parse(parser, 0, 0, e)
+#define FINISH_PARSING(e) parse(parser, 0, NULL, e)
 
 void fill_lex(char *q)
 {
@@ -114,6 +119,7 @@ void parse_query(ersl_t *euler)
 
 	/* Create symbol table */
 	TOKENIZE_AND_FILL_ST(euler->ascii, euler);
+	ParseTrace(stdout, "parser >>");
 
 	while (st_markdown_func(&(euler->symbol_table), _query_internal)) {
 		PUSH_TOKEN_STREAM_TO_PARSER(&(euler->symbol_table), euler, 1);

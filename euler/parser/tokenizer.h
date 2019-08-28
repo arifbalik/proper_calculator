@@ -1,5 +1,6 @@
 #ifndef __LEXER__
 #define __LEXER__
+
 #include "../inc/euler.h"
 
 /* Just change of notation */
@@ -13,7 +14,8 @@
 #define __func_end 2
 
 void *ParseAlloc(void);
-void Parse(void *, int, double, ersl_t *);
+void ParseTrace(FILE *TraceFILE, char *zTracePrompt);
+void Parse(void *, int, ast_t *, ersl_t *);
 void ParseFree(void *);
 int lex(symbol_table_t *symbol_table);
 void fill_lex(char *q);
