@@ -189,12 +189,13 @@ double st_get_number(symbol_table_t *symbol_table)
 		idx--;
 	}
 
-	st_get_token_string(symbol_table, sval);
+	st_get_token_string(symbol_table, sval, idx);
 	return _atof(sval);
 }
 
 /* returns the current token string */
-void st_get_token_string(symbol_table_t *symbol_table, char *target)
+void st_get_token_string(symbol_table_t *symbol_table, char *target,
+			 uint8_t idx)
 {
 	if (symbol_table->token[symbol_table->cur].no == EOQ) {
 		_strcpy(target, "(null)", MAX_QUERY_LENGTH);
@@ -202,10 +203,9 @@ void st_get_token_string(symbol_table_t *symbol_table, char *target)
 	}
 	if (symbol_table->cur == 0)
 		return;
-	st_get_string(symbol_table, target,
-		      symbol_table->token[symbol_table->cur - 1].p,
-		      (uint8_t)(symbol_table->token[symbol_table->cur].p -
-				symbol_table->token[symbol_table->cur - 1].p));
+	st_get_string(symbol_table, target, symbol_table->token[idx - 1].p,
+		      (uint8_t)(symbol_table->token[idx].p -
+				symbol_table->token[idx - 1].p));
 }
 
 /* Counts how many times a token occurerd in the table */
