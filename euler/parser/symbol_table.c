@@ -1,7 +1,10 @@
 
 #include "grammar.h"
 #include "tokenizer.h"
-#include <stdio.h>
+#include "symbol_table.h"
+#include "../inc/euler.h"
+#include "../inc/_atof.h"
+#include "../inc/_strcpy.h"
 
 #define _TABLE_OVERFLOW(i, top) (i >= top)
 #define _END_OF_TABLE(i, top) (i == top)
@@ -164,7 +167,7 @@ uint8_t st_get_next_token(symbol_table_t *symbol_table, uint8_t ispartial)
 }
 
 /* returns the current token value if its a number, or searches backwards and
- * returns the first found number, otherwise 0
+ * returns the first found number, returns  0 if no number is found.
  */
 double st_get_number(symbol_table_t *symbol_table)
 {
@@ -210,7 +213,9 @@ uint8_t st_count_token(symbol_table_t *symbol_table, uint8_t token)
 	return count;
 }
 
-/* returns the current token value if its a letter */
+/* returns the current token value if its a letter, or searches backwards and
+ * returns the first found letter, returns  \0 if no letter is found.
+ */
 char st_get_letter(symbol_table_t *symbol_table)
 {
 	uint8_t idx = symbol_table->cur;
