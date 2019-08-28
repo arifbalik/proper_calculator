@@ -63,7 +63,7 @@ TGT_CPPFLAGS += -MD
 TGT_CPPFLAGS += -Wall -Wundef $(INCLUDES)
 TGT_CPPFLAGS += $(INCLUDES) $(OPENCM3_DEFS)
 
-TGT_CFLAGS += $(OPT) $(CSTD) -ggdb3
+TGT_CFLAGS += $(OPT) $(CSTD) -ggdb3 -nostdlib
 TGT_CFLAGS += $(ARCH_FLAGS)
 TGT_CFLAGS += -fno-common
 TGT_CFLAGS += -ffunction-sections -fdata-sections
