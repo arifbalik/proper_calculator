@@ -36,19 +36,6 @@ static void st_clear(symbol_table_t *symbol_table)
 	symbol_table->cur = 0;
 }
 
-static void st_get_string(symbol_table_t *symbol_table, char *target, char *p,
-			  uint8_t n)
-{
-	uint8_t idx = 0;
-
-	while (n) {
-		*(target + idx) = *(p + idx);
-		idx++;
-		n--;
-	}
-	*(target + idx) = '\0';
-}
-
 /* Clear symbol_table and load first index with beggining of the query address */
 void st_init(symbol_table_t *symbol_table, char *addr)
 {
@@ -114,7 +101,8 @@ uint8_t st_markdown_func(symbol_table_t *symbol_table, char *query)
 	to = symbol_table->token[idx].p;
 	symbol_table->token[idx].priority = __func_end;
 
-	st_get_string(symbol_table, query, from, (uint8_t)(to - from));
+	_strnncpy(query, from, (uint8_t)(to - from));
+	*(query + (uint8_t)(to - from)) = '\0';
 
 	return 1; /* call again */
 }
@@ -127,9 +115,11 @@ void st_print(symbol_table_t *symbol_table)
 	printf("Symbol Table. Entry : %d\n", symbol_table->top);
 	printf("token\t |addr\t\t| str \t| priority\n");
 	while (idx <= symbol_table->top) {
-		st_get_string(symbol_table, s, symbol_table->token[idx - 1].p,
-			      (uint8_t)(symbol_table->token[idx].p -
-					symbol_table->token[idx - 1].p));
+		_strnncpy(s, symbol_table->token[idx - 1].p,
+			  (uint8_t)(symbol_table->token[idx].p -
+				    symbol_table->token[idx - 1].p));
+		*(s + (uint8_t)(symbol_table->token[idx].p -
+				symbol_table->token[idx - 1].p)) = '\0';
 		printf("%d\t |%p\t| %s \t| %d\n", symbol_table->token[idx].no,
 		       symbol_table->token[idx].p, s,
 		       symbol_table->token[idx].priority);
@@ -194,15 +184,17 @@ double st_get_number(symbol_table_t *symbol_table)
 	return _atof(sval);
 }
 
-/* returns the current token string */
+/* returns the given token's string */
 void st_get_token_string(symbol_table_t *symbol_table, char *target,
 			 uint8_t idx)
 {
 	if (idx == 0)
 		return;
-	st_get_string(symbol_table, target, symbol_table->token[idx - 1].p,
-		      (uint8_t)(symbol_table->token[idx].p -
-				symbol_table->token[idx - 1].p));
+	_strnncpy(target, symbol_table->token[idx - 1].p,
+		  (uint8_t)(symbol_table->token[idx].p -
+			    symbol_table->token[idx - 1].p));
+	*(target + (uint8_t)(symbol_table->token[idx].p -
+			     symbol_table->token[idx - 1].p)) = '\0';
 }
 
 /* Counts how many times a token occurerd in the table */
@@ -255,8 +247,8 @@ void st_get_string_between_tokens(symbol_table_t *symbol_table, uint8_t ftoken,
 
 	addr_end = symbol_table->token[idx].p - 1;
 
-	st_get_string(symbol_table, s, addr_begin,
-		      (uint8_t)(addr_end - addr_begin));
+	_strnncpy(s, addr_begin, (uint8_t)(addr_end - addr_begin));
+	*(s + (uint8_t)(addr_end - addr_begin)) = '\0';
 }
 
 void st_set_cur(symbol_table_t *symbol_table, uint8_t idx)
