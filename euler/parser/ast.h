@@ -16,5 +16,7 @@ typedef struct ast {
 } ast_t;
 
 ast_t *ast_add_leaf(ast_t *ast, uint8_t type, void *value);
+ast_t *add_node(ast_t *ast_node, uint8_t type, void *value, ast_t *ast_left,
+		ast_t *ast_right);
 
 #endif /* _AST_ */

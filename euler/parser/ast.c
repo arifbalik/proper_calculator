@@ -1,10 +1,8 @@
 #include "../inc/euler.h"
 #include "grammar.h"
 
-ast_t *ast_add_leaf(ast_t *ast, uint8_t type, void *value)
+static void ast_write_value(ast_t *ast)
 {
-	ast->type = type;
-
 	switch (ast->type) {
 	case INT:
 	case FLOAT:
@@ -17,9 +15,29 @@ ast_t *ast_add_leaf(ast_t *ast, uint8_t type, void *value)
 		return NULL; /* Unsupported type */
 		break;
 	}
+}
+
+ast_t *ast_add_leaf(ast_t *ast, uint8_t type, void *value)
+{
+	ast->type = type;
+
+	ast_write_value(ast);
 
 	ast->left = NULL;
 	ast->right = NULL;
 
 	return ast;
+}
+
+ast_t *add_node(ast_t *ast_node, uint8_t type, void *value, ast_t *ast_left,
+		ast_t *ast_right)
+{
+	ast_node->type = type;
+
+	ast_write_value(ast_node);
+
+	ast_node->left = ast_left;
+	ast_node->right = ast_right;
+
+	return ast_node;
 }
