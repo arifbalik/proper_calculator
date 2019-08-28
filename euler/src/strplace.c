@@ -1,4 +1,8 @@
 #include "../inc/euler.h"
+#include "../inc/_strcpy.h"
+#include "../inc/_strlen.h"
+#include "../inc/_strstr.h"
+#include "../inc/_itoa.h"
 
 void strplace(char *s, char *dest, char old, int number)
 {
