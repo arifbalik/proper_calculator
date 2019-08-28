@@ -190,6 +190,7 @@ double st_get_number(symbol_table_t *symbol_table)
 	}
 
 	st_get_token_string(symbol_table, sval, idx);
+	printf("idx = %d %s\n", idx, sval);
 	return _atof(sval);
 }
 
@@ -197,11 +198,7 @@ double st_get_number(symbol_table_t *symbol_table)
 void st_get_token_string(symbol_table_t *symbol_table, char *target,
 			 uint8_t idx)
 {
-	if (symbol_table->token[symbol_table->cur].no == EOQ) {
-		_strcpy(target, "(null)", MAX_QUERY_LENGTH);
-		return;
-	}
-	if (symbol_table->cur == 0)
+	if (idx == 0)
 		return;
 	st_get_string(symbol_table, target, symbol_table->token[idx - 1].p,
 		      (uint8_t)(symbol_table->token[idx].p -
