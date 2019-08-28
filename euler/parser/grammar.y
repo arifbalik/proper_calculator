@@ -1,12 +1,13 @@
 %include {
 #include <assert.h>
-#include "tokenizer.h"
-#include "grammar.h"
+#include "../inc/euler.h"
 #include "../inc/constant.h"
-
+#include "symbol_table.h"
+#include "grammar.h"
+#include "ast.h"
 }
 
-%token_type { double }
+%token_type { ast_t * }
 %extra_argument { ersl_t *euler }
 %start_symbol   query
 %stack_overflow {printf("stack_overflow\n");}
@@ -14,7 +15,7 @@
 %parse_failure {printf("syntax error\n");}
 
 /* Priorities */
-%nonassoc EQ INT FLOAT UNKNOWN TO SIGMA PROD.
+%nonassoc EQ INT FLOAT UNKNOWN TO SIGMA PROD PI E COMMA.
 %left CONST.
 %left LETTER.
 %left PLUS MINUS.
@@ -31,13 +32,13 @@
 
 /* Elementary Arithmetic */
 query ::= elar(B) EOQ. {
-        euler->resultn.fraction = B;
-        euler->type = FRACTION;
+        ast_print(B);
+        ast_clear(euler);
 }
 
 
 /* Iterated Functions. */
-elar(A) ::= SIGMA LPAREN ANY COMMA LETTER COMMA number(B) COMMA number(C) RPAREN. {
+/* elar(A) ::= SIGMA LPAREN ANY COMMA LETTER COMMA number(B) COMMA number(C) RPAREN. {
 
         char fn[MAX_QUERY_LENGTH];
         char query[MAX_QUERY_LENGTH];
@@ -79,44 +80,43 @@ elar(A) ::= PROD LPAREN ANY COMMA LETTER COMMA number(B) COMMA number(C) RPAREN.
         A = result;
 
 
-}
+} */
 
 
 /* Boolean Operators */
-elar(A) ::= elar(B) AND elar(C). { A = (int)B & (int)C; }
+/*elar(A) ::= elar(B) AND elar(C). { A = (int)B & (int)C; }
 elar(A) ::= elar(B) NOT AND elar(C). { A = ~((int)B & (int)C);  }
 elar(A) ::= elar(B) OR elar(C). { A = (int)B | (int)C; }
 elar(A) ::= elar(B) NOT OR elar(C). { A = ~((int)B | (int)C); }
 elar(A) ::= elar(B) XOR elar(C). { A = ((int)B ^ (int)C); }
 elar(A) ::= elar(B) GREATER GREATER elar(C). { A = ((int)B >> (int)C); }
 elar(A) ::= elar(B) SMALLER SMALLER elar(C). { A = ((int)B << (int)C); }
-elar(A) ::= NOT elar(B). { A =  ~(int)B; }
+elar(A) ::= NOT elar(B). { A =  ~(int)B; }*/
 
 /* Binary Relations */
-elar(A) ::= elar(B) BAND elar(C). { A = ((int)B && (int)C); }
-elar(A) ::= elar(B) BOR elar(C). { A = ((int)B || (int)C); }
-elar(A) ::= elar(B) ISEQ elar(C). { A = ((int)B == (int)C); }
-elar(A) ::= elar(B) GREATER elar(C). { A = ((int)B > (int)C); }
-elar(A) ::= elar(B) SMALLER elar(C). { A = ((int)B < (int)C); }
+elar(A) ::= elar(B) BAND elar(C). {A = ast_add_node(euler, BAND, B, C); }
+elar(A) ::= elar(B) BOR elar(C). { A = ast_add_node(euler, BOR, B, C); }
+elar(A) ::= elar(B) ISEQ elar(C). { A = ast_add_node(euler, ISEQ, B, C); }
+elar(A) ::= elar(B) GREATER elar(C). { A = ast_add_node(euler, GREATER, B, C); }
+elar(A) ::= elar(B) SMALLER elar(C). { A = ast_add_node(euler, SMALLER, B, C); }
 
 /* Elementary Arithmetic */
-elar(A) ::= LETTER. { A = 1; }
-elar(A) ::= number(B).                    { A = B;       }
-elar(A) ::= CONST(B).                     { A = B;       }
-elar(A) ::= MINUS elar(B).                { A = -B;      }
-elar(A) ::= PLUS elar(B).                 { A = B;       }
+elar(A) ::= LETTER. { A = ast_add_leaf(euler, LETTER); }
+elar(A) ::= number(B).                    { A = B; }
+elar(A) ::= MINUS elar(B).                { A = ast_add_node(euler, MINUS, B, NULL); }
+elar(A) ::= PLUS elar(B).                 { A = ast_add_node(euler, PLUS, B, NULL);      }
 elar(A) ::= LPAREN elar(B) RPAREN.        { A = B;       }
-elar(A) ::= elar(B)    PLUS      elar(C). { euler->resultn.fraction = A = B + C;   }
-elar(A) ::= elar(B)    MINUS     elar(C). { A = B - C;   }
-elar(A) ::= elar(B)    MULT      elar(C). { A = B * C;   }
-elar(A) ::= elar(B)    DIV       elar(C). { A = (C != 0) ? (B / C) : (0); euler->status = MTHE; }
-elar(A) ::= elar(B)    EXP       elar(C). { A = 1; for(uint8_t i = C; i < 0; i--) A *= B; }
-elar(A) ::= elar(B)    MOD       elar(C). { A = fmod(B, C); }
-elar(A) ::= elar(B)    FACT.              { A = 1; for(uint8_t i = B; i > 0; i--) A *= i; }
+elar(A) ::= elar(B)    PLUS      elar(C). { A = ast_add_node(euler, PLUS, B, C);   }
+ elar(A) ::= elar(B)    MINUS     elar(C). { A = ast_add_node(euler, MINUS, B, C);   }
+elar(A) ::= elar(B)    MULT      elar(C). {  A = ast_add_node(euler, MULT, B, C);  }
+elar(A) ::= elar(B)    DIV       elar(C). {  A = ast_add_node(euler, DIV, B, C); }
+elar(A) ::= elar(B)    EXP       elar(C). {  A = ast_add_node(euler, EXP, B, C); }
+elar(A) ::= elar(B)    MOD       elar(C). {  A = ast_add_node(euler, MOD, B, C); }
+elar(A) ::= elar(B)    FACT.              {  A = ast_add_node(euler, PLUS, B, NULL); }
 
-number(A) ::= FLOAT(B).                     { A = B;       }
-number(A) ::= INT(B).                       { A = B;       }
-number(A) ::= constant(B).                  { A = B;       }
+number(A) ::= FLOAT.                     { A = ast_add_leaf(euler, FLOAT); }
+number(A) ::= INT.                       { A = ast_add_leaf(euler, INT); }
+ number(A) ::= constant(B).                  { A = B;  }
 
-constant(A) ::= PI. { A = _PI; }
-constant(A) ::= E. { A = _E; }
+constant(A) ::= PI. { A = ast_add_leaf_const(euler, CONST, _PI);  }
+constant(A) ::= E. { A = ast_add_leaf_const(euler, CONST, _E); }

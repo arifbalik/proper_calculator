@@ -1,22 +1,15 @@
 #ifndef _AST_
 #define _AST_
+#include "../inc/euler.h"
 
-/* AST Structre */
-typedef struct ast {
-	uint8_t type; /* This is the token value in grammar.h */
+#ifdef UNIX
+void ast_print(ast_t *tree);
+#endif
 
-	/* Value of the token */
-	union {
-		double number;
-		char literal;
-	} value;
-
-	struct ast *left; /* left hand side of the node */
-	struct ast *right; /* right hand side of the node */
-} ast_t;
-
-ast_t *ast_add_leaf(ast_t *ast, uint8_t type, void *value);
-ast_t *add_node(ast_t *ast_node, uint8_t type, void *value, ast_t *ast_left,
-		ast_t *ast_right);
+void ast_clear(ersl_t *euler);
+ast_t *ast_add_leaf(ersl_t *euler, uint8_t type);
+ast_t *ast_add_leaf_const(ersl_t *euler, uint8_t type, double value);
+ast_t *ast_add_node(ersl_t *euler, uint8_t type, ast_t *ast_left,
+		    ast_t *ast_right);
 
 #endif /* _AST_ */
