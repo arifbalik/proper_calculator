@@ -173,23 +173,24 @@ uint8_t st_get_next_token(symbol_table_t *symbol_table, uint8_t ispartial)
 	return symbol_table->token[symbol_table->cur].no;
 }
 
-/* returns the current token value if its a number */
+/* returns the current token value if its a number, or searches backwards and
+ * returns the first found number, otherwise 0
+ */
 double st_get_number(symbol_table_t *symbol_table)
 {
 	char sval[MAX_QUERY_LENGTH];
+	uint8_t idx = symbol_table->cur;
 
-	if (symbol_table->token[symbol_table->cur].no != INT &&
-	    symbol_table->token[symbol_table->cur].no != FLOAT) {
-		return 0;
+	while (symbol_table->token[idx].no != INT &&
+	       symbol_table->token[idx].no != FLOAT) {
+		if (!(idx > 0)) {
+			return 0;
+		}
+		idx--;
 	}
 
-	if (symbol_table->cur >= 1) {
-		st_get_token_string(symbol_table, sval);
-		return _atof(sval);
-	}
-
-	else
-		return 0;
+	st_get_token_string(symbol_table, sval);
+	return _atof(sval);
 }
 
 /* returns the current token string */
