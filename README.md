@@ -13,6 +13,16 @@ This math engine (we will call it **euler** from now on) we implemented in this 
 
 **Euler** uses **re2c** lexer and **lemon** parser generator for parsing, and implements some of *GNU Scientific Library* code. It uses **C** language and as long as it lasts it will continue to use **C** (nerd alert!)
 
+### Features
+-   Basic Arithmetic (+, -, *, /, ^, !, %)
+-   Boolean Arithmetic (&, |, ~, (+))
+-   Binary Relations (<, >, &&, ||, ==)
+-   Builtin Constants (e, pi, ...)
+-   User defined functions
+-   Builtin functions (cos, sin, tan, sum, prod, ...)
+-   Differentiation and Integration (Numerical and symbolic)
+-   Algebraic Simplification
+
 ### Currently Supported Platforms
 
 -   Linux
