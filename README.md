@@ -5,11 +5,7 @@
 ## Introduction
 This is an attempt to create a better, well documented, well designed open source mathematical expression parser and a scientific calculator.
 
-There are very nice projects out there, we like to mention them below;
-
-LIST.
-
-But unfortunately they're not comprehensive enough neither that is their motivation.
+There are very nice projects out there, but what we're trying to do here is to create a embedded framework of libraries to be used in embedded systems where size is important.
 
 This math engine (we will call it **euler** from now on) we implemented in this project is capable of doing basic arithmetic to very complex matrices and calculus operations. But since it is planned to put it in a microcontroller its not as powerful as wolfram's products or GNU Octave or Matlab etc. This project aims to make the most powerful math parser that can be fitted in a main stream microcontroller, such as STM32 MCUs.
 
