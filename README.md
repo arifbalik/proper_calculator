@@ -34,7 +34,7 @@ Then enter the directory and call make as follows;
 
 ```bash
   cd proper_calculator
-  make clean && make ARCH=linux
+  make clean && make ARCH=linux && ./build/linux
 ```
 
 After this command, *euler* welcome message will show up and program will wait for an input.
