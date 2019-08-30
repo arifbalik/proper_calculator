@@ -50,3 +50,8 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+build/linux
+euler/parser/grammar.c
+euler/parser/lemon/lemon
+euler/parser/grammar.h
+euler/parser/tokenizer.c
