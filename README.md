@@ -5,17 +5,23 @@
 ## Introduction
 This is an attempt to create a better, well documented, well designed open source mathematical expression parser and a scientific calculator.
 
-There are very nice projects out there, we like to mention them below;
-
-LIST.
-
-But unfortunately they're not comprehensive enough neither that is their motivation.
+There are very nice projects out there, but what we're trying to do here is to create a embedded framework of libraries to be used in embedded systems where size is important.
 
 This math engine (we will call it **euler** from now on) we implemented in this project is capable of doing basic arithmetic to very complex matrices and calculus operations. But since it is planned to put it in a microcontroller its not as powerful as wolfram's products or GNU Octave or Matlab etc. This project aims to make the most powerful math parser that can be fitted in a main stream microcontroller, such as STM32 MCUs.
 
 **Euler** is designed to be standalone, portable, simple but yet powerful. It can run on anything that has an FPU (a version without FPU coming soon).
 
 **Euler** uses **re2c** lexer and **lemon** parser generator for parsing, and implements some of *GNU Scientific Library* code. It uses **C** language and as long as it lasts it will continue to use **C** (nerd alert!)
+
+### Features
+-   Basic Arithmetic (+, -, *, /, ^, !, %)
+-   Boolean Arithmetic (&, |, ~, (+))
+-   Binary Relations (<, >, &&, ||, ==)
+-   Builtin Constants (e, pi, ...)
+-   User defined functions
+-   Builtin functions (cos, sin, tan, sum, prod, ...)
+-   Differentiation and Integration (Numerical and symbolic)
+-   Algebraic Simplification
 
 ### Currently Supported Platforms
 
@@ -38,7 +44,7 @@ Then enter the directory and call make as follows;
 
 ```bash
   cd proper_calculator
-  make clean && make ARCH=linux
+  make clean && make ARCH=linux && ./build/linux
 ```
 
 After this command, *euler* welcome message will show up and program will wait for an input.
