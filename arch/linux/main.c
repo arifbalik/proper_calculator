@@ -12,9 +12,9 @@ int main(int argc, char const **argv)
 	int c, k;
 	printf("char * %ld, uint8_t %ld\n", (long)sizeof(char *),
 	       (long)sizeof(uint8_t));
-	printf("size of euler %ld, size of symbol_table %ld, sizeof token table %ld, sizeof ast %ld\n",
+	printf("size of euler %ld, size of symbol_table %ld, sizeof ast %ld\n",
 	       (long)sizeof(euler), (long)sizeof(euler.symbol_table),
-	       (long)sizeof(token_t), (long)sizeof(ast_t));
+	       (long)sizeof(euler.ast));
 	while (1) {
 		uint8_t i = 0;
 		char ch = 0;
