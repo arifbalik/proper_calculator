@@ -15,7 +15,7 @@
 %parse_failure {printf("syntax error\n");}
 
 /* Priorities */
-%nonassoc EQ INT FLOAT UNKNOWN TO SIGMA PROD PI E COMMA.
+%nonassoc EQ INT FLOAT UNKNOWN TO SIGMA PROD PI E COMMA SHIFTL SHIFTR NAND NOR.
 %left CONST.
 %left LETTER.
 %left PLUS MINUS.
@@ -84,14 +84,14 @@ elar(A) ::= PROD LPAREN ANY COMMA LETTER COMMA number(B) COMMA number(C) RPAREN.
 
 
 /* Boolean Operators */
-/*elar(A) ::= elar(B) AND elar(C). { A = (int)B & (int)C; }
-elar(A) ::= elar(B) NOT AND elar(C). { A = ~((int)B & (int)C);  }
-elar(A) ::= elar(B) OR elar(C). { A = (int)B | (int)C; }
-elar(A) ::= elar(B) NOT OR elar(C). { A = ~((int)B | (int)C); }
-elar(A) ::= elar(B) XOR elar(C). { A = ((int)B ^ (int)C); }
-elar(A) ::= elar(B) GREATER GREATER elar(C). { A = ((int)B >> (int)C); }
-elar(A) ::= elar(B) SMALLER SMALLER elar(C). { A = ((int)B << (int)C); }
-elar(A) ::= NOT elar(B). { A =  ~(int)B; }*/
+elar(A) ::= elar(B) AND elar(C). {A = ast_add_node(euler, AND, B, C); }
+elar(A) ::= elar(B) NOT AND elar(C). { A = ast_add_node(euler, NAND, B, C);  }
+elar(A) ::= elar(B) OR elar(C). { A = ast_add_node(euler, OR, B, C); }
+elar(A) ::= elar(B) NOT OR elar(C). { A = ast_add_node(euler, NOR, B, C); }
+elar(A) ::= elar(B) XOR elar(C). {A = ast_add_node(euler, XOR, B, C);}
+elar(A) ::= elar(B) GREATER GREATER elar(C). { A = ast_add_node(euler, SHIFTR, B, C); }
+elar(A) ::= elar(B) SMALLER SMALLER elar(C). { A = ast_add_node(euler, SHIFTL, B, C); }
+elar(A) ::= NOT elar(B). { A = ast_add_node(euler, NOT, B, NULL); }
 
 /* Binary Relations */
 elar(A) ::= elar(B) BAND elar(C). {A = ast_add_node(euler, BAND, B, C); }
