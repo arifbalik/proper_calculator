@@ -75,7 +75,7 @@ typedef struct ast {
 
 	struct ast *left; /* left hand side of the node */
 	struct ast *right; /* right hand side of the node */
-} ast_t;
+} __attribute__((packed)) ast_t;
 
 /* Symbol Table Structre */
 typedef struct {
