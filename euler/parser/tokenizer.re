@@ -1,6 +1,7 @@
 #include "grammar.h"
 #include "tokenizer.h"
 #include "symbol_table.h"
+#include "ast.h"
 #include "../inc/_atof.h"
 #include "../inc/_itoa.h"
 #include "../inc/_strcpy.h"
@@ -105,6 +106,7 @@ void init_parser(ersl_t *euler, char *q)
 	euler->type = 0;
 	euler->resultn.fraction = 0;
 	st_init(&(euler->symbol_table), q);
+	ast_init(euler);
 	fill_lex(q);
 }
 
@@ -119,7 +121,9 @@ void parse_query(ersl_t *euler)
 
 	/* Create symbol table */
 	TOKENIZE_AND_FILL_ST(euler->ascii, euler);
+#ifdef PARSE_TRACE
 	ParseTrace(stdout, "parser >>");
+#endif
 
 	// while (st_markdown_func(&(euler->symbol_table), _query_internal)) {
 	// 	PUSH_TOKEN_STREAM_TO_PARSER(&(euler->symbol_table), euler, 1);

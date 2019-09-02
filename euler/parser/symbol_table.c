@@ -183,7 +183,6 @@ double st_get_number(symbol_table_t *symbol_table)
 	}
 
 	st_get_token_string(symbol_table, sval, idx);
-	printf("idx = %d %s\n", idx, sval);
 	return _atof(sval);
 }
 

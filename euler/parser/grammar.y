@@ -2,6 +2,7 @@
 #include <assert.h>
 #include "../inc/euler.h"
 #include "../inc/constant.h"
+#include "../inc/simplify.h"
 #include "symbol_table.h"
 #include "grammar.h"
 #include "ast.h"
@@ -32,8 +33,11 @@
 
 /* Elementary Arithmetic */
 query ::= elar(B) EOQ. {
-        ast_print(B);
-        ast_clear(euler);
+
+        ast_finalize(euler);
+        simplify(B, euler);
+        ast_print(ast_get_root(euler));
+        ast_init(euler);
 }
 
 
@@ -112,7 +116,7 @@ elar(A) ::= elar(B)    MULT      elar(C). {  A = ast_add_node(euler, MULT, B, C)
 elar(A) ::= elar(B)    DIV       elar(C). {  A = ast_add_node(euler, DIV, B, C); }
 elar(A) ::= elar(B)    EXP       elar(C). {  A = ast_add_node(euler, EXP, B, C); }
 elar(A) ::= elar(B)    MOD       elar(C). {  A = ast_add_node(euler, MOD, B, C); }
-elar(A) ::= elar(B)    FACT.              {  A = ast_add_node(euler, PLUS, B, NULL); }
+elar(A) ::= elar(B)    FACT.              {  A = ast_add_node(euler, FACT, B, NULL); }
 
 number(A) ::= FLOAT.                     { A = ast_add_leaf(euler, FLOAT); }
 number(A) ::= INT.                       { A = ast_add_leaf(euler, INT); }

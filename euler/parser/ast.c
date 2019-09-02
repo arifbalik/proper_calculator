@@ -3,23 +3,41 @@
 #include "grammar.h"
 #include "symbol_table.h"
 
-void ast_clear(ersl_t *euler)
+void ast_init(ersl_t *euler)
 {
-	euler->ast[0].type = 0;
+	uint8_t idx = 0;
+
+	/* Load the addresses of ast_rsv to ast and initialize members */
+	while (idx < MAX_AST_BRANCH) {
+		euler->ast[idx] = &(euler->ast_rsv[idx]);
+		euler->ast[idx]->type = 0;
+		euler->ast[idx]->left = NULL;
+		euler->ast[idx]->right = NULL;
+		idx++;
+	}
+	euler->ast_top_idx = 0;
 }
 
+void ast_finalize(ersl_t *euler)
+{
+	euler->ast_top_idx = ast_get_root_idx(euler);
+}
+
+/* return the address of the next available element */
 static ast_t *ast_malloc(ersl_t *euler)
 {
 	uint8_t idx = 0;
 
-	/* Check if the type is 0 which means its available cause 0 is reserved */
-	while (euler->ast[idx].type != 0) {
+	/* Check if the type is 0
+	 * which means its available cause 0 is reserved
+	 */
+	while (euler->ast[idx]->type != 0) {
 		idx++;
 		if (idx >= MAX_AST_BRANCH)
 			return NULL; /* Array is full */
 	}
 
-	return (euler->ast + idx);
+	return euler->ast[idx];
 }
 
 static void ast_write_value(ersl_t *euler, ast_t *ast)
@@ -38,6 +56,77 @@ static void ast_write_value(ersl_t *euler, ast_t *ast)
 		return; /* Unsupported type */
 		break;
 	}
+}
+
+/* Find the parent of a given leaf or node by searching the entire ast. */
+ast_t **ast_find_parent(ersl_t *euler, ast_t *child)
+{
+	uint8_t idx = 0;
+
+	while (idx < MAX_AST_BRANCH) {
+		if (euler->ast[idx]->left == child ||
+		    euler->ast[idx]->right == child) {
+			return &(euler->ast[idx]);
+		}
+		idx++;
+	}
+
+	return NULL;
+}
+
+void ast_destroy_node(ersl_t *euler, ast_t *node)
+{
+	ast_t **parent = NULL;
+
+	parent = ast_find_parent(euler, node);
+	if (parent != NULL) {
+		ast_relink_node(euler, *parent,
+				((*parent)->left == node) ? (*parent)->right :
+							    (*parent)->left);
+	}
+}
+void ast_relink_node(ersl_t *euler, ast_t *child, ast_t *new_child)
+{
+	ast_t **parent = NULL;
+	ast_t *root = ast_get_root(euler);
+
+	if (child == NULL)
+		return;
+
+	if (child == root) {
+		euler->ast[euler->ast_top_idx] = new_child;
+		return;
+	}
+
+	/* Find parent(s) of the child. When a child is referenced to a new
+	 * parent and that child is destroyed, than it should be found and
+	 * replaced with new_child as well.
+	 */
+	while ((parent = ast_find_parent(euler, child)) != NULL) {
+		if ((*parent)->left == child)
+			(*parent)->left = new_child;
+		else
+			(*parent)->right = new_child;
+	}
+}
+
+ast_t *ast_get_root(ersl_t *euler)
+{
+	return euler->ast[euler->ast_top_idx];
+}
+
+uint8_t ast_get_root_idx(ersl_t *euler)
+{
+	uint8_t idx = 0;
+
+	while (euler->ast[idx]->type != 0) {
+		idx++;
+		if (idx >= MAX_AST_BRANCH) {
+			return MAX_AST_BRANCH;
+		}
+	}
+
+	return idx - 1;
 }
 
 ast_t *ast_add_leaf(ersl_t *euler, uint8_t type)
@@ -68,6 +157,20 @@ ast_t *ast_add_leaf_const(ersl_t *euler, uint8_t type, double value)
 	return ast;
 }
 
+ast_t *ast_add_leaf_literal(ersl_t *euler, uint8_t type, char value)
+{
+	ast_t *ast = ast_malloc(euler);
+
+	ast->type = type;
+
+	ast->value.literal = value;
+
+	ast->left = NULL;
+	ast->right = NULL;
+
+	return ast;
+}
+
 ast_t *ast_add_node(ersl_t *euler, uint8_t type, ast_t *ast_left,
 		    ast_t *ast_right)
 {
@@ -83,75 +186,64 @@ ast_t *ast_add_node(ersl_t *euler, uint8_t type, ast_t *ast_left,
 }
 
 #ifdef UNIX
+#include <stdlib.h>
 
-int _print_t(ast_t *tree, int is_left, int offset, int depth, char s[20][255])
+void print_tree_recursive(FILE *fp, ast_t *curr)
 {
-	char b[20];
-	int width = 5;
+	fprintf(fp, "    \"%p\" [ label=\"", curr);
 
-	if (!tree)
-		return 0;
-	if (tree->type == INT || tree->type == FLOAT || tree->type == CONST) {
-		sprintf(b, "%f", tree->value.number);
-	} else if (tree->type == LETTER) {
-		sprintf(b, "%c", tree->value.literal);
-	} else {
-		sprintf(b, "(%03d)", tree->type);
+	switch (curr->type) {
+	case INT:
+	case FLOAT:
+	case CONST:
+		fprintf(fp, "%f", curr->value.number);
+		break;
+	case LETTER:
+		fprintf(fp, "%c", curr->value.literal);
+		break;
+	case PLUS:
+		fprintf(fp, "( + )");
+		break;
+	case MINUS:
+		fprintf(fp, "( - )");
+		break;
+	case MULT:
+		fprintf(fp, "( * )");
+		break;
+	case DIV:
+		fprintf(fp, "( / )");
+		break;
+	case FACT:
+		fprintf(fp, "( ! )");
+		break;
+	case EXP:
+		fprintf(fp, "( ^ )");
+		break;
+	default:
+		fprintf(fp, "(%03d)", curr->type);
+		break;
 	}
-
-	int left = _print_t(tree->left, 1, offset, depth + 1, s);
-	int right =
-		_print_t(tree->right, 0, offset + left + width, depth + 1, s);
-
-#ifdef COMPACT
-	for (int i = 0; i < width; i++)
-		s[depth][offset + left + i] = b[i];
-
-	if (depth && is_left) {
-		for (int i = 0; i < width + right; i++)
-			s[depth - 1][offset + left + width / 2 + i] = '-';
-
-		s[depth - 1][offset + left + width / 2] = '.';
-
-	} else if (depth && !is_left) {
-		for (int i = 0; i < left + width; i++)
-			s[depth - 1][offset - width / 2 + i] = '-';
-
-		s[depth - 1][offset + left + width / 2] = '.';
+	fprintf(fp, "\" ];\n");
+	if (curr->left) {
+		print_tree_recursive(fp, curr->left);
+		fprintf(fp, "    \"%p\" -> \"%p\" ;\n", curr, curr->left);
 	}
-#else
-	for (int i = 0; i < width; i++)
-		s[2 * depth][offset + left + i] = b[i];
-
-	if (depth && is_left) {
-		for (int i = 0; i < width + right; i++)
-			s[2 * depth - 1][offset + left + width / 2 + i] = '-';
-
-		s[2 * depth - 1][offset + left + width / 2] = '+';
-		s[2 * depth - 1][offset + left + width + right + width / 2] =
-			'+';
-
-	} else if (depth && !is_left) {
-		for (int i = 0; i < left + width; i++)
-			s[2 * depth - 1][offset - width / 2 + i] = '-';
-
-		s[2 * depth - 1][offset + left + width / 2] = '+';
-		s[2 * depth - 1][offset - width / 2 - 1] = '+';
+	if (curr->right) {
+		print_tree_recursive(fp, curr->right);
+		fprintf(fp, "    \"%p\" -> \"%p\" ;\n", curr, curr->right);
 	}
-#endif
-
-	return left + width + right;
 }
 
 void ast_print(ast_t *tree)
 {
-	char s[20][255];
-	for (int i = 0; i < 20; i++)
-		sprintf(s[i], "%80s", " ");
+	FILE *fp;
+	fp = fopen("digraph.dot", "w"); //opening file
+	fprintf(fp, "digraph {\n");
+	if (tree)
+		print_tree_recursive(fp, tree);
+	fprintf(fp, "}\n");
 
-	_print_t(tree, 0, 0, 0, s);
-
-	for (int i = 0; i < 20; i++)
-		printf("%s\n", s[i]);
+	fflush(fp);
+	system("graph-easy --input=digraph.dot --as=boxart");
 }
 #endif

@@ -103,7 +103,13 @@ typedef struct {
 	char *ascii; /* The query */
 	double (*func)(void);
 	symbol_table_t symbol_table; /* Token table */
-	ast_t ast[MAX_AST_BRANCH]; /* Abstract Syntax Tree */
+	ast_t *ast[MAX_AST_BRANCH]; /* Abstract Syntax Tree */
+	uint8_t ast_top_idx; /* index of top node */
+
+	/* Reserved Abstract Syntax Tree.
+	 * Only used by euler in custom malloc operations
+	 */
+	ast_t ast_rsv[MAX_AST_BRANCH];
 
 } __attribute__((packed)) ersl_t;
 
