@@ -23,7 +23,8 @@
 		 ((AST_TYPE_CHECK_2(node->right, t1, t2) ? node->right :       \
 							   NULL)))
 #define AST_OTHER_CHILD(node, child)                                           \
-	((node->left == child) ? node->right : node->left)
+	((node->left == child) ? node->right :                                 \
+				 (node->right == child) ? node->left : NULL)
 
 #define AST_WHICH_CHILD_HAS_TYPE_3(node, t1, t2, t3)                           \
 	((AST_TYPE_CHECK_3(node->left, t1, t2, t3)) ?                          \
@@ -43,10 +44,12 @@
 		 NULL)
 
 #define AST_VALUE_CHECK_CHILDS_2(node, t1, t2, postfix, val)                   \
-	(((node->left->type == t1 || node->left->type == t2) &&                \
+	((node->left != NULL &&                                                \
+	  (node->left->type == t1 || node->left->type == t2) &&                \
 	  (node->left->value.postfix == val)) ?                                \
 		 node->left :                                                  \
-		 ((node->right->type == t1 || node->right->type == t2) &&      \
+		 (node->right != NULL &&                                       \
+		  (node->right->type == t1 || node->right->type == t2) &&      \
 		  (node->right->value.postfix == val)) ?                       \
 		 node->right :                                                 \
 		 NULL)
