@@ -74,24 +74,29 @@ ast_t **ast_find_parent(ersl_t *euler, ast_t *child)
 	return NULL;
 }
 
-void ast_destroy_node(ersl_t *euler, ast_t *node)
+ast_t *ast_destroy_node(ersl_t *euler, ast_t *node)
 {
-	ast_t **parent = NULL;
-
-	parent = ast_find_parent(euler, node);
+	ast_t **parent = ast_find_parent(euler, node);
+	ast_t *tmp = NULL;
 	if (parent != NULL) {
-		ast_relink_node(euler, *parent,
-				((*parent)->left == node) ? (*parent)->right :
-							    (*parent)->left);
+		tmp = ((*parent)->left == node) ? (*parent)->right :
+						  (*parent)->left;
+		(*parent)->type = tmp->type;
+		(*parent)->value = tmp->value;
+		(*parent)->left = (*parent)->right = NULL;
+		if (AST_ISNODE(tmp)) {
+			(*parent)->left = tmp->left;
+			(*parent)->right = tmp->right;
+		}
+		printf("destroyed type %d, r %p l %p\n", (*parent)->type,
+		       (*parent)->right, (*parent)->left);
 	}
+	return *parent;
 }
 void ast_relink_node(ersl_t *euler, ast_t *child, ast_t *new_child)
 {
 	ast_t **parent = NULL;
 	ast_t *root = ast_get_root(euler);
-
-	if (child == NULL)
-		return;
 
 	if (child == root) {
 		euler->ast[euler->ast_top_idx] = new_child;
