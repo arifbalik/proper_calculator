@@ -67,6 +67,7 @@ void ast_print(ast_t *root);
 void ast_init(ersl_t *euler);
 void ast_finalize(ersl_t *euler);
 void ast_relink_node(ersl_t *euler, ast_t *child, ast_t *new_child);
+uint8_t ast_get_available_slots(ersl_t *euler);
 ast_t *ast_destroy_node(ersl_t *euler, ast_t *node);
 ast_t *ast_get_root(ersl_t *euler);
 uint8_t ast_get_root_idx(ersl_t *euler);

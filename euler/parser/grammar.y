@@ -35,7 +35,7 @@
 query ::= elar(B) EOQ. {
 
         ast_finalize(euler);
-        simplify(B, euler);
+        simplify(B, B, euler);
         ast_print(ast_get_root(euler));
         ast_init(euler);
 }

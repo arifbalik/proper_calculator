@@ -31,7 +31,7 @@ static ast_t *ast_malloc(ersl_t *euler)
 	/* Check if the type is 0
 	 * which means its available cause 0 is reserved
 	 */
-	while (euler->ast[idx]->type != 0) {
+	while (euler->ast[idx] != NULL && euler->ast[idx]->type != 0) {
 		idx++;
 		if (idx >= MAX_AST_BRANCH)
 			return NULL; /* Array is full */
@@ -64,8 +64,9 @@ ast_t **ast_find_parent(ersl_t *euler, ast_t *child)
 	uint8_t idx = 0;
 
 	while (idx < MAX_AST_BRANCH) {
-		if (euler->ast[idx]->left == child ||
-		    euler->ast[idx]->right == child) {
+		if (euler->ast[idx] != NULL && AST_ISNODE(euler->ast[idx]) &&
+		    (euler->ast[idx]->left == child ||
+		     euler->ast[idx]->right == child)) {
 			return &(euler->ast[idx]);
 		}
 		idx++;
@@ -138,6 +139,9 @@ ast_t *ast_add_leaf(ersl_t *euler, uint8_t type)
 {
 	ast_t *ast = ast_malloc(euler);
 
+	if (ast == NULL)
+		return NULL;
+
 	ast->type = type;
 
 	ast_write_value(euler, ast);
@@ -151,6 +155,9 @@ ast_t *ast_add_leaf(ersl_t *euler, uint8_t type)
 ast_t *ast_add_leaf_const(ersl_t *euler, uint8_t type, double value)
 {
 	ast_t *ast = ast_malloc(euler);
+
+	if (ast == NULL)
+		return NULL;
 
 	ast->type = type;
 
@@ -166,6 +173,9 @@ ast_t *ast_add_leaf_literal(ersl_t *euler, uint8_t type, char value)
 {
 	ast_t *ast = ast_malloc(euler);
 
+	if (ast == NULL)
+		return NULL;
+
 	ast->type = type;
 
 	ast->value.literal = value;
@@ -175,14 +185,31 @@ ast_t *ast_add_leaf_literal(ersl_t *euler, uint8_t type, char value)
 
 	return ast;
 }
+uint8_t ast_get_available_slots(ersl_t *euler)
+{
+	uint8_t idx = 0;
+	uint8_t count = 0;
 
+	while (idx < MAX_AST_BRANCH) {
+		if (euler->ast_rsv[idx].type == 0) {
+			count++;
+		}
+		idx++;
+	}
+
+	return count;
+}
 ast_t *ast_add_node(ersl_t *euler, uint8_t type, ast_t *ast_left,
 		    ast_t *ast_right)
 {
 	ast_t *ast_node = ast_malloc(euler);
+
+	if (ast_node == NULL)
+		return NULL;
+
 	ast_node->type = type;
 
-	ast_write_value(euler, ast_node);
+	//ast_write_value(euler, ast_node);
 
 	ast_node->left = ast_left;
 	ast_node->right = ast_right;

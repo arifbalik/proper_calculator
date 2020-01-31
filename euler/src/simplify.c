@@ -5,168 +5,248 @@
 #define ZERO_CHECK(n) AST_VALUE_CHECK_CHILDS_2(n, INT, FLOAT, number, 0)
 #define VAR_CHECK(n, v) AST_VALUE_CHECK_CHILDS(n, LETTER, literal, v)
 
-void simplify_sum_variable(ast_t *node, ersl_t *euler, char variable,
-			   double coefficient, ast_t *relink_node)
+void ast_print_element_list(ersl_t *euler)
+{
+	uint8_t idx = 0;
+#ifdef UNIX
+	while (idx <= euler->ast_element_idx) {
+		switch (euler->ast_element_type[idx]) {
+		case FLOAT:
+		case CONST:
+		case INT:
+			printf("%f|", euler->ast_element[idx].number);
+
+			break;
+		case LETTER:
+			printf("%c|", euler->ast_element[idx].literal);
+
+			break;
+		default:
+			if (euler->ast_element_type[idx] != 0)
+				printf("(%d)|",
+				       euler->ast_element[idx].node->type);
+			else
+				printf("(unknown)");
+			break;
+		}
+
+		idx++;
+	}
+#endif
+}
+
+void ast_sort_element_list(ersl_t *euler)
+{
+	uint8_t idx = 0, inner_idx = 0;
+
+	while (idx <= euler->ast_element_idx) {
+		if (euler->ast_element_type[idx] == 0) {
+			inner_idx = idx;
+			while (inner_idx < euler->ast_element_idx) {
+				if (euler->ast_element_type[inner_idx] != 0) {
+					euler->ast_element_type[idx] =
+						euler->ast_element_type
+							[inner_idx];
+					euler->ast_element[idx] =
+						euler->ast_element[inner_idx];
+					euler->ast_element_type[inner_idx] = 0;
+					break;
+				}
+				inner_idx++;
+			}
+		}
+		idx++;
+	}
+	idx = 0;
+	while (euler->ast_element_type[idx] != 0) {
+		idx++;
+	}
+	euler->ast_element_idx = idx - 1;
+}
+void ast_new_element(ersl_t *euler, ast_t *node)
 {
 	if (node == NULL || !AST_ISNODE(node)) {
 		return;
 	}
-	ast_t *tmp = NULL;
 
-	if ((tmp = AST_TYPE_CHECK_CHILDS(node, LETTER)) != NULL &&
-	    variable == 0) {
-		variable = tmp->value.literal;
-		relink_node = tmp;
-	}
+	ast_t *child = node->left;
 
-	/* Find if node has a variable */
-	if ((tmp = AST_VALUE_CHECK_CHILDS(node, LETTER, literal, variable)) !=
-	    NULL) {
-		switch (node->type) {
-		case PLUS:
-			coefficient += 1;
-			if (relink_node != tmp)
-				ast_relink_node(euler, node,
-						AST_OTHER_CHILD(node, tmp));
-
+	while (child) {
+		switch (child->type) {
+		case PLUS: /* ignore */
 			break;
-		case MINUS:
-			coefficient -= 1;
-			if (relink_node != tmp)
-				ast_relink_node(euler, node,
-						AST_OTHER_CHILD(node, tmp));
+		case INT:
+		case FLOAT:
+		case CONST:
 
+			euler->ast_element[euler->ast_element_idx].number =
+				child->value.number;
+			euler->ast_element_type[euler->ast_element_idx] = FLOAT;
+			euler->ast_element_idx++;
+			break;
+		case LETTER:
+
+			euler->ast_element[euler->ast_element_idx].node =
+				ast_add_node(euler, MULT,
+					     ast_add_leaf_const(euler, FLOAT,
+								1),
+					     ast_add_leaf_literal(
+						     euler, LETTER,
+						     child->value.literal));
+			euler->ast_element_type[euler->ast_element_idx] = MULT;
+			euler->ast_element_idx++;
+			break;
+		default:
+			euler->ast_element[euler->ast_element_idx].node = child;
+			euler->ast_element_type[euler->ast_element_idx] =
+				child->type;
+			euler->ast_element_idx++;
+			break;
+		}
+
+		child = (child == node->left) ? node->right : NULL;
+	}
+}
+
+ast_t *ast_create_tree_from_element_list(ersl_t *euler)
+{
+	double number = 0;
+	char variable = 0;
+	uint8_t idx = 0, inner_idx = 0;
+	ast_t *new_tree = NULL, *letter_node = NULL, *tmp = NULL;
+
+	while (idx < euler->ast_element_idx) {
+		switch (euler->ast_element_type[idx]) {
+		case INT:
+		case FLOAT:
+		case CONST:
+			number += euler->ast_element[idx].number;
+			euler->ast_element_type[idx] = 0;
 			break;
 		case MULT:
-			if (AST_TYPE_CHECK_3(AST_OTHER_CHILD(node, tmp), INT,
-					     FLOAT, CONST)) {
-				coefficient +=
-					AST_OTHER_CHILD(node, tmp)->value.number;
-				if (relink_node != tmp)
-					ast_relink_node(euler, node,
-							ast_add_leaf_const(
-								euler, INT, 0));
+
+			if ((letter_node = AST_TYPE_CHECK_CHILDS(
+				     euler->ast_element[idx].node, LETTER)) !=
+			    NULL) {
+				inner_idx = idx + 1;
+				variable = letter_node->value.literal;
+
+				while (inner_idx < euler->ast_element_idx) {
+					if (euler->ast_element_type[inner_idx] ==
+						    MULT &&
+					    (tmp = VAR_CHECK(
+						     euler->ast_element[inner_idx]
+							     .node,
+						     variable)) != NULL) {
+						tmp = AST_OTHER_CHILD(
+							euler->ast_element
+								[inner_idx]
+									.node,
+							tmp);
+
+						euler->ast_element[idx]
+							.node = ast_add_node(
+							euler, MULT,
+							ast_add_leaf_literal(
+								euler, LETTER,
+								variable),
+							ast_add_node(
+								euler, PLUS,
+								tmp,
+								AST_OTHER_CHILD(
+									euler->ast_element
+										[idx]
+											.node,
+									AST_TYPE_CHECK_CHILDS(
+										euler->ast_element
+											[idx]
+												.node,
+										LETTER))));
+
+						euler->ast_element_type
+							[inner_idx] = 0;
+					}
+					inner_idx++;
+				}
 			}
+
 			break;
 		}
+		idx++;
+	}
+	if (number > 0) {
+		euler->ast_element[euler->ast_element_idx].number = number;
+		euler->ast_element_type[euler->ast_element_idx] = FLOAT;
+		euler->ast_element_idx++;
 	}
 
-	simplify_sum_variable(node->left, euler, variable, coefficient, NULL);
-	simplify_sum_variable(node->right, euler, variable, coefficient, NULL);
+	ast_sort_element_list(euler);
 
-	if (relink_node) {
-		ast_relink_node(
-			euler, relink_node,
-			ast_add_node(euler, MULT,
-				     ast_add_leaf_const(euler, FLOAT,
-							coefficient),
-				     ast_add_leaf_literal(euler, LETTER,
-							  tmp->value.literal)));
-	}
-}
+	ast_print_element_list(euler);
 
-void simplify_sum(ast_t *node, ersl_t *euler)
-{
-	simplify_sum_variable(node, euler, 0, 0, NULL);
-	simplify_zero(node, euler);
-}
-
-void simplify(ast_t *node, ersl_t *euler, uint8_t recursion_depth)
-{
-	if (node == NULL || !AST_ISNODE(node)) {
-		return;
-	}
-
-	ast_t *tmp = NULL;
-
-	switch (node->type) {
-	case PLUS:
-		/* Simplify addition with 0.
-		 * _number + 0 + _number -> _number + _number,
-		 * 0+ _number -> _number
-		 */
-		if (ZERO_CHECK(node)) {
-			tmp = ZERO_CHECK(node);
-			ast_relink_node(euler, node,
-					AST_OTHER_CHILD(node, tmp));
-		}
-		break;
-
-	case MINUS:
-		/* Simplify subst. with 0. 0 - _number -> -_number,
-		 * _number-0 -> _number
-		 */
-		if (ZERO_CHECK(node)) {
-			tmp = ZERO_CHECK(node);
-			(tmp == node->left) ?
-				node->left = NULL :
-				ast_relink_node(euler, node,
-						AST_OTHER_CHILD(node, tmp));
-		}
-		break;
-
-	case MULT:
-		/* Simplify multiplication with 0. _number * 0 + _number -> 1,
-		 * 0 * _number -> 0 * _number
-		 * If the expression contains only multiplication with zero,
-		 * we don't change it.
-		 */
-		if (ZERO_CHECK(node)) {
-			tmp = ZERO_CHECK(node);
-			ast_destroy_node(euler, node);
-		}
-		return;
-
-	case FACT:
-		/* 0! -> 1 */
-		if (ZERO_CHECK(node)) {
-			tmp = ZERO_CHECK(node);
-			ast_relink_node(euler, node,
-					ast_add_leaf_const(euler, INT, 1));
-		}
-		break;
-
-	case DIV:
-		/* 0 / _number -> 0,
-		 *  _number / 0 ->  _number / 0,
-		 *  0 / 0 ->  0 / 0
-		 */
-		if (ZERO_CHECK(node)) {
-			tmp = ZERO_CHECK(node);
-			/* If they are both 0, do nothing */
-			if (!((node->left && node->right) &&
-			      AST_TYPE_CHECK(node->left, node->right->type) &&
-			      AST_LEAF_NUMBER_VAL(node->left,
-						  node->right->value.number)) &&
-			    tmp == node->left) {
-				ast_destroy_node(euler, node);
-				return;
-			}
-		}
-		break;
-	case EXP:
-		/* 0^_number -> 0, _number^0 -> 1, 0^0 -> 0^0 */
-		if (ZERO_CHECK(node)) {
-			tmp = ZERO_CHECK(node);
-			/* If they are both 0, do nothing */
-			if (!((node->left && node->right) &&
-			      AST_TYPE_CHECK(node->left, node->right->type) &&
-			      AST_LEAF_NUMBER_VAL(node->left,
-						  node->right->value.number)) &&
-			    tmp == node->left) {
-				ast_destroy_node(euler, node);
-				return;
-			} else {
-				ast_relink_node(euler, node,
-						ast_add_leaf_const(euler, INT,
-								   1));
-			}
-		}
+	idx = 1;
+	switch (euler->ast_element_type[0]) {
+	case FLOAT:
+		new_tree = ast_add_leaf_const(euler, FLOAT,
+					      euler->ast_element[0].number);
 		break;
 	default:
+		new_tree = euler->ast_element[0].node;
 		break;
 	}
 
-	simplify(node->left, euler, recursion_depth + 1);
-	simplify(node->right, euler, recursion_depth + 1);
+	while (idx <= euler->ast_element_idx) {
+		if (euler->ast_element_type[idx] == FLOAT)
+			new_tree = ast_add_node(
+				euler, PLUS, new_tree,
+				ast_add_leaf_const(
+					euler, FLOAT,
+					euler->ast_element[idx].number));
+		else
+			new_tree = ast_add_node(euler, PLUS, new_tree,
+						euler->ast_element[idx].node);
+		idx++;
+	}
+	euler->ast_element_idx = 0;
+
+	return new_tree;
+}
+ast_t *simplify_sum(ast_t *node, ersl_t *euler, uint8_t depth)
+{
+	if (node == NULL || !AST_ISNODE(node) || node->type != PLUS) {
+		return NULL;
+	}
+
+	ast_new_element(euler, node);
+
+	simplify_sum(node->left, euler, depth + 1);
+	simplify_sum(node->right, euler, depth + 1);
+
+	if (!depth) {
+		return ast_create_tree_from_element_list(euler);
+	}
+	return NULL;
+}
+
+void simplify(ast_t *root, ast_t *child, ersl_t *euler)
+{
+	ast_t *changed_node = NULL;
+	if (child == NULL) {
+		return;
+	}
+
+	if (child->type == PLUS) {
+		changed_node = simplify_sum(child, euler, 0);
+		if (changed_node != NULL) {
+			ast_relink_node(euler, child, changed_node);
+			child = changed_node;
+			ast_print(changed_node);
+			changed_node = NULL;
+			printf("\n\navailable slots for ast %d\n\n",
+			       ast_get_available_slots(euler));
+		}
+	}
+
+	simplify(root, child->left, euler);
+	simplify(root, child->right, euler);
 }

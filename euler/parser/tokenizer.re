@@ -7,6 +7,8 @@
 #include "../inc/_strcpy.h"
 #include "../inc/strplace.h"
 
+#define PARSE_TRACE
+
 char *YYCURSOR;
 
 #define TOKENIZE_AND_FILL_ST(query, e)                                         \
@@ -102,9 +104,17 @@ int lex(symbol_table_t *symbol_table)
 
 void init_parser(ersl_t *euler, char *q)
 {
+	uint8_t idx = 0;
 	euler->status = NONE;
 	euler->type = 0;
 	euler->resultn.fraction = 0;
+	euler->ast_element_idx = 0;
+
+	while (idx < MAX_AST_BRANCH) {
+		euler->ast_element_type[idx] = 0;
+		idx++;
+	}
+
 	st_init(&(euler->symbol_table), q);
 	ast_init(euler);
 	fill_lex(q);
@@ -123,6 +133,7 @@ void parse_query(ersl_t *euler)
 	TOKENIZE_AND_FILL_ST(euler->ascii, euler);
 #ifdef PARSE_TRACE
 	ParseTrace(stdout, "parser >>");
+	st_print(&(euler->symbol_table));
 #endif
 
 	// while (st_markdown_func(&(euler->symbol_table), _query_internal)) {
