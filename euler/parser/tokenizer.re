@@ -117,9 +117,7 @@ void parse_query(ersl_t *euler)
 {
 	uint8_t token = 0;
 	void *parser = parse_alloc();
-	// char _query_internal[MAX_QUERY_LENGTH];
-	// char number[MAX_QUERY_LENGTH];
-	// char final_query[MAX_QUERY_LENGTH];
+
 	init_parser(euler, euler->ascii);
 
 	/* Create symbol table */
@@ -128,18 +126,6 @@ void parse_query(ersl_t *euler)
 	ParseTrace(stdout, "parser >>");
 	st_print(&(euler->symbol_table));
 #endif
-
-	// while (st_markdown_func(&(euler->symbol_table), _query_internal)) {
-	// 	PUSH_TOKEN_STREAM_TO_PARSER(&(euler->symbol_table), euler, 1);
-	//
-	// 	ftoa(euler->resultn.fraction, number, DOUBLE_PRECISION);
-	// 	str_replace(euler->ascii, _query_internal, number, final_query);
-	// 	_strcpy(euler->symbol_table.token[0].p, final_query,
-	// 		MAX_QUERY_LENGTH);
-	//
-	// 	TOKENIZE_AND_FILL_ST(euler->ascii, euler);
-	// 	//st_print(&(euler->symbol_table));
-	// }
 
 	PUSH_TOKEN_STREAM_TO_PARSER(&(euler->symbol_table), euler, 0);
 }

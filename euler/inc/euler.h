@@ -46,23 +46,6 @@ typedef enum {
 	UNDEFR /* Undefined Eesult Type */
 } estatus_t;
 
-typedef enum {
-	NO_RESULT = -128,
-	FN_EVAL,
-	INTEGER,
-	FRACTION,
-	BINARY,
-	BOOL,
-	MATRIX
-} etype_t;
-
-/* Results will be stored here by the parser */
-typedef union {
-	double fraction;
-	double **matrix;
-	char *var;
-} numerical_t;
-
 /* AST Structre */
 typedef struct ast {
 	uint8_t type; /* This is the token value in grammar.h */
@@ -97,14 +80,14 @@ typedef struct {
 } __attribute__((packed)) symbol_table_t;
 
 typedef struct {
-	etype_t type; 			/* Developer should check this type before any action */
-	numerical_t resultn; 		/* Numerical results will be stored here */
-	estatus_t status; 		/* Developer can use this to debug the engine */
-	char *ascii; 			/* The query */
+	etype_t type; /* Developer should check this type before any action */
+	numerical_t resultn; /* Numerical results will be stored here */
+	estatus_t status; /* Developer can use this to debug the engine */
+	char *ascii; /* The query */
 	double (*func)(void);
-	symbol_table_t symbol_table; 	/* Token table */
-	ast_t *ast[MAX_AST_BRANCH]; 	/* Abstract Syntax Tree */
-	uint8_t ast_top_idx; 		/* index of top node */
+	symbol_table_t symbol_table; /* Token table */
+	ast_t *ast[MAX_AST_BRANCH]; /* Abstract Syntax Tree */
+	uint8_t ast_top_idx; /* index of top node */
 
 	/* Reserved Abstract Syntax Tree.
 	 * Only used by euler in custom malloc operations

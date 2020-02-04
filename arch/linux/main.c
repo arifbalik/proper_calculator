@@ -10,8 +10,6 @@ int main(int argc, char const **argv)
 	char query[LINE + 1] = { '\0' };
 	ersl_t euler;
 	int c, k;
-	printf("char * %ld, uint8_t %ld\n", (long)sizeof(char *),
-	       (long)sizeof(uint8_t));
 	printf("size of euler %ld, size of symbol_table %ld, sizeof ast %ld\n",
 	       (long)sizeof(euler), (long)sizeof(euler.symbol_table),
 	       (long)sizeof(euler.ast));
@@ -33,23 +31,6 @@ int main(int argc, char const **argv)
 		query[i] = '\0'; /* a string should always end with '\0' ! */
 		euler.ascii = query;
 		parse_query(&euler);
-		if (euler.type == FRACTION)
-			printf("result : %.15f\n", euler.resultn.fraction);
-		else if (euler.type == BINARY) {
-			printf("result : ");
-			for (c = 31; c >= 0; c--) {
-				k = (int)euler.resultn.fraction >> c;
-
-				if (k & 1)
-					printf("1");
-				else
-					printf("0");
-			}
-
-			printf("\n");
-		} else if (euler.type == BOOL) {
-			printf("%d\n", (int)euler.resultn.fraction);
-		}
 	}
 
 	return 0;

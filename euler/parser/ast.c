@@ -277,5 +277,6 @@ void ast_print(ast_t *tree)
 
 	fflush(fp);
 	system("graph-easy --input=digraph.dot --as=boxart");
+	free(fp);
 }
 #endif
