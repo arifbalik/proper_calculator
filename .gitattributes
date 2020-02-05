@@ -1,4 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 euler/parser/*.re linguist-language=C
-html/*.html linguist-vendored=false
+html/* linguist-vendored=false
