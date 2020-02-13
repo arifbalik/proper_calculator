@@ -1,0 +1,85 @@
+.TH "__attribute__" 3 "Thu Feb 13 2020" "Euler Computer Algebra System" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+__attribute__
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <euler\&.h>\fP
+.SS "Data Fields"
+
+.in +1c
+.ti -1c
+.RI "char * \fBp\fP"
+.br
+.ti -1c
+.RI "uint8_t \fBno\fP"
+.br
+.ti -1c
+.RI "uint8_t \fBpriority\fP"
+.br
+.ti -1c
+.RI "token_t \fBtoken\fP [\fBMAX_QUERY_LENGTH\fP]"
+.br
+.ti -1c
+.RI "uint8_t \fBtop\fP"
+.br
+.ti -1c
+.RI "uint8_t \fBcur\fP"
+.br
+.ti -1c
+.RI "\fBestatus_t\fP \fBstatus\fP"
+.br
+.ti -1c
+.RI "char * \fBascii\fP"
+.br
+.ti -1c
+.RI "double(* \fBfunc\fP )(void)"
+.br
+.ti -1c
+.RI "symbol_table_t \fBsymbol_table\fP"
+.br
+.ti -1c
+.RI "ast_t * \fBast\fP [\fBMAX_AST_BRANCH\fP]"
+.br
+.ti -1c
+.RI "uint8_t \fBast_top_idx\fP"
+.br
+.ti -1c
+.RI "ast_t \fBast_rsv\fP [\fBMAX_AST_BRANCH\fP]"
+.br
+.in -1c
+.SH "Field Documentation"
+.PP 
+.SS "char* __attribute__::ascii"
+
+.SS "ast_t* __attribute__::ast[\fBMAX_AST_BRANCH\fP]"
+
+.SS "ast_t __attribute__::ast_rsv[\fBMAX_AST_BRANCH\fP]"
+
+.SS "uint8_t __attribute__::ast_top_idx"
+
+.SS "uint8_t __attribute__::cur"
+
+.SS "double(* __attribute__::func) (void)"
+
+.SS "uint8_t __attribute__::no"
+
+.SS "char* __attribute__::p"
+
+.SS "uint8_t __attribute__::priority"
+
+.SS "\fBestatus_t\fP __attribute__::status"
+
+.SS "symbol_table_t __attribute__::symbol_table"
+
+.SS "token_t __attribute__::token[\fBMAX_QUERY_LENGTH\fP]"
+
+.SS "uint8_t __attribute__::top"
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Euler Computer Algebra System from the source code\&.

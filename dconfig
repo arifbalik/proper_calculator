@@ -58,7 +58,7 @@ PROJECT_LOGO           =
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       =
+OUTPUT_DIRECTORY       = doc/
 
 # If the CREATE_SUBDIRS tag is set to YES then doxygen will create 4096 sub-
 # directories (in 2 levels) under the output directory of each output format and
@@ -1478,7 +1478,7 @@ DISABLE_INDEX          = NO
 # The default value is: NO.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-GENERATE_TREEVIEW      = NO
+GENERATE_TREEVIEW      = YES
 
 # The ENUM_VALUES_PER_LINE tag can be used to set the number of enum values that
 # doxygen will group on one line in the generated HTML documentation.
@@ -1533,7 +1533,7 @@ FORMULA_TRANSPARENT    = YES
 # The default value is: NO.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-USE_MATHJAX            = NO
+USE_MATHJAX            = YES
 
 # When MathJax is enabled you can set the default output format to be used for
 # the MathJax output. See the MathJax site (see:
@@ -1810,7 +1810,7 @@ LATEX_HIDE_INDICES     = NO
 # The default value is: NO.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-LATEX_SOURCE_CODE      = NO
+LATEX_SOURCE_CODE      = YES
 
 # The LATEX_BIB_STYLE tag can be used to specify the style to use for the
 # bibliography, e.g. plainnat, or ieeetr. See
@@ -1902,7 +1902,7 @@ RTF_SOURCE_CODE        = NO
 # classes and files.
 # The default value is: NO.
 
-GENERATE_MAN           = NO
+GENERATE_MAN           = YES
 
 # The MAN_OUTPUT tag is used to specify where the man pages will be put. If a
 # relative path is entered the value of OUTPUT_DIRECTORY will be put in front of
@@ -2492,3 +2492,7 @@ GENERATE_LEGEND        = YES
 # This tag requires that the tag HAVE_DOT is set to YES.
 
 DOT_CLEANUP            = YES
+
+
+# C style documenting
+JAVADOC_BANNER = YES

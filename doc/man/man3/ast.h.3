@@ -1,0 +1,218 @@
+.TH "euler/parser/ast.h" 3 "Thu Feb 13 2020" "Euler Computer Algebra System" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+euler/parser/ast.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include '\&.\&./inc/euler\&.h'\fP
+.br
+
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBAST_ISNODE\fP(node)   !\fBAST_ISLEAF\fP(node)"
+.br
+.ti -1c
+.RI "#define \fBAST_ISLEAF\fP(leaf)   (leaf\->\fBleft\fP == \fBNULL\fP && leaf\->\fBright\fP == \fBNULL\fP)"
+.br
+.ti -1c
+.RI "#define \fBAST_NULL_CHECK\fP(node)   ((node != \fBNULL\fP) ? node : \fBNULL\fP)"
+.br
+.ti -1c
+.RI "#define \fBAST_TYPE_CHECK\fP(node,  t)   (node\->\fBtype\fP == t)"
+.br
+.ti -1c
+.RI "#define \fBAST_TYPE_CHECK_2\fP(node,  t1,  t2)   ((node\->\fBtype\fP == t1) || (node\->\fBtype\fP == t2))"
+.br
+.ti -1c
+.RI "#define \fBAST_TYPE_CHECK_3\fP(node,  t1,  t2,  t3)   ((node\->\fBtype\fP == t1) || (node\->\fBtype\fP == t2) || (node\->\fBtype\fP == t3))"
+.br
+.ti -1c
+.RI "#define \fBAST_WHICH_CHILD_HAS_TYPE\fP(node,  t)"
+.br
+.ti -1c
+.RI "#define \fBAST_WHICH_CHILD_HAS_TYPE_2\fP(node,  t1,  t2)"
+.br
+.ti -1c
+.RI "#define \fBAST_OTHER_CHILD\fP(node,  child)"
+.br
+.ti -1c
+.RI "#define \fBAST_WHICH_CHILD_HAS_TYPE_3\fP(node,  t1,  t2,  t3)"
+.br
+.ti -1c
+.RI "#define \fBAST_TYPE_CHECK_CHILDS\fP(node,  t)"
+.br
+.ti -1c
+.RI "#define \fBAST_VALUE_CHECK_CHILDS\fP(node,  t,  postfix,  val)"
+.br
+.ti -1c
+.RI "#define \fBAST_VALUE_CHECK_CHILDS_2\fP(node,  t1,  t2,  postfix,  val)"
+.br
+.ti -1c
+.RI "#define \fBAST_LEAF_NUMBER_VAL\fP(leaf,  val)   (leaf\->\fBvalue\&.number\fP == val)"
+.br
+.ti -1c
+.RI "#define \fBAST_LEAF_LITERAL_VAL\fP(leaf,  val)   (leaf\->\fBvalue\&.literal\fP == val)"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBast_print\fP (ast_t *root)"
+.br
+.ti -1c
+.RI "void \fBast_init\fP (ersl_t *euler)"
+.br
+.ti -1c
+.RI "void \fBast_finalize\fP (ersl_t *euler)"
+.br
+.ti -1c
+.RI "void \fBast_relink_node\fP (ersl_t *euler, ast_t *child, ast_t *new_child)"
+.br
+.ti -1c
+.RI "uint8_t \fBast_get_available_slots\fP (ersl_t *euler)"
+.br
+.ti -1c
+.RI "ast_t * \fBast_destroy_node\fP (ersl_t *euler, ast_t *node)"
+.br
+.ti -1c
+.RI "ast_t * \fBast_get_root\fP (ersl_t *euler)"
+.br
+.ti -1c
+.RI "uint8_t \fBast_get_root_idx\fP (ersl_t *euler)"
+.br
+.ti -1c
+.RI "ast_t ** \fBast_find_parent\fP (ersl_t *euler, ast_t *child)"
+.br
+.ti -1c
+.RI "ast_t * \fBast_add_leaf\fP (ersl_t *euler, uint8_t \fBtype\fP)"
+.br
+.ti -1c
+.RI "ast_t * \fBast_add_leaf_const\fP (ersl_t *euler, uint8_t \fBtype\fP, double \fBvalue\fP)"
+.br
+.ti -1c
+.RI "ast_t * \fBast_add_leaf_literal\fP (ersl_t *euler, uint8_t \fBtype\fP, char \fBvalue\fP)"
+.br
+.ti -1c
+.RI "ast_t * \fBast_add_node\fP (ersl_t *euler, uint8_t \fBtype\fP, ast_t *ast_left, ast_t *ast_right)"
+.br
+.in -1c
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define AST_ISLEAF(leaf)   (leaf\->\fBleft\fP == \fBNULL\fP && leaf\->\fBright\fP == \fBNULL\fP)"
+
+.SS "#define AST_ISNODE(node)   !\fBAST_ISLEAF\fP(node)"
+
+.SS "#define AST_LEAF_LITERAL_VAL(leaf, val)   (leaf\->\fBvalue\&.literal\fP == val)"
+
+.SS "#define AST_LEAF_NUMBER_VAL(leaf, val)   (leaf\->\fBvalue\&.number\fP == val)"
+
+.SS "#define AST_NULL_CHECK(node)   ((node != \fBNULL\fP) ? node : \fBNULL\fP)"
+
+.SS "#define AST_OTHER_CHILD(node, child)"
+\fBValue:\fP
+.PP
+.nf
+((node->left == child) ? node->right :                                 \
+                                 (node->right == child) ? node->left : NULL)
+.fi
+.SS "#define AST_TYPE_CHECK(node, t)   (node\->\fBtype\fP == t)"
+
+.SS "#define AST_TYPE_CHECK_2(node, t1, t2)   ((node\->\fBtype\fP == t1) || (node\->\fBtype\fP == t2))"
+
+.SS "#define AST_TYPE_CHECK_3(node, t1, t2, t3)   ((node\->\fBtype\fP == t1) || (node\->\fBtype\fP == t2) || (node\->\fBtype\fP == t3))"
+
+.SS "#define AST_TYPE_CHECK_CHILDS(node, t)"
+\fBValue:\fP
+.PP
+.nf
+(AST_TYPE_CHECK(node->left, t) ?                                       \
+                 node->left :                                                  \
+                 AST_TYPE_CHECK(node->right, t) ? node->right : NULL)
+.fi
+.SS "#define AST_VALUE_CHECK_CHILDS(node, t, postfix, val)"
+\fBValue:\fP
+.PP
+.nf
+(((node->left->type == t) && (node->left->value\&.postfix == val)) ?     \
+                 node->left :                                                  \
+                 ((node->right->type == t) &&                                  \
+                  (node->right->value\&.postfix == val)) ?                       \
+                 node->right :                                                 \
+                 NULL)
+.fi
+.SS "#define AST_VALUE_CHECK_CHILDS_2(node, t1, t2, postfix, val)"
+\fBValue:\fP
+.PP
+.nf
+((node->left != NULL &&                                                \
+          (node->left->type == t1 || node->left->type == t2) &&                \
+          (node->left->value\&.postfix == val)) ?                                \
+                 node->left :                                                  \
+                 (node->right != NULL &&                                       \
+                  (node->right->type == t1 || node->right->type == t2) &&      \
+                  (node->right->value\&.postfix == val)) ?                       \
+                 node->right :                                                 \
+                 NULL)
+.fi
+.SS "#define AST_WHICH_CHILD_HAS_TYPE(node, t)"
+\fBValue:\fP
+.PP
+.nf
+((AST_TYPE_CHECK(node->left, t)) ?                                     \
+                 node->left :                                                  \
+                 ((AST_TYPE_CHECK(node->right, t) ? node->right : NULL)))
+.fi
+.SS "#define AST_WHICH_CHILD_HAS_TYPE_2(node, t1, t2)"
+\fBValue:\fP
+.PP
+.nf
+((AST_TYPE_CHECK_2(node->left, t1, t2)) ?                              \
+                 node->left :                                                  \
+                 ((AST_TYPE_CHECK_2(node->right, t1, t2) ? node->right :       \
+                                                           NULL)))
+.fi
+.SS "#define AST_WHICH_CHILD_HAS_TYPE_3(node, t1, t2, t3)"
+\fBValue:\fP
+.PP
+.nf
+((AST_TYPE_CHECK_3(node->left, t1, t2, t3)) ?                          \
+                 node->left :                                                  \
+                 ((AST_TYPE_CHECK_3(node->right, t1, t2, t3) ? node->right :   \
+                                                               NULL)))
+.fi
+.SH "Function Documentation"
+.PP 
+.SS "ast_t* ast_add_leaf (ersl_t * euler, uint8_t type)"
+
+.SS "ast_t* ast_add_leaf_const (ersl_t * euler, uint8_t type, double value)"
+
+.SS "ast_t* ast_add_leaf_literal (ersl_t * euler, uint8_t type, char value)"
+
+.SS "ast_t* ast_add_node (ersl_t * euler, uint8_t type, ast_t * ast_left, ast_t * ast_right)"
+
+.SS "ast_t* ast_destroy_node (ersl_t * euler, ast_t * node)"
+
+.SS "void ast_finalize (ersl_t * euler)"
+
+.SS "ast_t** ast_find_parent (ersl_t * euler, ast_t * child)"
+
+.SS "uint8_t ast_get_available_slots (ersl_t * euler)"
+
+.SS "ast_t* ast_get_root (ersl_t * euler)"
+
+.SS "uint8_t ast_get_root_idx (ersl_t * euler)"
+
+.SS "void ast_init (ersl_t * euler)"
+
+.SS "void ast_print (ast_t * root)"
+
+.SS "void ast_relink_node (ersl_t * euler, ast_t * child, ast_t * new_child)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Euler Computer Algebra System from the source code\&.
