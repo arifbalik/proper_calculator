@@ -105,8 +105,6 @@ int lex(symbol_table_t *symbol_table)
 void init_parser(ersl_t *euler, char *q)
 {
 	euler->status = NONE;
-	euler->type = 0;
-	euler->resultn.fraction = 0;
 
 	st_init(&(euler->symbol_table), q);
 	ast_init(euler);

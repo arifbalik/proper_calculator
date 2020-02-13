@@ -80,8 +80,6 @@ typedef struct {
 } __attribute__((packed)) symbol_table_t;
 
 typedef struct {
-	etype_t type; /* Developer should check this type before any action */
-	numerical_t resultn; /* Numerical results will be stored here */
 	estatus_t status; /* Developer can use this to debug the engine */
 	char *ascii; /* The query */
 	double (*func)(void);

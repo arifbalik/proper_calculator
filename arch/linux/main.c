@@ -9,7 +9,6 @@ int main(int argc, char const **argv)
 {
 	char query[LINE + 1] = { '\0' };
 	ersl_t euler;
-	int c, k;
 	printf("size of euler %ld, size of symbol_table %ld, sizeof ast %ld\n",
 	       (long)sizeof(euler), (long)sizeof(euler.symbol_table),
 	       (long)sizeof(euler.ast));
