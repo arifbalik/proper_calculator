@@ -9,8 +9,7 @@ LEXER=$(SRC)/tokenizer
 
 BUILD_DIR = build
 
-all: $(PARSER).c $(LEXER).c dconfig
-	doxygen dconfig
+all: $(PARSER).c $(LEXER).c 
 	cd arch/$(ARCH)/$(MCU) && $(MAKE)
 
 $(LEXER).c : $(PARSER).c
@@ -27,3 +26,6 @@ clean:
 
 graph:
 	re2c -D -o graphviz.txt $(LEXER).re
+
+document: dconfig
+	doxygen dconfig

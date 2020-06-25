@@ -7,7 +7,7 @@
 #include "../inc/_strcpy.h"
 #include "../inc/strplace.h"
 
-#define PARSE_TRACE
+//#define PARSE_TRACE
 
 char *YYCURSOR;
 

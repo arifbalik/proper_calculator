@@ -11,6 +11,7 @@
 
 #ifdef UNIX
 #include <stdio.h>
+#include <stdlib.h>
 #endif
 
 #ifndef NULL
