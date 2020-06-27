@@ -12,7 +12,7 @@
 char *YYCURSOR;
 
 #define TOKENIZE_AND_FILL_ST(query, e)                                         \
-	init_parser(e, query);                                                 \
+	init_parser(query);                                                    \
 	while (lex(&(e->symbol_table)) != EOQ)
 
 #define PUSH_TOKEN_STREAM_TO_PARSER(st, e, p)                                  \
@@ -102,8 +102,9 @@ int lex(symbol_table_t *symbol_table)
 	*/
 }
 
-void init_parser(ersl_t *euler, char *q)
+void init_parser(char *q)
 {
+	ersl_t *euler = _euler();
 	euler->status = NONE;
 
 	st_init(&(euler->symbol_table), q);
@@ -111,12 +112,13 @@ void init_parser(ersl_t *euler, char *q)
 	fill_lex(q);
 }
 
-void parse_query(ersl_t *euler)
+void parse_query()
 {
 	uint8_t token = 0;
 	void *parser = parse_alloc();
+	ersl_t *euler = _euler();
 
-	init_parser(euler, euler->ascii);
+	init_parser(euler->ascii);
 
 	/* Create symbol table */
 	TOKENIZE_AND_FILL_ST(euler->ascii, euler);

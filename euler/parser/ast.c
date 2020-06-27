@@ -1,38 +1,7 @@
-#include "../inc/euler.h"
 #include "ast.h"
 #include "grammar.h"
 #include "symbol_table.h"
-
-#define KIND(u, v) (u->type == v)
-#define ISOPERATOR(u)                                                          \
-	(KIND(u, PLUS) || KIND(u, MINUS) || KIND(u, MULT) || KIND(u, DIV) ||   \
-	 KIND(u, EQ))
-#define ISOPERAND(u) (!ISOPERATOR(u))
-#define GET_LEVEL(n) (log((double)n) / log(2))
-#define GET_POS(n) (n - pow(2, GET_LEVEL(n)))
-#define ISNUMERIC(u) (KIND(u, INT) || KIND(u, FLOAT))
-#define ISLITERAL(u) (KIND(u, LETTER))
-
-void ast_node_copy(ast_t *dest, ast_t *src);
-uint8_t ast_comp_val(ast_t *n1, ast_t *n2);
-static ast_t *ast_malloc(ersl_t *euler);
-void ast_operand(ast_t *u, int16_t i, ast_t *operand);
-
-/***** TEST ****/
-int integer_gcd(int n, int d)
-{
-	int r;
-
-	while (d != 0) {
-		r = n % d;
-		n = d;
-		d = r;
-	}
-	return abs(n);
-}
-
-
-/*** END TEST ****/
+#include "../inc/rational.h"
 
 /*! Primitive Structural Operators. */
 
@@ -48,14 +17,13 @@ void _get_operand(ast_t *u, uint8_t level, uint8_t pos, int16_t *_tmp,
 
 	else if (level > 1) {
 		*_tmp += 1;
-		_get_operand(u->left, level - 1, pos, _tmp, operand);
+		_get_operand(LEFT(u), level - 1, pos, _tmp, operand);
 		*_tmp += 1;
-		_get_operand(u->right, level - 1, pos, _tmp, operand);
+		_get_operand(RIGHT(u), level - 1, pos, _tmp, operand);
 	}
 
 	return;
 }
-
 /*!
  * returns the nth operand in the AST (level ordered search)
  */
@@ -64,9 +32,9 @@ void ast_operand(ast_t *u, int16_t i, ast_t *operand)
 	int16_t _tmp_pos = -1;
 
 	if (i == 1)
-		ast_node_copy(operand, u->right);
+		ast_node_copy(operand, RIGHT(u));
 	else if (i == 2)
-		ast_node_copy(operand, u->left);
+		ast_node_copy(operand, LEFT(u));
 	else
 		_get_operand(u, GET_LEVEL(i) + 1, GET_POS(i), &_tmp_pos,
 			     operand);
@@ -87,8 +55,8 @@ uint8_t ast_isidentical(ast_t *u, ast_t *t)
 
 	/* Check if the data of both roots is same and data of left and right 
        subtrees are also same */
-	return (ast_comp_val(u, t) && ast_isidentical(u->left, t->left) &&
-		ast_isidentical(u->right, t->right));
+	return (ast_comp_val(u, t) && ast_isidentical(LEFT(u), LEFT(t)) &&
+		ast_isidentical(RIGHT(u), RIGHT(t)));
 }
 
 /*!
@@ -109,31 +77,30 @@ uint8_t ast_free_of(ast_t *u, ast_t *t)
 
 	/* If the tree with root as current node doesn't match then 
        try left and right subtrees one by one */
-	return ast_free_of(u->left, t) && ast_free_of(u->right, t);
+	return ast_free_of(LEFT(u), t) && ast_free_of(RIGHT(u), t);
 }
 
 /*!
  * substitutes a subtree with a single leaf node.
  */
-void ast_substitute(ersl_t *euler, ast_t *u, ast_t *t, ast_t *r)
+void ast_substitute(ast_t *u, ast_t *t, ast_t *r)
 {
-	if (!r || !u || !t || !euler)
+	if (!r || !u || !t)
 		return;
-	if (r->left || r->right) /* only single variable substutution */
+	if (LEFT(r) || RIGHT(r)) /* only single variable substutution */
 		return;
 
-	if (ast_isidentical(u, t)) {
-		printf("identical\n");
-		ast_relink_node(euler, u, r);
-	}
+	if (ast_isidentical(u, t))
+		ast_relink_node(u, r);
 
-	ast_substitute(euler, u->left, t, r);
-	ast_substitute(euler, u->right, t, r);
+	ast_substitute(LEFT(u), t, r);
+	ast_substitute(RIGHT(u), t, r);
 }
 
-void ast_init(ersl_t *euler)
+void ast_init()
 {
 	uint8_t idx = 0;
+	ersl_t *euler = _euler();
 
 	/* Load the addresses of ast_rsv to ast and initialize members */
 	while (idx < MAX_AST_BRANCH) {
@@ -166,18 +133,20 @@ int ast_to_infix(ast_t *root, int total)
 	return total;
 }
 
-void ast_finalize(ersl_t *euler)
+void ast_finalize()
 {
-	euler->ast_top_idx = ast_get_root_idx(euler);
-	ast_t *tmp = simplify_rational_number(euler, ast_get_root(euler));
+	ersl_t *euler = _euler();
+	euler->ast_top_idx = ast_get_root_idx();
+	ast_t *tmp = simplify_rational_number(ast_get_root());
 	if (tmp != NULL)
 		ast_print(tmp);
 }
 
 /* return the address of the next available element in erstl_t */
-static ast_t *ast_malloc(ersl_t *euler)
+ast_t *ast_malloc()
 {
 	uint8_t idx = 0;
+	ersl_t *euler = _euler();
 
 	/* Check if the type is 0
 	 * which means its available cause 0 is reserved
@@ -191,8 +160,9 @@ static ast_t *ast_malloc(ersl_t *euler)
 	return euler->ast[idx];
 }
 
-static void ast_write_value(ersl_t *euler, ast_t *ast)
+void ast_write_value(ast_t *ast)
 {
+	ersl_t *euler = _euler();
 	if (ast == NULL)
 		return;
 	switch (ast->type) {
@@ -210,12 +180,13 @@ static void ast_write_value(ersl_t *euler, ast_t *ast)
 }
 
 /* Find the parent of a given leaf or node by searching the entire ast. */
-ast_t **ast_find_parent(ersl_t *euler, ast_t *child)
+ast_t **ast_find_parent(ast_t *child)
 {
 	uint8_t idx = 0;
+	ersl_t *euler = _euler();
 
 	while (idx < MAX_AST_BRANCH) {
-		if (euler->ast[idx] != NULL && AST_ISNODE(euler->ast[idx]) &&
+		if (euler->ast[idx] != NULL && ISNODE(euler->ast[idx]) &&
 		    (euler->ast[idx]->left == child ||
 		     euler->ast[idx]->right == child)) {
 			return &(euler->ast[idx]);
@@ -226,9 +197,9 @@ ast_t **ast_find_parent(ersl_t *euler, ast_t *child)
 	return NULL;
 }
 
-ast_t *ast_destroy_node(ersl_t *euler, ast_t *node)
+ast_t *ast_destroy_node(ast_t *node)
 {
-	ast_t **parent = ast_find_parent(euler, node);
+	ast_t **parent = ast_find_parent(node);
 	ast_t *tmp = NULL;
 	if (parent != NULL) {
 		tmp = ((*parent)->left == node) ? (*parent)->right :
@@ -236,7 +207,7 @@ ast_t *ast_destroy_node(ersl_t *euler, ast_t *node)
 		(*parent)->type = tmp->type;
 		(*parent)->value = tmp->value;
 		(*parent)->left = (*parent)->right = NULL;
-		if (AST_ISNODE(tmp)) {
+		if (ISNODE(tmp)) {
 			(*parent)->left = tmp->left;
 			(*parent)->right = tmp->right;
 		}
@@ -245,10 +216,11 @@ ast_t *ast_destroy_node(ersl_t *euler, ast_t *node)
 	}
 	return *parent;
 }
-void ast_relink_node(ersl_t *euler, ast_t *child, ast_t *new_child)
+void ast_relink_node(ast_t *child, ast_t *new_child)
 {
 	ast_t **parent = NULL;
-	ast_t *root = ast_get_root(euler);
+	ast_t *root = ast_get_root();
+	ersl_t *euler = _euler();
 
 	if (child == root) {
 		euler->ast[euler->ast_top_idx] = new_child;
@@ -259,7 +231,7 @@ void ast_relink_node(ersl_t *euler, ast_t *child, ast_t *new_child)
 	 * parent and that child is destroyed, than it should be found and
 	 * replaced with new_child as well.
 	 */
-	while ((parent = ast_find_parent(euler, child)) != NULL) {
+	while ((parent = ast_find_parent(child)) != NULL) {
 		if ((*parent)->left == child)
 			(*parent)->left = new_child;
 		else
@@ -267,14 +239,16 @@ void ast_relink_node(ersl_t *euler, ast_t *child, ast_t *new_child)
 	}
 }
 
-ast_t *ast_get_root(ersl_t *euler)
+ast_t *ast_get_root()
 {
+	ersl_t *euler = _euler();
 	return euler->ast[euler->ast_top_idx];
 }
 
-uint8_t ast_get_root_idx(ersl_t *euler)
+uint8_t ast_get_root_idx()
 {
 	uint8_t idx = 0;
+	ersl_t *euler = _euler();
 
 	while (euler->ast[idx]->type != 0) {
 		idx++;
@@ -286,16 +260,16 @@ uint8_t ast_get_root_idx(ersl_t *euler)
 	return idx - 1;
 }
 
-ast_t *ast_add_leaf(ersl_t *euler, uint8_t type)
+ast_t *ast_add_leaf(uint8_t type)
 {
-	ast_t *ast = ast_malloc(euler);
+	ast_t *ast = ast_malloc();
 
 	if (ast == NULL)
 		return NULL;
 
 	ast->type = type;
 
-	ast_write_value(euler, ast);
+	ast_write_value(ast);
 
 	ast->left = NULL;
 	ast->right = NULL;
@@ -303,9 +277,9 @@ ast_t *ast_add_leaf(ersl_t *euler, uint8_t type)
 	return ast;
 }
 
-ast_t *ast_add_leaf_const(ersl_t *euler, uint8_t type, double value)
+ast_t *ast_add_leaf_const(uint8_t type, double value)
 {
-	ast_t *ast = ast_malloc(euler);
+	ast_t *ast = ast_malloc();
 
 	if (ast == NULL)
 		return NULL;
@@ -320,9 +294,9 @@ ast_t *ast_add_leaf_const(ersl_t *euler, uint8_t type, double value)
 	return ast;
 }
 
-ast_t *ast_add_leaf_literal(ersl_t *euler, uint8_t type, char value)
+ast_t *ast_add_leaf_literal(uint8_t type, char value)
 {
-	ast_t *ast = ast_malloc(euler);
+	ast_t *ast = ast_malloc();
 
 	if (ast == NULL)
 		return NULL;
@@ -336,10 +310,11 @@ ast_t *ast_add_leaf_literal(ersl_t *euler, uint8_t type, char value)
 
 	return ast;
 }
-uint8_t ast_get_available_slots(ersl_t *euler)
+uint8_t ast_get_available_slots()
 {
 	uint8_t idx = 0;
 	uint8_t count = 0;
+	ersl_t *euler = _euler();
 
 	while (idx < MAX_AST_BRANCH) {
 		if (euler->ast_rsv[idx].type == 0) {
@@ -350,10 +325,9 @@ uint8_t ast_get_available_slots(ersl_t *euler)
 
 	return count;
 }
-ast_t *ast_add_node(ersl_t *euler, uint8_t type, ast_t *ast_right,
-		    ast_t *ast_left)
+ast_t *ast_add_node(uint8_t type, ast_t *ast_right, ast_t *ast_left)
 {
-	ast_t *ast_node = ast_malloc(euler);
+	ast_t *ast_node = ast_malloc();
 
 	if (ast_node == NULL)
 		return NULL;

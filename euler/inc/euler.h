@@ -20,6 +20,12 @@
 
 #define DOUBLE_PRECISION 10
 
+#ifdef __GNUC__
+#define __PACK __attribute__((packed))
+#else
+#error "Please use GCC to compile euler!"
+#endif
+
 /* Error defs. */
 typedef enum {
 	NONE = 255,
@@ -59,7 +65,7 @@ typedef struct ast {
 
 	struct ast *left; /* left hand side of the node */
 	struct ast *right; /* right hand side of the node */
-} __attribute__((packed)) ast_t;
+} __PACK ast_t;
 
 /* Symbol Table Structre */
 typedef struct {
@@ -71,14 +77,14 @@ typedef struct {
 	uint8_t no; /* Hold token number, defined in grammar.h */
 	uint8_t priority; /* For partial parsing */
 
-} __attribute__((packed)) token_t;
+} __PACK token_t;
 
 typedef struct {
 	token_t token[MAX_QUERY_LENGTH];
 	uint8_t top; /* index of last element in the stack */
 	uint8_t cur; /* currently handled token index */
 
-} __attribute__((packed)) symbol_table_t;
+} __PACK symbol_table_t;
 
 typedef struct {
 	estatus_t status; /* Developer can use this to debug the engine */
@@ -93,9 +99,10 @@ typedef struct {
 	 */
 	ast_t ast_rsv[MAX_AST_BRANCH];
 
-} __attribute__((packed)) ersl_t;
+} __PACK ersl_t;
 
-void parse_query(ersl_t *ersl);
+void parse_query(void);
 void euler_init(void);
+ersl_t *_euler(void);
 
 #endif /* _EULER_ */

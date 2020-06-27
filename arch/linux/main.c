@@ -8,10 +8,10 @@
 int main(int argc, char const **argv)
 {
 	char query[LINE + 1] = { '\0' };
-	ersl_t euler;
+	ersl_t *euler = _euler();
 	printf("size of euler %ld, size of symbol_table %ld, sizeof ast %ld\n",
-	       (long)sizeof(euler), (long)sizeof(euler.symbol_table),
-	       (long)sizeof(euler.ast));
+	       (long)sizeof(*euler), (long)sizeof(euler->symbol_table),
+	       (long)sizeof(euler->ast));
 	while (1) {
 		uint8_t i = 0;
 		char ch = 0;
@@ -28,8 +28,8 @@ int main(int argc, char const **argv)
 		}
 
 		query[i] = '\0'; /* a string should always end with '\0' ! */
-		euler.ascii = query;
-		parse_query(&euler);
+		euler->ascii = query;
+		parse_query();
 	}
 
 	return 0;
