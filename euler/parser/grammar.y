@@ -33,7 +33,7 @@
 
 expression ::= query EOQ. {
         ast_finalize(euler);
-        ast_print(ast_get_root(euler));
+       // ast_print(ast_get_root(euler));
         ast_init(euler);
 }
 

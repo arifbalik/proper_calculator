@@ -2,6 +2,8 @@
 #include "grammar.h"
 #include "symbol_table.h"
 #include "../inc/rational.h"
+#include "../inc/_itoa.h"
+#include "../inc/_strlen.h"
 
 /*! Primitive Structural Operators. */
 
@@ -27,9 +29,11 @@ void _get_operand(ast_t *u, uint8_t level, uint8_t pos, int16_t *_tmp,
 /*!
  * returns the nth operand in the AST (level ordered search)
  */
-void ast_operand(ast_t *u, int16_t i, ast_t *operand)
+ast_t *ast_operand(ast_t *u, int16_t i)
 {
 	int16_t _tmp_pos = -1;
+	ast_t *operand = ast_malloc();
+	ast_t **tmp = NULL;
 
 	if (i == 1)
 		ast_node_copy(operand, RIGHT(u));
@@ -38,6 +42,8 @@ void ast_operand(ast_t *u, int16_t i, ast_t *operand)
 	else
 		_get_operand(u, GET_LEVEL(i) + 1, GET_POS(i), &_tmp_pos,
 			     operand);
+	tmp = &operand;
+	return *tmp;
 }
 
 /*! Structural Operations */
@@ -113,33 +119,102 @@ void ast_init()
 	euler->ast_top_idx = 0;
 }
 
-int ast_to_infix(ast_t *root, int total)
+ast_t *ast_to_infix(ast_t *root)
 {
 	if (root == NULL)
-		return total;
+		return NULL;
 
-	ast_to_infix(root->left, total);
-	if (root->left == NULL && root->right == NULL) {
-		if (root->type == 2) {
-			printf("%f", root->value.number);
-			total += root->value.number;
+	ersl_t *euler = _euler();
+
+	ast_to_infix(root->right);
+	if (ISLEAF(root)) {
+		if (ISNUMERIC(root)) {
+#ifdef _TEST_
+			_itoa(root->value.number,
+			      &(euler->out[euler->out_pos]));
+			euler->out_pos +=
+				_strlen(_itoa(root->value.number,
+					      &(euler->out[euler->out_pos])),
+					255);
+#else
+			printf("%d", (int)root->value.number);
+#endif
+		} else {
+#ifdef _TEST_
+			euler->out[euler->out_pos++] = root->value.literal;
+#else
+			printf("%c", root->value.literal);
+#endif
 		}
 	} else {
-		printf("(%d)", root->type);
+		switch (root->type) {
+		case PLUS:
+
+#ifdef _TEST_
+			euler->out[euler->out_pos++] = '+';
+#else
+			printf("+");
+#endif
+			break;
+		case MINUS:
+
+#ifdef _TEST_
+			euler->out[euler->out_pos++] = '-';
+#else
+			printf("-");
+#endif
+			break;
+		case MULT:
+
+#ifdef _TEST_
+			euler->out[euler->out_pos++] = '+';
+#else
+			printf("*");
+#endif
+			break;
+		case DIV:
+
+#ifdef _TEST_
+			euler->out[euler->out_pos++] = '/';
+#else
+			printf("/");
+#endif
+			break;
+		case FACT:
+
+#ifdef _TEST_
+			euler->out[euler->out_pos++] = '!';
+#else
+			printf("!");
+#endif
+			break;
+		case EXP:
+
+#ifdef _TEST_
+			euler->out[euler->out_pos++] = '^';
+#else
+			printf("^");
+#endif
+			break;
+		default:
+			break;
+		}
 	}
 
-	ast_to_infix(root->right, total);
+	ast_to_infix(root->left);
 
-	return total;
+	return NULL;
 }
 
 void ast_finalize()
 {
 	ersl_t *euler = _euler();
 	euler->ast_top_idx = ast_get_root_idx();
-	ast_t *tmp = simplify_rational_number(ast_get_root());
+
+	ast_t *tmp = simplify_rne(ast_get_root());
+
 	if (tmp != NULL)
-		ast_print(tmp);
+		ast_to_infix(tmp);
 }
 
 /* return the address of the next available element in erstl_t */

@@ -7,6 +7,8 @@
 #define MAX_QUERY_LENGTH 80
 #define MAX_AST_BRANCH 100
 
+#define _TEST_
+
 #define UNIX
 
 #ifdef UNIX
@@ -93,6 +95,11 @@ typedef struct {
 	symbol_table_t symbol_table; /* Token table */
 	ast_t *ast[MAX_AST_BRANCH]; /* Abstract Syntax Tree */
 	uint8_t ast_top_idx; /* index of top node */
+
+#ifdef _TEST_
+	char out[255];
+	uint8_t out_pos;
+#endif
 
 	/* Reserved Abstract Syntax Tree.
 	 * Only used by euler in custom malloc operations
